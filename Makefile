@@ -3,11 +3,12 @@
 NOOP   = true
 NOECHO = @
 
-CP   = cp -a
-MD   = mkdir -p
-RMRF = rm -rf
-CURL = curl
-NPM  = npm
+CP    = cp -a
+MD    = mkdir -p
+RMRF  = rm -rf
+CURL  = curl
+NPM   = npm
+PSASS = psass
 
 
 XSLT_ASSETS = transclude.xsl rdfa.xsl ibis.xsl

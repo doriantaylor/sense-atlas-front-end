@@ -592,7 +592,7 @@
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:variable name="inverse">
+ <xsl:variable name="inverse">
     <xsl:variable name="_" select="document('')/xsl:stylesheet/x:inverses"/>
     <xsl:value-of select="($_/x:pair[@a=$predicate]/@b|$_/x:pair[@b=$predicate]/@a)[1]"/>
   </xsl:variable>
@@ -864,7 +864,48 @@
 
 <x:doc>
   <h2>skos:footer</h2>
-  <p>This is a UI component for <code>skos:Concept</code> (i.e. <code>ibis:Entity</code>)-derived </p>
+  <p>This is a UI component for <code>skos:Concept</code> (i.e. <code>ibis:Entity</code>)-derived subjects, as well as <code>skos:ConceptScheme</code>/<code>ibis:Network</code> aggregates.</p>
+  <p>If it's a concept or derivative thereof (I should really change <code>ibis:Entity</code> to <code>ibis:Statement</code>), it has to first find the <em>scheme</em> it belongs to (via <code>skos:inScheme</code>, <code>skos:topConceptOf</code>, or its inverse, <code>skos:hasTopConcept</code>), otherwise we are currently looking at the scheme.</p>
+  <p>We then have to determine if the scheme is in <em>focus</em>. For this we first find the <code>xhv:top</code> (at least for now; I may come up with a better one later) relative to the scheme.</p>
+  <aside role="note">
+    <p>Note that there is nothing preventing a conceptual entity from belonging to zero schemes, or belonging to more than one scheme. There is furthermore nothing preventing none of the associated schemes from being in focus, although having more than one scheme in focus is an error. (This is partly why I have to change the focus mechanism from being relative to the <em>space</em>, to being relative to the <em>user</em>, not only because it can potentially get into this state in a multiuser system, but also because people will be continually clobbering each other's focus.)</p>
+    <p>If a concept belongs to zero schemes, we should throw up a modal to force the user to pick a scheme. We should default to the scheme in focus. If there are other schemes present, we should provide an option to set the focus as well as attach the concept. We should provide a mechanism to create a new scheme (which we assume will attach the concept). There should be an option (default?) to focus a new scheme.</p>
+  </aside>
+  <p>A concept attached to multiple schemes needs UI to be able to detach from one scheme, but only if there are multiples.</p>
+  <p>A concept should also be able to import all of its neighbours into the scheme</p>
+  <section>
+    <h3>Concept UI</h3>
+    <ul>
+      <li>
+	<p>flyout list of all schemes</p>
+	<ul>
+	  <li>participating scheme(s) gathered at the top</li>
+	  <li>focused scheme at the tippy-top/closed position (if participating)</li>
+	  <li>then non-participating schemes, whether focused or not</li>
+	  <li>each has a link to the scheme itself</li>
+	  <li>unfocused schemes have a set focus button</li>
+	  <li>non-participating schemes have attach+set focus, attach+no-focus buttons as well</li>
+	</ul>
+      </li>
+      <li>
+	<p>create new scheme UI</p>
+	<ul>
+	  <li>text box for name</li>
+	  <li>attach concept?</li>
+	  <li>if current subject is <em>not</em> an <code>ibis:Entity</code>, provide toggle between <code>skos:ConceptScheme</code> and <code>ibis:Network</code></li>
+	  <li>go to</li>
+	  <li>set focus</li>
+	</ul>
+      </li>
+    </ul>
+  </section>
+  <section>
+    <h3>Scheme UI</h3>
+    <ul>
+      <li>schemes do not have to worry about attaching concepts, so when the subject location is a scheme, there is only the matter of navigating to another one of the listed schemes, or otherwise focusing it (and presumably navigating to it as well).</li>
+      <li>in other words the scheme UI is the same as the concept UI minus all the <em>attach</em> business.</li>
+    </ul>
+  </section>
 </x:doc>
 
 <xsl:template match="html:*" mode="skos:footer">
@@ -887,7 +928,7 @@
     </xsl:apply-templates>
   </xsl:param>
 
-  <xsl:variable name="top">
+  <xsl:variable name="space">
     <xsl:apply-templates select="." mode="rdfa:object-resources">
       <xsl:with-param name="subject" select="$subject"/>
       <xsl:with-param name="base" select="$base"/>
@@ -895,19 +936,19 @@
     </xsl:apply-templates>
   </xsl:variable>
 
-  <xsl:variable name="scheme">
-    <xsl:variable name="is-scheme">
-      <xsl:variable name="_">
-	<xsl:call-template name="str:token-intersection">
-	  <xsl:with-param name="left" select="$type"/>
-	  <xsl:with-param name="right" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
-	</xsl:call-template>
-      </xsl:variable>
-      <xsl:value-of select="normalize-space($_)"/>
+  <xsl:variable name="scheme-xx">
+    <xsl:variable name="_">
+      <xsl:call-template name="str:token-intersection">
+	<xsl:with-param name="left" select="$type"/>
+	<xsl:with-param name="right" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
+      </xsl:call-template>
     </xsl:variable>
-    <xsl:choose>
-      <xsl:when test="string-length($is-scheme)"><xsl:value-of select="$subject"/></xsl:when>
-      <xsl:otherwise>
+    <xsl:value-of select="normalize-space($_)"/>
+  </xsl:variable>
+  <xsl:variable name="is-scheme" select="string-length($scheme-xx) != 0"/>
+
+  <xsl:variable name="attached">
+    <xsl:if test="not($is-scheme)">
 	<!--
 	    make it possible to list/switch current ibis:Network/skos:ConceptScheme:
 
@@ -917,41 +958,45 @@
 	    * otherwise an ibis network should take precedence over a skos concept scheme
 	    * otherwise ???
 	-->
-	<xsl:variable name="_">
-	  <xsl:apply-templates select="." mode="rdfa:object-resources">
-            <xsl:with-param name="subject" select="$subject"/>
-            <xsl:with-param name="base" select="$base"/>
-            <xsl:with-param name="predicate" select="concat($SKOS, 'inScheme')"/>
-	  </xsl:apply-templates>
-	  <xsl:text> </xsl:text>
-	  <xsl:apply-templates select="." mode="rdfa:object-resources">
-            <xsl:with-param name="subject" select="$subject"/>
-            <xsl:with-param name="base" select="$base"/>
-            <xsl:with-param name="predicate" select="concat($SKOS, 'topConceptOf')"/>
-	  </xsl:apply-templates>
-	  <xsl:text> </xsl:text>
-	  <xsl:apply-templates select="." mode="rdfa:subject-resources">
-            <xsl:with-param name="object" select="$subject"/>
-            <xsl:with-param name="base" select="$base"/>
-            <xsl:with-param name="predicate" select="concat($SKOS, 'hasTopConcept')"/>
-	  </xsl:apply-templates>
-	</xsl:variable>
-	<xsl:call-template name="str:unique-tokens">
-	  <xsl:with-param name="string" select="normalize-space($_)"/>
-	</xsl:call-template>
-      </xsl:otherwise>
-    </xsl:choose>
+      <xsl:variable name="_">
+	<xsl:apply-templates select="." mode="rdfa:object-resources">
+          <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="base" select="$base"/>
+        <xsl:with-param name="predicate" select="concat($SKOS, 'inScheme')"/>
+	</xsl:apply-templates>
+	<xsl:text> </xsl:text>
+	<xsl:apply-templates select="." mode="rdfa:object-resources">
+          <xsl:with-param name="subject" select="$subject"/>
+          <xsl:with-param name="base" select="$base"/>
+          <xsl:with-param name="predicate" select="concat($SKOS, 'topConceptOf')"/>
+	</xsl:apply-templates>
+	<xsl:text> </xsl:text>
+	<xsl:apply-templates select="." mode="rdfa:subject-resources">
+          <xsl:with-param name="object" select="$subject"/>
+          <xsl:with-param name="base" select="$base"/>
+          <xsl:with-param name="predicate" select="concat($SKOS, 'hasTopConcept')"/>
+	</xsl:apply-templates>
+      </xsl:variable>
+      <xsl:call-template name="str:unique-tokens">
+	<xsl:with-param name="string" select="normalize-space($_)"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="focus">
+    <xsl:apply-templates select="document($space)/*" mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$space"/>
+      <xsl:with-param name="predicate" select="concat($CGTO, 'focus')"/>
+    </xsl:apply-templates>
   </xsl:variable>
 
   <!--
       * provide some kind of ui for creating a new ibis:Network/skos:ConceptScheme
       * make setting the cgto:focus optional (default??)
   -->
-  <xsl:variable name="inventory">
+  <xsl:variable name="schemes">
     <xsl:variable name="_">
-     <xsl:apply-templates select="document($top)/*" mode="cgto:find-inventories-by-class">
-       <!--<xsl:with-param name="base" select="$top"/>
-       <xsl:with-param name="subject" select="$top"/>-->
+     <xsl:apply-templates select="document($space)/*" mode="cgto:find-inventories-by-class">
        <xsl:with-param name="classes">
          <xsl:value-of select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
        </xsl:with-param>
@@ -961,48 +1006,235 @@
       <xsl:with-param name="resources" select="$_"/>
       <xsl:with-param name="predicate" select="concat($DCT, 'hasPart')"/>
     </xsl:apply-templates>
-   </xsl:variable>
+  </xsl:variable>
 
-   <xsl:message>inventory: <xsl:value-of select="$inventory"/></xsl:message>
 
   <footer>
-	  <a href="{$scheme}">Overview</a>
-	  <!--
-      <form id="overview" method="post" action="">
-	<fieldset id="overview-selector">
-	  <a href="{$scheme}">Overview</a>
-	<select name="$ SUBJECT $">
-	  <option value="$NEW_UUID_URN">New&#x2026;</option>
-	  <xsl:apply-templates select="." mode="skos:footer-option">
-	    <xsl:with-param name="candidates" select="$inventory"/>
-	    <xsl:with-param name="selected" select="$scheme"/>
-	  </xsl:apply-templates>
-	</select>
-	</fieldset>
-	<fieldset id="control-existing">
-	  <button type="button" id="go">Go</button>
-	  <button disabled="">Set Focus</button>
-	  <label><input name="! skos:inScheme :" value="{$subject}" type="checkbox"/> Import this entity</label>
-	  <input type="text" placeholder="Name"/>
-	  <button>Rename</button>
-	</fieldset>
-	<fieldset id="control-new hidden">
-	  <fieldset>
-	    <label><input name="= rdf:type :" type="radio" value="ibis:Network" checked="checked"/> IBIS Network</label>
-	    <xsl:text>&#xa0;</xsl:text>
-	    <label><input name="= rdf:type :" value="skos:ConceptScheme" type="radio"/> SKOS Concepts</label>
-	  </fieldset>
-	  <label><input type="checkbox"/> Import this entity</label>
-	  <input type="text" placeholder="Name"/>
-	  <button>Create</button>
-	</fieldset>
-      </form>-->
+    <form>
+      <button type="button" id="scheme-collapsed">
+      <xsl:call-template name="skos:scheme-collapsed-item">
+	<xsl:with-param name="schemes"    select="$attached"/>
+	<xsl:with-param name="focus"      select="$focus"/>
+      </xsl:call-template>
+      </button>
+    </form>
+    <ul id="scheme-list" class="schemes">
+      <xsl:call-template name="skos:scheme-item">
+	<xsl:with-param name="schemes"    select="$schemes"/>
+	<xsl:with-param name="attached"   select="$attached"/>
+	<xsl:with-param name="focus"      select="$focus"/>
+	<xsl:with-param name="space"      select="$space"/>
+	<xsl:with-param name="is-concept" select="not($is-scheme)"/>
+      </xsl:call-template>
+      <li>
+    <form class="new-scheme" method="POST" action="">
+      <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+      <xsl:choose>
+	<xsl:when test="false()">
+	  <label><input name="= rdf:type :" type="radio" value="ibis:Network" checked="checked"/> IBIS Network</label>
+	  <xsl:text>&#xa0;</xsl:text>
+	  <label><input name="= rdf:type :" value="skos:ConceptScheme" type="radio"/> SKOS Concepts</label>
+	</xsl:when>
+	<xsl:otherwise>
+	  <input type="hidden" name="= rdf:type :" value="ibis:Network"/>
+	</xsl:otherwise>
+      </xsl:choose>
+      <input type="text" name="= skos:prefLabel" placeholder="Name&#x2026;"/>
+      <xsl:if test="false()">
+	<label><input type="checkbox" name="! skos:inScheme :" value="{$subject}"/> Import this entity</label>
+      </xsl:if>
+      <button>Create</button>
+      <button name="= {$space} cgto:focus :" value="$SUBJECT">+ Focus</button>
+    </form>
+      </li>
+    </ul>
   </footer>
 </xsl:template>
 
 <x:doc>
-  <h2>skos:footer-option</h2>
+  <h2>skos:scheme-item-label</h2>
+  <p>this is just a plain list</p>
 </x:doc>
+
+<xsl:template name="skos:scheme-item-label">
+  <xsl:param name="subject" select="''"/>
+  <xsl:param name="is-focused" select="false()"/>
+
+  <xsl:variable name="doc" select="document($subject)/*"/>
+  <!-- get label shenanigans -->
+  <xsl:variable name="label-raw">
+    <xsl:apply-templates select="$doc" mode="skos:object-form-label">
+      <xsl:with-param name="subject" select="$subject"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+  <xsl:variable name="label-prop" select="substring-before($label-raw, ' ')"/>
+  <xsl:variable name="label-val" select="substring-after($label-raw, ' ')"/>
+  <xsl:variable name="label" select="substring-before($label-val, $rdfa:UNIT-SEP)"/>
+  <xsl:variable name="label-type">
+    <xsl:if test="not(starts-with(substring-after($label-val, $rdfa:UNIT-SEP), '@'))">
+      <xsl:value-of select="substring-after($label-val, $rdfa:UNIT-SEP)"/>
+    </xsl:if>
+  </xsl:variable>
+  <xsl:variable name="label-lang">
+    <xsl:if test="starts-with(substring-after($label-val, $rdfa:UNIT-SEP), '@')">
+      <xsl:value-of select="substring-after($label-val, concat($rdfa:UNIT-SEP, ' '))"/>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="span">
+    <xsl:choose>
+      <xsl:when test="$is-focused">strong</xsl:when>
+      <xsl:otherwise>span</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:element name="{$span}">
+    <xsl:if test="$label-prop">
+      <xsl:attribute name="property">
+	<xsl:value-of select="$label-prop"/>
+      </xsl:attribute>
+      <xsl:if test="$label-type">
+	<xsl:attribute name="datatype"><xsl:value-of select="$label-type"/></xsl:attribute>
+      </xsl:if>
+      <xsl:if test="$label-lang">
+	<xsl:attribute name="xml:lang"><xsl:value-of select="$label-lang"/></xsl:attribute>
+      </xsl:if>
+    </xsl:if>
+    <xsl:value-of select="$label"/>
+  </xsl:element>
+</xsl:template>
+
+<x:doc>
+  <h2>skos:scheme-collapsed-item</h2>
+  <p>this is just a plain list</p>
+</x:doc>
+
+<xsl:template name="skos:scheme-collapsed-item">
+  <xsl:param name="schemes" select="''"/>
+  <xsl:param name="focus"   select="''"/>
+
+  <xsl:variable name="first">
+    <xsl:choose>
+      <xsl:when test="string-length(normalize-space($focus)) and contains(concat(' ', $focus, ' '), concat(' ', $schemes, ' '))">
+	<xsl:value-of select="normalize-space($focus)"/>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:call-template name="str:safe-first-token">
+	  <xsl:with-param name="tokens" select="$schemes"/>
+	</xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="is-focused" select="normalize-space($focus) = $first"/>
+
+  <xsl:variable name="rest">
+    <xsl:choose>
+      <xsl:when test="$is-focused">
+	<xsl:call-template name="str:token-minus">
+	  <xsl:with-param name="tokens" select="$schemes"/>
+	  <xsl:with-param name="minus" select="$first"/>
+	</xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:value-of select="substring-after(normalize-space($schemes), ' ')"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:if test="string-length($first)">
+    <xsl:call-template name="skos:scheme-item-label">
+      <xsl:with-param name="subject" select="$first"/>
+      <xsl:with-param name="is-focused" select="$is-focused"/>
+    </xsl:call-template>
+
+    <xsl:if test="string-length($rest)">
+      <xsl:text>, </xsl:text>
+      <xsl:call-template name="skos:scheme-collapsed-item">
+	<xsl:with-param name="schemes" select="$rest"/>
+	<xsl:with-param name="focus" select="$focus"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:if>
+</xsl:template>
+
+<x:doc>
+  <h2>skos:scheme-item</h2>
+  <p>okay so this is supposed consume a space-delimited queue of addresses recursively and produce a list of things.</p>
+  <p>it needs to know</p>
+</x:doc>
+
+<xsl:template name="skos:scheme-item">
+  <xsl:param name="schemes"  select="''"/>
+  <xsl:param name="attached" select="''"/>
+  <xsl:param name="focus"    select="''"/>
+  <xsl:param name="space">
+    <xsl:message terminate="yes">`space` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="is-concept" select="false()"/>
+
+  <xsl:variable name="snorm" select="normalize-space($schemes)"/>
+
+  <xsl:variable name="first">
+    <xsl:call-template name="str:safe-first-token">
+      <xsl:with-param name="tokens" select="$snorm"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:if test="string-length($first)">
+    <xsl:variable name="scheme-doc" select="document($first)/*"/>
+
+    <!-- test if attached -->
+    <xsl:variable name="attach-intersection">
+      <xsl:call-template name="str:token-intersection">
+	<xsl:with-param name="left" select="$first"/>
+	<xsl:with-param name="right" select="$attached"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:variable name="is-attached" select="string-length($attach-intersection)"/>
+
+    <li>
+      <a href="{$first}">
+	<xsl:if test="$is-attached">
+	  <xsl:attribute name="rel">skos:inScheme</xsl:attribute>
+	</xsl:if>
+	<xsl:call-template name="skos:scheme-item-label">
+	  <xsl:with-param name="subject" select="$first"/>
+	  <xsl:with-param name="is-focused" select="$first = $focus"/>
+	</xsl:call-template>
+      </a>
+      <!-- 'set focus' button (if not focused, unconditional) -->
+      <form method="POST" action="">
+	<xsl:if test="$is-concept">
+	  <!-- 'detach' button if attached -->
+	  <xsl:choose>
+	    <xsl:when test="$is-attached">
+	      <button name="- skos:inScheme :" value="{$first}">Detach</button>
+	    </xsl:when>
+	    <xsl:otherwise>
+	      <button name="skos:inScheme :" value="{$first}">Attach</button>
+	    </xsl:otherwise>
+	  </xsl:choose>
+	</xsl:if>
+	<xsl:if test="$first != $focus">
+	  <button name="= {$space} cgto:focus :" value="{$first}">Set Focus</button>
+	</xsl:if>
+      </form>
+    </li>
+
+    <xsl:variable name="rest" select="normalize-space(substring-after($snorm, ' '))"/>
+    <xsl:if test="string-length($rest)">
+      <xsl:call-template name="skos:scheme-item">
+	<xsl:with-param name="schemes"    select="$rest"/>
+	<xsl:with-param name="attached"   select="$attached"/>
+	<xsl:with-param name="focus"      select="$focus"/>
+	<xsl:with-param name="space"      select="$space"/>
+	<xsl:with-param name="is-concept" select="$is-concept"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:if>
+
+</xsl:template>
 
 <xsl:template match="html:*" mode="skos:footer-option">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>

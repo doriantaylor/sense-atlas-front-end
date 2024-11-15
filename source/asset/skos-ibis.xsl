@@ -255,22 +255,23 @@
       </section>
     </article>
     <figure id="force" class="aside"/>
-    <xsl:apply-templates select="." mode="ibis:make-datalist">
+    <!--<xsl:apply-templates select="." mode="ibis:make-datalist">
       <xsl:with-param name="base"          select="$base"/>
       <xsl:with-param name="resource-path" select="$resource-path"/>
       <xsl:with-param name="rewrite"       select="$rewrite"/>
       <xsl:with-param name="main"          select="true()"/>
       <xsl:with-param name="heading"       select="$heading"/>
       <xsl:with-param name="subject"       select="$subject"/>
-    </xsl:apply-templates>
+    </xsl:apply-templates>-->
   </main>
+  <!--
   <xsl:apply-templates select="." mode="skos:footer">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
     <xsl:with-param name="heading"       select="$heading"/>
     <xsl:with-param name="subject"       select="$subject"/>
-  </xsl:apply-templates>
+  </xsl:apply-templates>-->
 </xsl:template>
 
 
@@ -529,8 +530,8 @@
     </xsl:apply-templates>
   </xsl:param>
 
-  <xsl:variable name="sequence" select="document('')/xsl:stylesheet/x:sequence[1]"/>
   <xsl:variable name="current" select="."/>
+  <xsl:variable name="sequence" select="document('')/xsl:stylesheet/x:sequence[1]"/>
 
   <xsl:for-each select="$sequence/x:class[@uri = $type]/x:prop">
     <xsl:variable name="targets">
@@ -548,6 +549,8 @@
       </xsl:call-template>
     </xsl:variable>
 
+    <xsl:comment>curie: <xsl:value-of select="$curie"/></xsl:comment>
+
     <section about="{@uri}">
       <h3 property="rdfs:label"><xsl:value-of select="x:label"/></h3>
       <xsl:apply-templates select="." mode="ibis:add-relation">
@@ -556,7 +559,9 @@
         <xsl:with-param name="subject" select="$subject"/>
       </xsl:apply-templates>
       <xsl:if test="normalize-space($targets)">
-      <ul about="" rel="{$curie}">
+	<ul><!-- about="{$base}" rel="{$curie}">-->
+	  <xsl:attribute name="about"/>
+	  <xsl:attribute name="rel"><xsl:value-of select="$curie"/></xsl:attribute>
         <xsl:apply-templates select="$current" mode="ibis:link-stack">
           <xsl:with-param name="base"          select="$base"/>
           <xsl:with-param name="resource-path" select="$resource-path"/>
@@ -678,7 +683,7 @@
   </form>
 </xsl:template>
 
-<xsl:template match="*" mode="ibis:link-stack">
+<xsl:template match="html:*" mode="ibis:link-stack">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="resource-path" select="$base"/>
   <xsl:param name="rewrite" select="''"/>
@@ -690,14 +695,13 @@
 
   <xsl:variable name="s" select="normalize-space($stack)"/>
 
-  <xsl:if test="$s">
+  <xsl:if test="string-length($s)">
     <xsl:variable name="first">
       <xsl:call-template name="str:safe-first-token">
         <xsl:with-param name="tokens" select="$s"/>
       </xsl:call-template>
     </xsl:variable>
     <xsl:variable name="rest" select="substring-after($s, ' ')"/>
-
     <xsl:variable name="type">
       <xsl:apply-templates select="." mode="rdfa:object-resources">
         <xsl:with-param name="subject" select="$first"/>
@@ -758,9 +762,8 @@
           <xsl:value-of select="substring-before($label, $rdfa:UNIT-SEP)"/>
         </a>
       </form>
-      <!--<xsl:comment><xsl:value-of select="$rest"/></xsl:comment>-->
     </li>
-
+    <!--<xsl:comment><xsl:value-of select="$rest"/></xsl:comment>-->
     <xsl:if test="normalize-space($rest)">
       <xsl:apply-templates select="." mode="ibis:link-stack">
         <xsl:with-param name="base"          select="$base"/>
@@ -935,6 +938,10 @@
       <xsl:with-param name="predicate" select="concat($XHV, 'top')"/>
     </xsl:apply-templates>
   </xsl:variable>
+
+  <xsl:if test="normalize-space($space) = ''">
+    <xsl:message terminate="yes">no xhv:top</xsl:message>
+  </xsl:if>
 
   <xsl:variable name="scheme-xx">
     <xsl:variable name="_">
@@ -1676,7 +1683,7 @@
 
 <xsl:template match="html:*" mode="skos:scheme-item">
   <xsl:param name="resources">
-    <xsl:message terminate="yes">`resources` required</xsl:message>
+    <xsl:message terminate="yes">`resources` parameter required</xsl:message>
   </xsl:param>
   <xsl:param name="lprop" select="concat($SKOS, 'prefLabel')"/>
 

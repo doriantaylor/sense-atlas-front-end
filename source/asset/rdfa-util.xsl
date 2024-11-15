@@ -387,7 +387,7 @@
         <xsl:value-of select="concat($state, ' ')"/>
         <xsl:choose>
           <xsl:when test="$reverse">
-            <xsl:message><xsl:value-of select="$first"/></xsl:message>
+            <xsl:message>reverse: <xsl:value-of select="$first"/></xsl:message>
             <xsl:apply-templates select="$root/html:body" mode="rdfa:subject-resources">
               <xsl:with-param name="object" select="$first"/>
               <xsl:with-param name="base" select="$doc"/>

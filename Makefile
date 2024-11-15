@@ -5,6 +5,7 @@ NOECHO = @
 
 CP    = cp -a
 MD    = mkdir -p
+RM    = rm
 RMRF  = rm -rf
 CURL  = curl
 NPM   = npm
@@ -12,8 +13,8 @@ PSASS = psass
 
 
 XSLT_ASSETS = transclude.xsl rdfa.xsl ibis.xsl
-SCSS_ASSETS = ibis.scss
-JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js
+# SCSS_ASSETS = ibis.scss
+JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js skos-ibis/scripts.js
 
 GITHUB = https://raw.githubusercontent.com/doriantaylor
 LOCAL  = $(HOME)/clients/me
@@ -33,6 +34,9 @@ target:
 target/asset: target
 	$(MD) target/asset
 
+target/asset/skos-ibis: target/asset
+	$(MD) target/asset/skos-ibis
+
 # OUT-OF-REPO XSLT
 
 target/asset/transclude.xsl : target/asset
@@ -47,20 +51,29 @@ target/asset/rdfa.xsl : target/asset
 
 # OUR XSLT
 
-target/asset/ibis.xsl : target/asset
-	$(CP) source/asset/ibis.xsl target/asset
+target/asset/rdfa-util.xsl : target/asset/transclude.xsl target/asset/rdfa.xsl
+	$(CP) source/asset/rdfa-util.xsl target/asset
 
-target/transform.xsl : target/asset
+target/asset/cgto.xsl : target/asset/rdfa-util.xsl
+	$(CP) source/asset/cgto.xsl target/asset
+
+target/asset/skos-ibis.xsl : target/asset/cgto.xsl target/asset/rdfa-util.xsl
+	$(CP) source/asset/skos-ibis.xsl target/asset
+
+target/transform.xsl : target/asset/rdfa-util.xsl target/asset/cgto.xsl target/asset/skos-ibis.xsl
 	$(CP) source/transform.xsl target
 
-xslt: target/asset/transclude.xsl target/asset/rdfa.xsl target/asset/ibis.xsl target/transform.xsl
+xslt: target/transform.xsl target/asset/skos-ibis.xsl
+
+clean-xslt:
+	$(RM) target/asset/*.xsl target/*.xsl
 
 # (S)CSS
 
-target/asset/ibis.css : target/asset
-	$(PSASS) -t expanded -o target/asset/ibis.css source/asset/ibis.scss
+target/asset/skos-ibis/style.css : target/asset/skos-ibis
+	$(PSASS) -t expanded -o target/asset/skos-ibis/style.css source/asset/skos-ibis/style.scss
 
-css: target/asset/ibis.css
+css: target/asset/skos-ibis/style.css
 
 # JAVASCRIPT
 
@@ -84,6 +97,9 @@ target/asset/force-directed.js : target/asset
 
 target/asset/hierarchical.js : target/asset
 	cd js; $(NPM) run build; cd -
+
+target/asset/skos-ibis/scripts.js : target/asset/skos-ibis
+	$(CP) source/asset/skos-ibis/scripts.js target/asset/skos-ibis/
 
 js: $(foreach x,$(JS_ASSETS),target/asset/$(x))
 

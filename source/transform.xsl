@@ -91,11 +91,12 @@
   <xsl:variable name="type-pad" select="concat(' ', normalize-space($type), ' ')"/>
 
   <!-- XXX UN-HARDCODE THIS -->
+  <!--<xsl:variable name="vocabs" select="document('/13e45ee1-0b98-4d4b-9e74-a83a09e85030')"/>-->
   <xsl:variable name="vocabs" select="document('asset/vocabs')"/>
 
   <xsl:variable name="match" select="$vocabs/rdf:RDF//*[self::rdfs:Class|self::owl:Class][contains($type-pad, concat(' ', @rdf:about, ' '))][1]"/>
 
-  <xsl:message><xsl:value-of select="$match"/></xsl:message>
+  <xsl:message>woops <xsl:value-of select="name($match)"/><xsl:text> </xsl:text><xsl:value-of select="$match/@rdf:about"/></xsl:message>
 
   <xsl:choose>
     <xsl:when test="$match">

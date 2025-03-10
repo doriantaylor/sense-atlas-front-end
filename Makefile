@@ -63,7 +63,7 @@ target/asset/skos-ibis.xsl : target/asset/cgto.xsl target/asset/rdfa-util.xsl
 target/transform.xsl : target/asset/rdfa-util.xsl target/asset/cgto.xsl target/asset/skos-ibis.xsl
 	$(CP) source/transform.xsl target
 
-xslt: target/transform.xsl target/asset/skos-ibis.xsl
+xslt: clean-xslt target/transform.xsl target/asset/skos-ibis.xsl
 
 clean-xslt:
 	$(RM) target/asset/*.xsl target/*.xsl

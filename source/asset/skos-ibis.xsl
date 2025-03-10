@@ -210,7 +210,139 @@
   </x:class>
 </x:sequence>
 
-<!-- -->
+
+<xsl:template match="html:*" mode="skos:get-schemes">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="type">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:variable name="scheme-type">
+    <xsl:call-template name="str:token-intersection">
+      <xsl:with-param name="left" select="$type"/>
+      <xsl:with-param name="right" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="normalize-space($scheme-type) != ''">
+      <xsl:value-of select="$subject"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="_">
+	<xsl:apply-templates select="." mode="rdfa:object-resources">
+	  <xsl:with-param name="subject" select="$subject"/>
+	  <xsl:with-param name="base" select="$base"/>
+	  <xsl:with-param name="predicate" select="concat($SKOS, 'inScheme')"/>
+	</xsl:apply-templates>
+	<xsl:text> </xsl:text>
+	<xsl:apply-templates select="." mode="rdfa:object-resources">
+	  <xsl:with-param name="subject" select="$subject"/>
+	  <xsl:with-param name="base" select="$base"/>
+	  <xsl:with-param name="predicate" select="concat($SKOS, 'topConceptOf')"/>
+	</xsl:apply-templates>
+	<xsl:text> </xsl:text>
+	<xsl:apply-templates select="." mode="rdfa:subject-resources">
+	  <xsl:with-param name="object" select="$subject"/>
+	  <xsl:with-param name="base" select="$base"/>
+	  <xsl:with-param name="predicate" select="concat($SKOS, 'hasTopConcept')"/>
+	</xsl:apply-templates>
+      </xsl:variable>
+      <xsl:call-template name="str:unique-tokens">
+	<xsl:with-param name="string" select="normalize-space($_)"/>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<x:doc>
+  <h2>skos:get-spaces</h2>
+  <p>This is different from <code>cgto:get-spaces</code> insofar as it assumes it's coming from the point of view of a <code>skos:Concept</code> or <code>skos:ConceptScheme</code> (and their IBIS derivatives)</p>
+</x:doc>
+
+<xsl:template match="html:*" mode="skos:get-spaces">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="type">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="scheme">
+    <xsl:call-template name="str:safe-first-token">
+      <xsl:with-param name="tokens">
+	<xsl:apply-templates select="." mode="skos:get-schemes">
+	  <xsl:with-param name="subject" select="$subject"/>
+	  <xsl:with-param name="type" select="$type"/>
+	</xsl:apply-templates>
+      </xsl:with-param>
+    </xsl:call-template>
+  </xsl:param>
+
+  <xsl:if test="$scheme != ''">
+    <xsl:variable name="root" select="document($scheme)/*"/>
+    <xsl:apply-templates select="$root" mode="cgto:get-spaces">
+      <xsl:with-param name="subject" select="$scheme"/>
+    </xsl:apply-templates>
+  </xsl:if>
+</xsl:template>
+
+<x:doc>
+  <h2>ibis:Entity</h2>
+</x:doc>
+
+<xsl:template match="html:head" mode="ibis:Entity">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:apply-templates>
+    <xsl:with-param name="base"          select="$base"/>
+    <xsl:with-param name="resource-path" select="$resource-path"/>
+    <xsl:with-param name="rewrite"       select="$rewrite"/>
+    <xsl:with-param name="heading"       select="$heading"/>
+    <xsl:with-param name="subject"       select="$subject"/>
+  </xsl:apply-templates>
+
+  <!-- XXX get rid of this lol -->
+  <link rel="stylesheet" type="text/css" href="/asset/skos-ibis/style"/>
+  <link rel="stylesheet" type="text/css" href="/type/font-awesome"/>
+  <link rel="stylesheet" type="text/css" href="/type/noto-sans-symbols2"/>
+  <script type="text/javascript" src="/asset/rdf"></script>
+  <script type="text/javascript" src="/asset/rdf-viz"></script>
+  <script type="text/javascript" src="/asset/complex"></script>
+  <script type="text/javascript" src="/asset/d3"></script>
+  <script type="text/javascript" src="/asset/hierarchical"></script>
+  <script type="text/javascript" src="/asset/force-directed"></script>
+  <script type="text/javascript" src="/asset/skos-ibis/scripts"></script>
+
+</xsl:template>
+
 
 <xsl:template match="html:body" mode="ibis:Entity">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -255,25 +387,23 @@
       </section>
     </article>
     <figure id="force" class="aside"/>
-    <!--<xsl:apply-templates select="." mode="ibis:make-datalist">
+    <xsl:apply-templates select="." mode="ibis:make-datalist">
       <xsl:with-param name="base"          select="$base"/>
       <xsl:with-param name="resource-path" select="$resource-path"/>
       <xsl:with-param name="rewrite"       select="$rewrite"/>
       <xsl:with-param name="main"          select="true()"/>
       <xsl:with-param name="heading"       select="$heading"/>
       <xsl:with-param name="subject"       select="$subject"/>
-    </xsl:apply-templates>-->
+    </xsl:apply-templates>
   </main>
-  <!--
   <xsl:apply-templates select="." mode="skos:footer">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
     <xsl:with-param name="heading"       select="$heading"/>
     <xsl:with-param name="subject"       select="$subject"/>
-  </xsl:apply-templates>-->
+  </xsl:apply-templates>
 </xsl:template>
-
 
 <xsl:template match="html:*" mode="ibis:make-datalist">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -287,7 +417,6 @@
       <xsl:with-param name="debug" select="false()"/>
     </xsl:apply-templates>
   </xsl:param>
-
   <xsl:param name="type">
     <xsl:apply-templates select="." mode="rdfa:object-resources">
       <xsl:with-param name="subject" select="$subject"/>
@@ -296,26 +425,17 @@
     </xsl:apply-templates>
   </xsl:param>
 
-  <xsl:variable name="top">
-    <xsl:apply-templates select="." mode="rdfa:object-resources">
+  <xsl:variable name="spaces">
+    <xsl:apply-templates select="." mode="skos:get-spaces">
       <xsl:with-param name="subject" select="$subject"/>
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="predicate" select="concat($XHV, 'top')"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <xsl:variable name="class-lists">
-    <xsl:apply-templates select="." mode="cgto:find-indices">
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="origins" select="concat($subject, ' ', $top)"/>
-      <xsl:with-param name="relations" select="concat($CGTO, 'by-class')"/>
+      <xsl:with-param name="type" select="$type"/>
     </xsl:apply-templates>
   </xsl:variable>
 
   <xsl:variable name="inventories">
     <xsl:apply-templates select="." mode="cgto:find-inventories-by-class">
       <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="origins" select="concat($subject, ' ', $top)"/>
+      <xsl:with-param name="origins" select="$spaces"/>
       <xsl:with-param name="classes">
         <xsl:value-of select="concat($IBIS, 'Issue')"/>
         <xsl:text> </xsl:text>
@@ -802,6 +922,28 @@
 
 <!-- SKOS concept -->
 
+<xsl:template match="html:head" mode="skos:Concept">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:apply-templates>
+    <xsl:with-param name="base"          select="$base"/>
+    <xsl:with-param name="resource-path" select="$resource-path"/>
+    <xsl:with-param name="rewrite"       select="$rewrite"/>
+    <xsl:with-param name="heading"       select="$heading"/>
+    <xsl:with-param name="subject"       select="$subject"/>
+  </xsl:apply-templates>
+</xsl:template>
+
 <xsl:template match="html:body" mode="skos:Concept">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="resource-path" select="$base"/>
@@ -931,18 +1073,6 @@
     </xsl:apply-templates>
   </xsl:param>
 
-  <xsl:variable name="space">
-    <xsl:apply-templates select="." mode="rdfa:object-resources">
-      <xsl:with-param name="subject" select="$subject"/>
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="predicate" select="concat($XHV, 'top')"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <xsl:if test="normalize-space($space) = ''">
-    <xsl:message terminate="yes">no xhv:top</xsl:message>
-  </xsl:if>
-
   <xsl:variable name="scheme-xx">
     <xsl:variable name="_">
       <xsl:call-template name="str:token-intersection">
@@ -954,8 +1084,10 @@
   </xsl:variable>
   <xsl:variable name="is-scheme" select="string-length($scheme-xx) != 0"/>
 
-  <xsl:variable name="attached">
-    <xsl:if test="not($is-scheme)">
+  <xsl:variable name="schemes">
+    <xsl:choose>
+      <xsl:when test="$is-scheme"><xsl:value-of select="$subject"/></xsl:when>
+      <xsl:otherwise>
 	<!--
 	    make it possible to list/switch current ibis:Network/skos:ConceptScheme:
 
@@ -965,7 +1097,7 @@
 	    * otherwise an ibis network should take precedence over a skos concept scheme
 	    * otherwise ???
 	-->
-      <xsl:variable name="_">
+	<xsl:variable name="_">
 	<xsl:apply-templates select="." mode="rdfa:object-resources">
           <xsl:with-param name="subject" select="$subject"/>
         <xsl:with-param name="base" select="$base"/>
@@ -987,8 +1119,48 @@
       <xsl:call-template name="str:unique-tokens">
 	<xsl:with-param name="string" select="normalize-space($_)"/>
       </xsl:call-template>
-    </xsl:if>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:variable>
+  <xsl:variable name="scheme">
+    <xsl:call-template name="str:safe-first-token">
+      <xsl:with-param name="tokens" select="$schemes"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:if test="normalize-space($scheme) = ''">
+    <xsl:message terminate="yes">no concept scheme found</xsl:message>
+  </xsl:if>
+
+  <xsl:variable name="space">
+    <xsl:variable name="root" select="document($scheme)/*"/>
+    <xsl:variable name="_">
+      <xsl:apply-templates select="$root" mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$scheme"/>
+	<xsl:with-param name="base" select="$scheme"/>
+	<xsl:with-param name="predicate" select="concat($SIOC, 'has_space')"/>
+      </xsl:apply-templates>
+      <xsl:text> </xsl:text>
+      <xsl:apply-templates select="$root" mode="rdfa:subject-resources">
+        <xsl:with-param name="object" select="$scheme"/>
+        <xsl:with-param name="base" select="$scheme"/>
+        <xsl:with-param name="predicate" select="concat($SIOC, 'space_of')"/>
+      </xsl:apply-templates>
+      <xsl:text> </xsl:text>
+      <xsl:apply-templates select="$root" mode="rdfa:subject-resources">
+        <xsl:with-param name="object" select="$scheme"/>
+        <xsl:with-param name="base" select="$scheme"/>
+        <xsl:with-param name="predicate" select="concat($CGTO, 'focus')"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+    <xsl:call-template name="str:unique-tokens">
+      <xsl:with-param name="string" select="normalize-space($_)"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:if test="normalize-space($space) = ''">
+    <xsl:message terminate="yes">could not find space relative to scheme</xsl:message>
+  </xsl:if>
 
   <xsl:variable name="focus">
     <xsl:apply-templates select="document($space)/*" mode="rdfa:object-resources">
@@ -1001,7 +1173,7 @@
       * provide some kind of ui for creating a new ibis:Network/skos:ConceptScheme
       * make setting the cgto:focus optional (default??)
   -->
-  <xsl:variable name="schemes">
+  <xsl:variable name="all-schemes">
     <xsl:variable name="_">
      <xsl:apply-templates select="document($space)/*" mode="cgto:find-inventories-by-class">
        <xsl:with-param name="classes">
@@ -1015,20 +1187,19 @@
     </xsl:apply-templates>
   </xsl:variable>
 
-
   <footer>
     <form>
       <button type="button" id="scheme-collapsed">
       <xsl:call-template name="skos:scheme-collapsed-item">
-	<xsl:with-param name="schemes"    select="$attached"/>
+	<xsl:with-param name="schemes"    select="$all-schemes"/>
 	<xsl:with-param name="focus"      select="$focus"/>
       </xsl:call-template>
       </button>
     </form>
     <ul id="scheme-list" class="schemes">
       <xsl:call-template name="skos:scheme-item">
-	<xsl:with-param name="schemes"    select="$schemes"/>
-	<xsl:with-param name="attached"   select="$attached"/>
+	<xsl:with-param name="schemes"    select="$all-schemes"/>
+	<xsl:with-param name="attached"   select="$schemes"/>
 	<xsl:with-param name="focus"      select="$focus"/>
 	<xsl:with-param name="space"      select="$space"/>
 	<xsl:with-param name="is-concept" select="not($is-scheme)"/>
@@ -1613,6 +1784,28 @@
 
 <!-- concept schemes -->
 
+<xsl:template match="html:head" mode="skos:ConceptScheme">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:apply-templates>
+    <xsl:with-param name="base"          select="$base"/>
+    <xsl:with-param name="resource-path" select="$resource-path"/>
+    <xsl:with-param name="rewrite"       select="$rewrite"/>
+    <xsl:with-param name="heading"       select="$heading"/>
+    <xsl:with-param name="subject"       select="$subject"/>
+  </xsl:apply-templates>
+</xsl:template>
+
 <xsl:template match="html:body" mode="skos:ConceptScheme">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="resource-path" select="$base"/>
@@ -1750,6 +1943,28 @@
 </xsl:template>
 
 <!-- ibis network -->
+
+<xsl:template match="html:head" mode="ibis:Network">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:apply-templates>
+    <xsl:with-param name="base"          select="$base"/>
+    <xsl:with-param name="resource-path" select="$resource-path"/>
+    <xsl:with-param name="rewrite"       select="$rewrite"/>
+    <xsl:with-param name="heading"       select="$heading"/>
+    <xsl:with-param name="subject"       select="$subject"/>
+  </xsl:apply-templates>
+</xsl:template>
 
 <xsl:template match="html:body" mode="ibis:Network">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>

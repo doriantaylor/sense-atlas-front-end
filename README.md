@@ -36,10 +36,10 @@ This front-end expects to be able to `POST` to any resource under management usi
 
 In general the debugging sucks; I use `xsltproc` when the server is
 running on localhost (it won't work over HTTPS). Firefox emits
-`<xsl:message>` content to the /browser/ console (like the JS console
+`<xsl:message>` content to the *browser* console (like the JS console
 but for the whole browser) but generally the debugging infrastructure
-for XSLT is poor. Stuff will just not work and not give any indication
-why.
+for XSLT is poor. Most errors do not resolve in any meaningful way;
+processing will just stop and not tell you why.
 
 There also appears to be a bug in Firefox's XSLT processor that trips
 over empty attributes. You have to use `<xsl:attribute name="about"/>`

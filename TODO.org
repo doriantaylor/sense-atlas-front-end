@@ -1,0 +1,10 @@
+#+STARTUP: showall hidestars indent
+* 2025-02-27
+** TODO backend/catalogue resources
+- [ ] 
+** TODO visualization
+- [ ] fix the math
+** TODO autocomplete
+- [ ] 
+** TODO functionality/behaviour
+- [ ] state should be relative to user

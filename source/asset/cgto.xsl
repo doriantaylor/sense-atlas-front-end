@@ -15,6 +15,7 @@
 
 <!-- too bad firefox still has no namespace:: axis -->
 <xsl:variable name="CGTO" select="'https://vocab.methodandstructure.com/graph-tool#'"/>
+<xsl:variable name="SIOC" select="'http://rdfs.org/sioc/ns#'"/>
 
 <x:doc>
   <h1>Graph tool UI</h1>
@@ -81,6 +82,66 @@
   </xsl:apply-templates>
 </xsl:template>
 
+
+<x:doc>
+  <h2>cgto:get-spaces</h2>
+  <p>The subject either <em>is</em> a <code>cgto:Space</code> or is related to it by one degree.</p>
+</x:doc>
+
+<xsl:template match="html:*" mode="cgto:get-spaces">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="type">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:variable name="type-xx">
+    <xsl:call-template name="str:token-intersection">
+      <xsl:with-param name="left" select="$type"/>
+      <xsl:with-param name="right" select="concat($CGTO, 'Space')"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="string-length(normalize-space($type-xx))">
+      <xsl:value-of select="$subject"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="_">
+	<xsl:apply-templates select="." mode="rdfa:object-resources">
+	  <xsl:with-param name="subject" select="$subject"/>
+	  <xsl:with-param name="base" select="$base"/>
+	  <xsl:with-param name="predicate" select="concat($SIOC, 'has_space')"/>
+	</xsl:apply-templates>
+	<xsl:text> </xsl:text>
+	<xsl:apply-templates select="." mode="rdfa:subject-resources">
+          <xsl:with-param name="object" select="$subject"/>
+          <xsl:with-param name="base" select="$base"/>
+          <xsl:with-param name="predicate" select="concat($SIOC, 'space_of')"/>
+	</xsl:apply-templates>
+	<xsl:text> </xsl:text>
+	<xsl:apply-templates select="." mode="rdfa:subject-resources">
+          <xsl:with-param name="object" select="$subject"/>
+          <xsl:with-param name="base" select="$base"/>
+          <xsl:with-param name="predicate" select="concat($CGTO, 'focus')"/>
+	</xsl:apply-templates>
+      </xsl:variable>
+      <xsl:call-template name="str:unique-tokens">
+	<xsl:with-param name="string" select="normalize-space($_)"/>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
 <x:doc>
   <h2>cgto:find-indices</h2>
   <p></p>
@@ -90,32 +151,19 @@
 <xsl:template match="html:*" mode="cgto:find-indices">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="origins">
-    <xsl:variable name="subject">
-      <xsl:apply-templates select="." mode="rdfa:get-subject">
-        <xsl:with-param name="base" select="$base"/>
-        <xsl:with-param name="debug" select="false()"/>
-      </xsl:apply-templates>
-    </xsl:variable>
-    <xsl:variable name="top">
-      <xsl:apply-templates select="." mode="rdfa:object-resources">
-        <xsl:with-param name="subject" select="$subject"/>
-        <xsl:with-param name="base" select="$base"/>
-        <xsl:with-param name="predicate" select="concat($XHV, 'top')"/>
-      </xsl:apply-templates>
-    </xsl:variable>
-    <xsl:call-template name="str:unique-tokens">
-      <xsl:with-param name="string" select="concat($subject, ' ', $top)"/>
-    </xsl:call-template>
+    <xsl:apply-templates select="." mode="cgto:get-spaces">
+      <xsl:with-param name="base" select="$base"/>
+    </xsl:apply-templates>
   </xsl:param>
   <xsl:param name="relations">
     <xsl:message terminate="yes">`relations` parameter required</xsl:message>
   </xsl:param>
   <xsl:param name="debug" select="$rdfa:DEBUG"/>
 
-  <xsl:variable name="metas">
+  <xsl:variable name="indices">
     <xsl:apply-templates select="." mode="rdfa:find-relations">
       <xsl:with-param name="resources" select="$origins"/>
-      <xsl:with-param name="predicate" select="concat($XHV, 'meta')"/>
+      <xsl:with-param name="predicate" select="concat($CGTO, 'index')"/>
     </xsl:apply-templates>
   </xsl:variable>
 
@@ -125,16 +173,7 @@
 
   <xsl:variable name="candidates">
     <xsl:apply-templates select="." mode="rdfa:filter-by-type">
-      <xsl:with-param name="subjects">
-        <xsl:apply-templates select="." mode="rdfa:find-relations">
-          <xsl:with-param name="resources">
-            <xsl:call-template name="str:unique-tokens">
-              <xsl:with-param name="string" select="concat($origins, ' ', $metas)"/>
-            </xsl:call-template>
-          </xsl:with-param>
-          <xsl:with-param name="predicate" select="concat($XHV, 'index')"/>
-        </xsl:apply-templates>
-      </xsl:with-param>
+      <xsl:with-param name="subjects" select="$indices"/>
       <xsl:with-param name="class" select="concat($CGTO, 'Index')"/>
     </xsl:apply-templates>
   </xsl:variable>
@@ -163,16 +202,8 @@
     </xsl:apply-templates>
   </xsl:param>
   <xsl:param name="origins">
-    <xsl:variable name="top">
-      <xsl:apply-templates select="." mode="rdfa:object-resources">
-        <xsl:with-param name="subject" select="$subject"/>
-        <xsl:with-param name="base" select="$base"/>
-        <xsl:with-param name="predicate" select="concat($XHV, 'top')"/>
-      </xsl:apply-templates>
-    </xsl:variable>
-    <xsl:call-template name="str:unique-tokens">
-      <xsl:with-param name="string" select="concat($subject, ' ', $top)"/>
-    </xsl:call-template>
+    <xsl:apply-templates select="." mode="cgto:get-spaces">
+    </xsl:apply-templates>
   </xsl:param>
   <xsl:param name="summaries">
     <xsl:apply-templates select="." mode="cgto:find-indices">

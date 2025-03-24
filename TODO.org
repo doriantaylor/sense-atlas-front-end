@@ -1,4 +1,48 @@
 #+STARTUP: showall hidestars indent
+* 2025-03-19
+The sort of idea here is to outline the resources and their behaviours
+** Space
+- This resource is intended to encapsulate everything we care about in the app.
+  - This is the "home page" for the app and could play the role in a stand-alone situation
+  - Everything the app needs should be reachable from this location.
+    - If not directly, then via some intermediate (e.g. collection) resource.
+  - If you were going to deploy it as a stand-alone system, this would be the root address.
+*** Index
+- This is the reusable entry point for the catalogue resources and user state.
+- by "reusable" I mean it doesn't /only/ "belong to" this app but rather belongs to the entire domain, which could host multiple apps.
+**** Summaries
+- These are subclassees of ~qb:DataSet~ that each have their respective ~qb:DataStructureDefinition~ denoting what's in them.
+- The two we concern ourselves with are:
+  - *instances of classes*
+  - *entities in the domains and/or ranges of properties*
+- these are rendered as tables
+- the table entries include counts
+- they also show tallies for asserted and inferred entities
+- they also have links to the actual inventories
+**** Inventories
+- these are just simple ~rdfs:Container~ entities that relate to their contents ~rdfs:member~
+- they are sorted by some hopefully relatively stable criterion
+- they are paginated if they get too big
+- the mechanism is the parametrized URI is of type ~cgto:Window~
+  - it relates to the main (non- or /less/-parametrized) resource via ~cgto:window-of~ and its inverse, ~cgto:window~
+  - it's found via ~cgto:first-window~ (which is a subproperty of ~cgto:window~)
+  - then the user agent can just use ~xhv:next~ until it runs out of them
+    - (obviously you will need some kind of internal register to watch out for loops but that's child's play)
+*** User
+- this is currently a ~foaf:Agent~ (because of itinerant issues around ~foaf:OnlineAccount~/~sioc:UserAccount~ instances being denoted by ~mailto:~ URIs)
+**** State
+- This (for now) tells us which object is in focus
+- the focus is 
+** Concept scheme (or IBIS network)
+- This is the unit of "workspace" under consideration.
+  - There can be more than one of these, but only one of them can be "in focus" relative to the user.
+  - …at least on the same domain
+*** SKOS concept
+- This is the subject of our attention vis-à-vis SKOS
+- 
+*** IBIS entity (issue, position, argument)
+- This is the subject of our attention vis-à-vis IBIS
+- These of course inherit from SKOS concepts
 * 2025-02-27
 ** TODO backend/catalogue resources
 - [ ] 

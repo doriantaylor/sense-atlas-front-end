@@ -134,26 +134,15 @@
   </xsl:if>
 </xsl:template>
 
-<xsl:template name="uri:document-for-uri">
-  <xsl:param name="uri">
-    <xsl:message terminate="yes">`uri` parameter required</xsl:message>
-  </xsl:param>
-  <xsl:choose>
-    <xsl:when test="contains($uri, '#')">
-      <xsl:value-of select="normalize-space(substring-before($uri, '#'))"/>
-    </xsl:when>
-    <xsl:otherwise><xsl:value-of select="normalize-space($uri)"/></xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
-
 <xsl:template match="html:*" mode="rdfa:multi-object-resources">
   <xsl:param name="current"    select="."/>
   <xsl:param name="base" select="normalize-space(($current/ancestor-or-self::html:html/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="subjects" select="$base"/>
   <xsl:param name="predicates" select="''"/>
   <xsl:param name="single"     select="false()"/>
-  <xsl:param name="debug"      select="$rdfa:DEBUG"/>
   <xsl:param name="raw"        select="false()"/>
+  <xsl:param name="traverse"   select="false()"/>
+  <xsl:param name="debug"      select="$rdfa:DEBUG"/>
   <xsl:param name="prefixes">
     <xsl:apply-templates select="$current" mode="rdfa:prefix-stack"/>
   </xsl:param>
@@ -176,6 +165,7 @@
 	    <xsl:with-param name="single" select="$single"/>
 	    <xsl:with-param name="debug" select="$debug"/>
 	    <xsl:with-param name="raw" select="true()"/>
+	    <xsl:with-param name="traverse" select="$traverse"/>
 	    <xsl:with-param name="prefixes" select="$prefixes"/>
 	  </xsl:apply-templates>
 	</xsl:when>
@@ -187,6 +177,7 @@
 	  <xsl:with-param name="single" select="$single"/>
 	  <xsl:with-param name="debug" select="$debug"/>
 	  <xsl:with-param name="raw" select="true()"/>
+	  <xsl:with-param name="traverse" select="$traverse"/>
 	  <xsl:with-param name="prefixes" select="$prefixes"/>
 	</xsl:apply-templates>
       </xsl:otherwise>
@@ -203,7 +194,8 @@
 	<xsl:with-param name="single" select="$single"/>
 	<xsl:with-param name="debug" select="$debug"/>
 	<xsl:with-param name="raw" select="$raw"/>
-	<xsl:with-param name="continue" select="$continue"/>
+	<xsl:with-param name="traverse" select="$traverse"/>
+	<!--<xsl:with-param name="continue" select="$continue"/>-->
 	<xsl:with-param name="prefixes" select="$prefixes"/>
       </xsl:apply-templates>
     </xsl:if>
@@ -388,9 +380,9 @@
         <xsl:choose>
           <xsl:when test="$reverse">
             <xsl:message>reverse: <xsl:value-of select="$first"/></xsl:message>
-            <xsl:apply-templates select="$root/html:body" mode="rdfa:subject-resources">
+            <xsl:apply-templates select="$root" mode="rdfa:subject-resources">
               <xsl:with-param name="object" select="$first"/>
-              <xsl:with-param name="base" select="$doc"/>
+              <!--<xsl:with-param name="base" select="$doc"/>-->
               <xsl:with-param name="predicate" select="$predicate"/>
               <!--<xsl:with-param name="debug" select="true()"/>-->
             </xsl:apply-templates>
@@ -398,7 +390,7 @@
           <xsl:otherwise>
             <xsl:apply-templates select="$root" mode="rdfa:object-resources">
               <xsl:with-param name="subject" select="$first"/>
-              <xsl:with-param name="base" select="$doc"/>
+              <!--<xsl:with-param name="base" select="$doc"/>-->
               <xsl:with-param name="predicate" select="$predicate"/>
             </xsl:apply-templates>
           </xsl:otherwise>
@@ -517,11 +509,15 @@
 <xsl:template match="html:*" mode="rdfa:filter-by-type">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="subjects" select="''"/>
-  <xsl:param name="class">
-    <xsl:message terminate="yes">required parameter `class`</xsl:message>
-  </xsl:param>
+  <xsl:param name="classes"/>
+  <xsl:param name="class" select="$classes"/>
   <xsl:param name="state" select="''"/>
   <xsl:param name="traverse" select="true()"/>
+  <xsl:param name="continued" select="false()"/>
+
+  <xsl:if test="not(string-length($class))">
+    <xsl:message terminate="yes">required parameter `classes` or `class`</xsl:message>
+  </xsl:if>
 
   <xsl:variable name="first">
     <xsl:call-template name="str:safe-first-token">
@@ -529,55 +525,90 @@
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:choose>
-    <xsl:when test="string-length($first)">
-      <xsl:variable name="padded" select="concat(' ', normalize-space($class), ' ')"/>
-      <xsl:variable name="doc">
-        <xsl:choose>
-          <xsl:when test="$traverse">
-            <xsl:call-template name="uri:document-for-uri">
-              <xsl:with-param name="uri" select="$first"/>
-            </xsl:call-template>
-          </xsl:when>
-          <xsl:otherwise><xsl:value-of select="$base"/></xsl:otherwise>
-        </xsl:choose>
-      </xsl:variable>
+  <xsl:if test="string-length($first)">
+    <xsl:variable name="doc">
+      <xsl:choose>
+        <xsl:when test="$traverse">
+          <xsl:call-template name="uri:document-for-uri">
+            <xsl:with-param name="uri" select="$first"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise><xsl:value-of select="$base"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
 
-      <xsl:variable name="root" select="document($doc)/*"/>
+    <xsl:variable name="root" select="document($doc)/*"/>
 
-      <xsl:variable name="types">
-        <xsl:text> </xsl:text>
-        <xsl:apply-templates select="$root" mode="rdfa:object-resources">
-          <xsl:with-param name="subject" select="$first"/>
-          <xsl:with-param name="base" select="$first"/>
-          <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
-        </xsl:apply-templates>
-        <xsl:text> </xsl:text>
-      </xsl:variable>
-
-      <xsl:variable name="out">
-        <xsl:value-of select="concat($state, ' ')"/>
-        <xsl:if test="contains($types, $padded)">
-          <xsl:value-of select="$first"/>
-        </xsl:if>
-      </xsl:variable>
-
-      <xsl:variable name="rest" select="normalize-space(substring-after(normalize-space($subjects), ' '))"/>
-      <xsl:apply-templates select="." mode="rdfa:filter-by-type">
-        <xsl:with-param name="subjects" select="$rest"/>
-        <xsl:with-param name="class" select="$class"/>
-        <xsl:with-param name="state" select="normalize-space($out)"/>
-        <xsl:with-param name="traverse" select="$traverse"/>
+    <xsl:variable name="types">
+      <xsl:text> </xsl:text>
+      <xsl:apply-templates select="$root" mode="rdfa:object-resources">
+        <xsl:with-param name="subject" select="$first"/>
+        <xsl:with-param name="base" select="$first"/>
+        <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
       </xsl:apply-templates>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:call-template name="str:unique-tokens">
-        <xsl:with-param name="string" select="normalize-space($state)"/>
-      </xsl:call-template>
-    </xsl:otherwise>
-  </xsl:choose>
+      <xsl:text> </xsl:text>
+    </xsl:variable>
 
+    <xsl:variable name="match">
+      <xsl:call-template name="str:token-intersection">
+        <xsl:with-param name="left" select="$types"/>
+        <xsl:with-param name="right" select="$class"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:if test="string-length(normalize-space($match))">
+      <xsl:if test="$continued">
+	<xsl:text> </xsl:text>
+      </xsl:if>
+      <xsl:value-of select="$first"/>
+    </xsl:if>
+
+    <xsl:variable name="rest" select="substring-after(normalize-space($subjects), ' ')"/>
+
+    <xsl:if test="string-length($rest)">
+      <xsl:apply-templates select="." mode="rdfa:filter-by-type">
+	<xsl:with-param name="base"      select="$base"/>
+	<xsl:with-param name="subjects"  select="$rest"/>
+	<xsl:with-param name="classes"   select="$classes"/>
+	<xsl:with-param name="traverse"  select="$traverse"/>
+	<xsl:with-param name="continued" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:if>
 </xsl:template>
 
+<xsl:template name="rdfa:filter-uris-by-authority">
+  <xsl:param name="uris" select="''"/>
+  <xsl:param name="authority">
+    <xsl:message terminate="yes">`authority` parameter required</xsl:message>
+  </xsl:param>
+
+  <xsl:variable name="v-domain">
+    <xsl:choose>
+      <xsl:when test="contains($domain, '/')">
+	<xsl:call-template name="uri:get-uri-authority">
+	  <xsl:with-param name="uri" select="$authority"/>
+	</xsl:call-template>
+      </xsl:when>
+      <xsl:otherwise><xsl:value-of select="$authority"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="v-uris" select="normalize-space($uris)"/>
+  <xsl:if test="string-length($v-uris)">
+    <xsl:variable name="first">
+      <xsl:call-template name="str:safe-first-token">
+	<xsl:with-param name="tokens" select="$v-uris"/>
+      </xsl:call-template>
+    </xsl:variable>
+    <xsl:variable name="rest" select="substring-after($v-uris, ' ')"/>
+
+    <xsl:variable name="u-authority">
+      <xsl:call-template name="uri:get-uri-authority">
+	<xsl:with-param name="uri" select="$authority"/>
+      </xsl:call-template>
+    </xsl:variable>
+  </xsl:if>
+</xsl:template>
 
 </xsl:stylesheet>

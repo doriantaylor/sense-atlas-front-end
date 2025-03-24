@@ -198,17 +198,21 @@ export default class RDFViz {
     }
 
     installFetchOnLoad (url, target) {
+	if (!(url instanceof Array)) url = [url];
         if (window) {
             // XXX this is dumb but due to https://bugzilla.mozilla.org/show_bug.cgi?id=325891
             const event = e => {
-            // console.log('wat', this);
-            const fetcher = new RDF.Fetcher(this.graph);
-                // okay now load
-                fetcher.load(url, {
-                    baseURI: window.location.href,
-                    headers: { Accept: 'text/turtle;q=1' }
-                }).then(() => {
-                    // console.log('lol', this);
+		// console.log('wat', this);
+		const fetcher = new RDF.Fetcher(this.graph);
+
+		const fetches = url.map(
+		    u => fetcher.load(u, {
+			// this overrrides the actual <base href="">
+			// baseURI: window.location.href,
+			noRDFa: false }));
+
+		Promise.all(fetches).then(() => {
+                    console.log('lol', this);
                     this.init();
                     if (target) this.attach(target);
                 });

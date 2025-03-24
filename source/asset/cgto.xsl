@@ -22,9 +22,27 @@
   <p>This stylesheet handles UI peculiar to the collaborative graph tool ontology.</p>
 </x:doc>
 
+<xsl:template match="html:*" mode="cgto:get-user">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="type">
+    <xsl:text> </xsl:text>
+    <xsl:apply-templates select="." mode="rdfa:get-type">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="subject" select="$subject"/>
+    </xsl:apply-templates>
+    <xsl:text> </xsl:text>
+  </xsl:param>
+</xsl:template>
+
 <x:doc>
   <h2>cgto:get-focus</h2>
-  <p>Obtain the focus (foci) from the <code>cgto:Space</code> which is assumed to be the subject. More than one focus should be interpreted as an error.</p>
+  <p>Obtain the focus (foci) from the <code>cgto:State</code> which is assumed to be the subject. More than one focus should be interpreted as an error.</p>
+  <p>Assuming the subject <code>?s</code> is a <code>skos:Concept</code> or <code>ibis:Entity</code>, the property path to the focus will look something like <code>?s skos:inScheme/sioc:has_space/cgto:index/cgto:user/^cgto:owner/cgto:focus ?network</code>.</p>
 </x:doc>
 
 <xsl:template match="html:*" mode="cgto:get-focus">
@@ -42,12 +60,12 @@
     </xsl:apply-templates>
     <xsl:text> </xsl:text>
   </xsl:param>
-  <xsl:param name="via" select="concat($XHV, 'top')"/>
+  <xsl:param name="via" select="concat($CGTO, 'state')"/>
   <!-- this either *is* the space or you *get* the space -->
 
   <xsl:variable name="actual-subject">
     <xsl:choose>
-      <xsl:when test="contains($type, concat(' ', $CGTO, 'Space '))">
+      <xsl:when test="contains($type, concat(' ', $CGTO, 'State '))">
 	<xsl:value-of select="$subject"/>
       </xsl:when>
       <xsl:otherwise>
@@ -56,7 +74,7 @@
 	    <xsl:apply-templates select="." mode="rdfa:object-resources">
 	      <xsl:with-param name="base" select="$base"/>
 	      <xsl:with-param name="subject" select="$subject"/>
-	      <xsl:with-param name="predicate" select="$via"/>
+	      <xsl:with-param name="predicate" select="concat($CGTO, 'focus')"/>
 	    </xsl:apply-templates>
 	  </xsl:with-param>
 	</xsl:call-template>
@@ -82,6 +100,48 @@
   </xsl:apply-templates>
 </xsl:template>
 
+
+<x:doc>
+  <h2>cgto:get-state</h2>
+  <p>Given a list of candidate <code>cgto:State</code>s (retrieved from the encapsulating <code>cgto:Space</code>), get the state that belongs to the current user.</p>
+  <p>This template will dereference the user's containing document.</p>
+</x:doc>
+
+<xsl:template match="html:*" mode="cgto:get-state">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject"/>
+  <xsl:param name="candidates"/>
+
+  <xsl:variable name="doc">
+    <xsl:call-template name="uri:document-for-uri">
+      <xsl:with-param name="uri" select="$subject"/>
+    </xsl:call-template>
+  </xsl:variable>
+ 
+  <xsl:variable name="ours">
+    <xsl:variable name="root" select="document($doc)/*"/>
+    <xsl:apply-templates select="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$user"/>
+      <xsl:with-param name="predicate" select="concat($CGTO, 'state')"/>
+    </xsl:apply-templates>
+    <xsl:text> </xsl:text>
+    <xsl:apply-templates select="rdfa:subject-resources">
+      <xsl:with-param name="predicate" select="concat($CGTO, 'owner')"/>
+      <xsl:with-param name="object" select="$user"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="out">
+    <xsl:call-template name="str:token-intersection">
+      <xsl:with-param name="left" select="$candidates"/>
+      <xsl:with-param name="right" select="$ours"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:call-template name="str:safe-first-token">
+    <xsl:with-param name="tokens" select="out"/>
+  </xsl:call-template>
+</xsl:template>
 
 <x:doc>
   <h2>cgto:get-spaces</h2>
@@ -143,12 +203,12 @@
 </xsl:template>
 
 <x:doc>
-  <h2>cgto:find-indices</h2>
+  <h2>cgto:find-summaries</h2>
   <p></p>
 </x:doc>
 
 <!-- extremely specific i know but we use this more than once -->
-<xsl:template match="html:*" mode="cgto:find-indices">
+<xsl:template match="html:*" mode="cgto:find-summaries">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="origins">
     <xsl:apply-templates select="." mode="cgto:get-spaces">
@@ -168,7 +228,7 @@
   </xsl:variable>
 
   <xsl:if test="$debug">
-    <xsl:message>cgto:find-indices: metas: <xsl:value-of select="$metas"/></xsl:message>
+    <xsl:message>cgto:find-summaries: metas: <xsl:value-of select="$metas"/></xsl:message>
   </xsl:if>
 
   <xsl:variable name="candidates">
@@ -179,7 +239,7 @@
   </xsl:variable>
 
   <xsl:if test="$debug">
-    <xsl:message>cgto:find-indices: <xsl:value-of select="$candidates"/></xsl:message>
+    <xsl:message>cgto:find-summaries: <xsl:value-of select="$candidates"/></xsl:message>
   </xsl:if>
 
   <xsl:choose>
@@ -193,6 +253,8 @@
   </xsl:choose>
 </xsl:template>
 
+<!-- okay you run this *on* the index -->
+
 <xsl:template match="html:*" mode="cgto:find-inventories-by-class">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="subject">
@@ -201,20 +263,18 @@
       <xsl:with-param name="debug" select="false()"/>
     </xsl:apply-templates>
   </xsl:param>
-  <xsl:param name="origins">
-    <xsl:apply-templates select="." mode="cgto:get-spaces">
-    </xsl:apply-templates>
-  </xsl:param>
-  <xsl:param name="summaries">
-    <xsl:apply-templates select="." mode="cgto:find-indices">
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="origins" select="$origins"/>
-      <xsl:with-param name="relations" select="concat($CGTO, 'by-class')"/>
-    </xsl:apply-templates>
-  </xsl:param>
   <xsl:param name="classes">
     <xsl:message terminate="yes">`classes` parameter required</xsl:message>
   </xsl:param>
+  <xsl:param name="summaries">
+    <xsl:apply-templates select="." mode="rdfa:find-relations">
+      <xsl:with-param name="resources" select="$subject"/>
+      <xsl:with-param name="predicate" select="concat($CGTO, 'by-class')"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="inferred" select="false()"/>
+
+  <!--<xsl:message>lol summaries <xsl:value-of select="$summaries"/></xsl:message>-->
 
   <xsl:if test="string-length(normalize-space($summaries))">
     <xsl:variable name="observations">
@@ -226,6 +286,7 @@
         </xsl:apply-templates>
       </xsl:variable>
 
+      <!--<xsl:message>did this net anything? <xsl:value-of select="$_"/></xsl:message>-->
 
       <xsl:choose>
         <xsl:when test="string-length(normalize-space($classes))">
@@ -239,11 +300,18 @@
       </xsl:choose>
     </xsl:variable>
 
-    <xsl:message>observations: <xsl:value-of select="$observations"/></xsl:message>
+    <!--<xsl:message>observations: <xsl:value-of select="$observations"/></xsl:message>-->
+
+    <xsl:variable name="p">
+      <xsl:choose>
+	<xsl:when test="$inferred">inferred</xsl:when>
+	<xsl:otherwise>asserted</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
 
     <xsl:apply-templates select="." mode="rdfa:find-relations">
       <xsl:with-param name="resources" select="$observations"/>
-      <xsl:with-param name="predicate" select="concat($CGTO, 'subjects')"/>
+      <xsl:with-param name="predicate" select="concat($CGTO, $p, '-subjects')"/>
     </xsl:apply-templates>
 
   </xsl:if>

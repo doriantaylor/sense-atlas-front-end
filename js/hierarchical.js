@@ -109,9 +109,7 @@ export default class HierRDF extends RDFViz {
         graph.match(null, a).forEach(stmt => {
             const s = stmt.subject, type = stmt.object;
             // bail if we aren't on the list
-            if (!(RDF.isNamedNode(s) &&
-                  s.value.toLowerCase().startsWith('urn:uuid:')) ||
-                !validTypes.some(t => t.equals(type))) return;
+	    if (!RDF.isNamedNode(s) || !validTypes.some(t => t.equals(type))) return;
 
             // give us an initial label, the node itself
             let label = s.value;

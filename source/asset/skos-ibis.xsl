@@ -20,6 +20,8 @@
   <p>This stylesheet transforms markup specific to SKOS and IBIS.</p>
 </x:doc>
 
+<!--<xsl:variable name="uri:DEBUG" select="true()"/>-->
+
 <xsl:variable name="RDFS" select="'http://www.w3.org/2000/01/rdf-schema#'"/>
 <xsl:variable name="IBIS" select="'https://vocab.methodandstructure.com/ibis#'"/>
 <xsl:variable name="CGTO" select="'https://vocab.methodandstructure.com/graph-tool#'"/>
@@ -305,8 +307,17 @@
 </xsl:template>
 
 <x:doc>
-  <h2>ibis:Entity</h2>
+  <h2>IBIS Entities</h2>
 </x:doc>
+
+<x:doc>
+  <h3>Entity head</h3>
+  <p>Resources we need:</p>
+  <ul>
+    <li>The <em>space</em>, to fetch CSS/JavaScript for the whole app</li>
+  </ul>
+</x:doc>
+
 
 <xsl:template match="html:head" mode="ibis:Entity">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -343,6 +354,14 @@
 
 </xsl:template>
 
+<x:doc>
+  <h3>Entity body</h3>
+  <p>Resources we need:</p>
+  <ul>
+    <li>The <em>user</em>, if present, to determine whether the UI renders writing widgets, and to attribute changes/endorsements</li>
+    <li>The <em>focus</em> (contingent on the user), to determine which concept scheme (and/or IBIS network) to attach new entities to</li>
+  </ul>
+</x:doc>
 
 <xsl:template match="html:body" mode="ibis:Entity">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -364,6 +383,121 @@
     </xsl:apply-templates>
   </xsl:param>
 
+  <!--
+      This will produce all the concept schemes this entity is known
+      to participate in.
+  -->
+
+  <xsl:variable name="schemes">
+    <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
+      <xsl:with-param name="subjects" select="$subject"/>
+      <xsl:with-param name="predicates" select="'skos:inScheme skos:topConceptOf ^skos:hasTopConcept'"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+  <!--
+  <xsl:if test="not(normalize-space($schemes))">
+    <xsl:message terminate="yes">no schemes :(</xsl:message>
+  </xsl:if>-->
+
+  <!--
+      Okay so first problem here is there may be multiple concept
+      schemes. Furthermore the resolution of the space has to be done
+      *from* the document that represents the concept scheme. In other
+      words, this entity *may* be present in multiple schemes, and
+      each scheme *may* be present in multiple spaces. (Though we hope
+      this all coalesces to one space. I'm actually thinking more than
+      one cgto:Space on a domain managing these types of entities
+      should produce an error.)
+
+      *Why* this is a problem is that none of the RDFa stuff I wrote
+      actually dereferences the subject document before querying it,
+      so I have to patch rdfa:multi-object-resources which means I
+      actually have to patch rdfa.xsl.
+  -->
+
+  <xsl:variable name="space">
+    <xsl:if test="string-length(normalize-space($schemes))">
+      <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
+	<xsl:with-param name="subjects" select="$schemes"/>
+	<!-- XXX there is a bug in the prefix resolution somewhere -->
+	<xsl:with-param name="predicates" select="'http://rdfs.org/sioc/ns#has_space ^http://rdfs.org/sioc/ns#space_of'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <!--
+      Given that we potentially have more than one concept scheme, we
+      necessarily have to account for more than one space. Here we can
+      assert that there should be *exactly one* space for these kinds
+      of resources on this domain. So if there are more than one, this
+      should throw an (internal) error.
+
+      At any rate, all spaces should converge on the same index,
+      because the index (at least *this* index) should be the only one
+      on the site. Anything else is an internal error.
+  -->
+
+  <xsl:variable name="index">
+    <xsl:if test="string-length(normalize-space($space))">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$space"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#index'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <!--
+      At any rate, the (exactly one) index should yield (at most)
+      exactly one user, and if it doesn't, that's the signal that
+      whoever's looking at this site isn't logged in and therefore not
+      entitled to modify anything, so we don't show them the UI for
+      modifying anything.
+  -->
+
+  <xsl:variable name="user">
+    <xsl:if test="string-length(normalize-space($index))">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$index"/>
+      <xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#user'"/>
+      <xsl:with-param name="traverse" select="true()"/>
+    </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <!--
+      If, however, there *is* a user, then there should be a state (if
+      not there should be a modal that forces the user to define one).
+  -->
+
+  <xsl:variable name="state">
+    <xsl:if test="string-length(normalize-space($user))">
+      <xsl:apply-templates select="." mode="rdfa:subject-resources">
+	<xsl:with-param name="object" select="$user"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#owner'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <!--
+      The (application) state importantly is the thing that defines
+      the focus for this application.
+  -->
+
+  <xsl:variable name="focus">
+    <xsl:if test="string-length(normalize-space($state))">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$state"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#focus'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <!-- XXX if there is a user there should be a state and a focus; it's not necessary if there is no user -->
+
   <main>
     <article>
       <hgroup class="self">
@@ -371,6 +505,8 @@
           <xsl:with-param name="base"    select="$base"/>
           <xsl:with-param name="subject" select="$subject"/>
           <xsl:with-param name="type"    select="$type"/>
+	  <xsl:with-param name="user"    select="$user"/>
+	  <xsl:with-param name="focus"   select="$focus"/>
         </xsl:apply-templates>
       </hgroup>
 
@@ -383,6 +519,8 @@
           <xsl:with-param name="heading"       select="$heading"/>
           <xsl:with-param name="subject"       select="$subject"/>
           <xsl:with-param name="type"          select="$type"/>
+	  <xsl:with-param name="user"          select="$user"/>
+	  <xsl:with-param name="focus"         select="$focus"/>
         </xsl:apply-templates>
       </section>
     </article>
@@ -394,16 +532,30 @@
       <xsl:with-param name="main"          select="true()"/>
       <xsl:with-param name="heading"       select="$heading"/>
       <xsl:with-param name="subject"       select="$subject"/>
+      <xsl:with-param name="index"         select="$index"/>
     </xsl:apply-templates>
   </main>
+
   <xsl:apply-templates select="." mode="skos:footer">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
     <xsl:with-param name="heading"       select="$heading"/>
     <xsl:with-param name="subject"       select="$subject"/>
+    <xsl:with-param name="type"          select="$type"/>
+    <xsl:with-param name="schemes"       select="$schemes"/>
+    <xsl:with-param name="space"         select="$space"/>
+    <xsl:with-param name="index"         select="$index"/>
+    <xsl:with-param name="user"          select="$user"/>
+    <xsl:with-param name="state"         select="$state"/>
+    <xsl:with-param name="focus"         select="$focus"/>
   </xsl:apply-templates>
 </xsl:template>
+
+<x:doc>
+  <h2>ibis:make-datalist</h2>
+  <p>This is the outer envelope of the datalist function that goes and fetches the inventories (which may or may not be windows)</p>
+</x:doc>
 
 <xsl:template match="html:*" mode="ibis:make-datalist">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -424,6 +576,9 @@
       <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
     </xsl:apply-templates>
   </xsl:param>
+  <xsl:param name="index">
+    <xsl:message terminate="yes">`index` parameter required</xsl:message>
+  </xsl:param>
 
   <xsl:variable name="spaces">
     <xsl:apply-templates select="." mode="skos:get-spaces">
@@ -433,28 +588,102 @@
   </xsl:variable>
 
   <xsl:variable name="inventories">
-    <xsl:apply-templates select="." mode="cgto:find-inventories-by-class">
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="origins" select="$spaces"/>
-      <xsl:with-param name="classes">
+    <xsl:apply-templates select="document($index)/*" mode="cgto:find-inventories-by-class">
+      <xsl:with-param name="classes"><!--
         <xsl:value-of select="concat($IBIS, 'Issue')"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="concat($IBIS, 'Position')"/>
         <xsl:text> </xsl:text>
         <xsl:value-of select="concat($IBIS, 'Argument')"/>
-        <xsl:text> </xsl:text>
+        <xsl:text> </xsl:text>-->
         <xsl:value-of select="concat($SKOS, 'Concept')"/>
       </xsl:with-param>
+      <xsl:with-param name="inferred" select="true()"/>
     </xsl:apply-templates>
   </xsl:variable>
 
   <datalist id="big-friggin-list">
     <xsl:if test="string-length(normalize-space($inventories))">
-      <xsl:apply-templates select="." mode="ibis:datalist-options">
+      <xsl:apply-templates select="." mode="ibis:datalist-start">
         <xsl:with-param name="inventories" select="$inventories"/>
       </xsl:apply-templates>
     </xsl:if>
   </datalist>
+</xsl:template>
+
+<x:doc>
+  <h2>ibis:datalist-start</h2>
+  <p>The purpose of this is to handle the redirect that happens from the inventory to the window <em>over</em> the inventory.</p>
+</x:doc>
+
+<xsl:template match="html:*" mode="ibis:datalist-start">
+  <xsl:param name="inventories" select="''"/>
+
+  <xsl:variable name="first">
+    <xsl:call-template name="str:safe-first-token">
+      <xsl:with-param name="tokens" select="$inventories"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <!-- unlikely but whatever -->
+  <xsl:variable name="doc">
+    <xsl:call-template name="uri:document-for-uri">
+      <xsl:with-param name="uri" select="$first"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="root" select="document($doc)/*"/>
+  <xsl:variable name="subject">
+    <xsl:apply-templates select="$root" mode="rdfa:get-subject"/>
+  </xsl:variable>
+  <xsl:variable name="type">
+  </xsl:variable>
+  <!-- handle window -->
+
+  <xsl:apply-templates select="$root" mode="ibis:datalist-window">
+    <xsl:with-param name="window" select="$subject"/>
+    <xsl:with-param name="inventory" select="$first">
+    </xsl:with-param>
+  </xsl:apply-templates>
+
+  <xsl:variable name="rest" select="substring-after(normalize-space($inventories), ' ')"/>
+  <xsl:if test="string-length($rest)">
+    <xsl:apply-templates select="." mode="ibis:datalist-start">
+      <xsl:with-param name="inventories" select="$rest"/>
+    </xsl:apply-templates>
+  </xsl:if>
+</xsl:template>
+
+<x:doc>
+  <h2>ibis:datalist-window</h2>
+  <p>this is the thing that iterates over individual windows</p>
+</x:doc>
+
+<xsl:template match="html:*" mode="ibis:datalist-window">
+  <xsl:param name="window" select="''"/>
+  <xsl:param name="inventory" select="''"/>
+  <xsl:param name="state" select="''"/>
+
+  <xsl:message>inventory: <xsl:value-of select="$inventory"/> window: <xsl:value-of select="$window"/></xsl:message>
+
+  <xsl:apply-templates select="." mode="ibis:datalist-options">
+    <xsl:with-param name="inventories" select="$inventory"/>
+  </xsl:apply-templates>
+
+  <xsl:variable name="next">
+    <xsl:variable name="_">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$window"/>
+	<xsl:with-param name="predicate" select="concat($XHV, 'next')"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+    <xsl:call-template name="str:safe-first-token">
+      <xsl:with-param name="tokens" select="$_"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:if test="string-length($next)">
+    <xsl:message>next: <xsl:value-of select="$next"/></xsl:message>
+  </xsl:if>
 </xsl:template>
 
 <xsl:template match="html:*" mode="ibis:datalist-options">
@@ -481,7 +710,7 @@
       <xsl:apply-templates select="$root/html:body" mode="rdfa:object-resources">
         <xsl:with-param name="subject" select="$first"/>
         <xsl:with-param name="base"    select="$doc"/>
-        <xsl:with-param name="predicate" select="concat($DCT, 'hasPart')"/>
+        <xsl:with-param name="predicate" select="concat($RDFS, 'member')"/>
       </xsl:apply-templates>
     </xsl:variable>
 
@@ -920,7 +1149,13 @@
   </form>
 </xsl:template>
 
-<!-- SKOS concept -->
+<x:doc>
+  <h2>SKOS Concepts</h2>
+</x:doc>
+
+<x:doc>
+  <h3>Concept head</h3>
+</x:doc>
 
 <xsl:template match="html:head" mode="skos:Concept">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -943,6 +1178,10 @@
     <xsl:with-param name="subject"       select="$subject"/>
   </xsl:apply-templates>
 </xsl:template>
+
+<x:doc>
+  <h3>Concept body</h3>
+</x:doc>
 
 <xsl:template match="html:body" mode="skos:Concept">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -1073,101 +1312,71 @@
     </xsl:apply-templates>
   </xsl:param>
 
-  <xsl:variable name="scheme-xx">
+  <xsl:param name="schemes">
     <xsl:variable name="_">
       <xsl:call-template name="str:token-intersection">
 	<xsl:with-param name="left" select="$type"/>
 	<xsl:with-param name="right" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
       </xsl:call-template>
     </xsl:variable>
-    <xsl:value-of select="normalize-space($_)"/>
-  </xsl:variable>
-  <xsl:variable name="is-scheme" select="string-length($scheme-xx) != 0"/>
-
-  <xsl:variable name="schemes">
     <xsl:choose>
-      <xsl:when test="$is-scheme"><xsl:value-of select="$subject"/></xsl:when>
+      <xsl:when test="string-length(normalize-space($_))">
+	<xsl:value-of select="$subject"/>
+      </xsl:when>
       <xsl:otherwise>
-	<!--
-	    make it possible to list/switch current ibis:Network/skos:ConceptScheme:
-
-            * find the intersection of skos:inScheme skos:topConceptOf ^skos:hasTopConcept
-	    * perform some sort of tiebreaking if there are more than one
-	    * eg the one that is in focus (of which there should be only one) should take precedence
-	    * otherwise an ibis network should take precedence over a skos concept scheme
-	    * otherwise ???
-	-->
-	<xsl:variable name="_">
-	<xsl:apply-templates select="." mode="rdfa:object-resources">
-          <xsl:with-param name="subject" select="$subject"/>
-        <xsl:with-param name="base" select="$base"/>
-        <xsl:with-param name="predicate" select="concat($SKOS, 'inScheme')"/>
+	<xsl:apply-templates select="." mode="rdfa:multi-object-resources">
+	  <xsl:with-param name="subjects" select="$subject"/>
+	  <xsl:with-param name="predicates" select="'skos:inScheme skos:topConceptOf ^skos:hasTopConcept'"/>
 	</xsl:apply-templates>
-	<xsl:text> </xsl:text>
-	<xsl:apply-templates select="." mode="rdfa:object-resources">
-          <xsl:with-param name="subject" select="$subject"/>
-          <xsl:with-param name="base" select="$base"/>
-          <xsl:with-param name="predicate" select="concat($SKOS, 'topConceptOf')"/>
-	</xsl:apply-templates>
-	<xsl:text> </xsl:text>
-	<xsl:apply-templates select="." mode="rdfa:subject-resources">
-          <xsl:with-param name="object" select="$subject"/>
-          <xsl:with-param name="base" select="$base"/>
-          <xsl:with-param name="predicate" select="concat($SKOS, 'hasTopConcept')"/>
-	</xsl:apply-templates>
-      </xsl:variable>
-      <xsl:call-template name="str:unique-tokens">
-	<xsl:with-param name="string" select="normalize-space($_)"/>
-      </xsl:call-template>
       </xsl:otherwise>
     </xsl:choose>
-  </xsl:variable>
-  <xsl:variable name="scheme">
-    <xsl:call-template name="str:safe-first-token">
-      <xsl:with-param name="tokens" select="$schemes"/>
-    </xsl:call-template>
-  </xsl:variable>
+  </xsl:param>
 
-  <xsl:if test="normalize-space($scheme) = ''">
-    <xsl:message terminate="yes">no concept scheme found</xsl:message>
-  </xsl:if>
-
-  <xsl:variable name="space">
-    <xsl:variable name="root" select="document($scheme)/*"/>
-    <xsl:variable name="_">
-      <xsl:apply-templates select="$root" mode="rdfa:object-resources">
-	<xsl:with-param name="subject" select="$scheme"/>
-	<xsl:with-param name="base" select="$scheme"/>
-	<xsl:with-param name="predicate" select="concat($SIOC, 'has_space')"/>
-      </xsl:apply-templates>
-      <xsl:text> </xsl:text>
-      <xsl:apply-templates select="$root" mode="rdfa:subject-resources">
-        <xsl:with-param name="object" select="$scheme"/>
-        <xsl:with-param name="base" select="$scheme"/>
-        <xsl:with-param name="predicate" select="concat($SIOC, 'space_of')"/>
-      </xsl:apply-templates>
-      <xsl:text> </xsl:text>
-      <xsl:apply-templates select="$root" mode="rdfa:subject-resources">
-        <xsl:with-param name="object" select="$scheme"/>
-        <xsl:with-param name="base" select="$scheme"/>
-        <xsl:with-param name="predicate" select="concat($CGTO, 'focus')"/>
-      </xsl:apply-templates>
-    </xsl:variable>
-    <xsl:call-template name="str:unique-tokens">
-      <xsl:with-param name="string" select="normalize-space($_)"/>
-    </xsl:call-template>
-  </xsl:variable>
-
-  <xsl:if test="normalize-space($space) = ''">
-    <xsl:message terminate="yes">could not find space relative to scheme</xsl:message>
-  </xsl:if>
-
-  <xsl:variable name="focus">
-    <xsl:apply-templates select="document($space)/*" mode="rdfa:object-resources">
-      <xsl:with-param name="subject" select="$space"/>
-      <xsl:with-param name="predicate" select="concat($CGTO, 'focus')"/>
+  <xsl:param name="space">
+    <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
+      <xsl:with-param name="subjects" select="$schemes"/>
+      <xsl:with-param name="predicates" select="'http://rdfs.org/sioc/ns#has_space ^http://rdfs.org/sioc/ns#space_of'"/>
+      <xsl:with-param name="traverse" select="true()"/>
     </xsl:apply-templates>
-  </xsl:variable>
+  </xsl:param>
+
+  <xsl:param name="index">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$space"/>
+      <xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#index'"/>
+      <xsl:with-param name="traverse" select="true()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:param name="user">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$index"/>
+      <xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#user'"/>
+      <xsl:with-param name="traverse" select="true()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:param name="state">
+    <xsl:if test="string-length($user)">
+      <xsl:apply-templates select="." mode="rdfa:subject-resources">
+	<xsl:with-param name="object" select="$user"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#owner'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:param>
+
+  <xsl:param name="focus">
+    <xsl:if test="string-length($state)">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$state"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#focus'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:param>
+
+  <xsl:variable name="is-scheme" select="contains(concat(' ', $schemes, ' '), concat(' ', $subject, ' '))"/>
 
   <!--
       * provide some kind of ui for creating a new ibis:Network/skos:ConceptScheme
@@ -1175,23 +1384,26 @@
   -->
   <xsl:variable name="all-schemes">
     <xsl:variable name="_">
-     <xsl:apply-templates select="document($space)/*" mode="cgto:find-inventories-by-class">
-       <xsl:with-param name="classes">
-         <xsl:value-of select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
-       </xsl:with-param>
-     </xsl:apply-templates>
+      <xsl:apply-templates select="document($space)/*" mode="rdfa:multi-object-resources">
+	<xsl:with-param name="base" select="$space"/>
+	<xsl:with-param name="subjects" select="$space"/>
+	<xsl:with-param name="predicates" select="'http://rdfs.org/sioc/ns#space_of ^http://rdfs.org/sioc/ns#has_space'"/>
+      </xsl:apply-templates>
     </xsl:variable>
-    <xsl:apply-templates select="." mode="rdfa:find-relations">
-      <xsl:with-param name="resources" select="$_"/>
-      <xsl:with-param name="predicate" select="concat($DCT, 'hasPart')"/>
-    </xsl:apply-templates>
+    <xsl:if test="string-length(normalize-space($_))">
+      <xsl:apply-templates select="document($space)/*" mode="rdfa:filter-by-type">
+	<xsl:with-param name="subjects" select="$_"/>
+	<xsl:with-param name="classes" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
+	<xsl:with-param name="traverse" select="false()"/>
+      </xsl:apply-templates>
+    </xsl:if>
   </xsl:variable>
 
   <footer>
     <form>
       <button type="button" id="scheme-collapsed">
       <xsl:call-template name="skos:scheme-collapsed-item">
-	<xsl:with-param name="schemes"    select="$all-schemes"/>
+	<xsl:with-param name="schemes"    select="$schemes"/>
 	<xsl:with-param name="focus"      select="$focus"/>
       </xsl:call-template>
       </button>
@@ -1201,30 +1413,32 @@
 	<xsl:with-param name="schemes"    select="$all-schemes"/>
 	<xsl:with-param name="attached"   select="$schemes"/>
 	<xsl:with-param name="focus"      select="$focus"/>
-	<xsl:with-param name="space"      select="$space"/>
+	<xsl:with-param name="state"      select="$state"/>
 	<xsl:with-param name="is-concept" select="not($is-scheme)"/>
       </xsl:call-template>
-      <li>
-    <form class="new-scheme" method="POST" action="">
-      <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-      <xsl:choose>
-	<xsl:when test="false()">
-	  <label><input name="= rdf:type :" type="radio" value="ibis:Network" checked="checked"/> IBIS Network</label>
+      <xsl:if test="string-length($state)">
+	<li>
+	  <form class="new-scheme" method="POST" action="">
+	    <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+	    <xsl:choose>
+	      <xsl:when test="false()">
+		<label><input name="= rdf:type :" type="radio" value="ibis:Network" checked="checked"/> IBIS Network</label>
 	  <xsl:text>&#xa0;</xsl:text>
 	  <label><input name="= rdf:type :" value="skos:ConceptScheme" type="radio"/> SKOS Concepts</label>
-	</xsl:when>
-	<xsl:otherwise>
-	  <input type="hidden" name="= rdf:type :" value="ibis:Network"/>
-	</xsl:otherwise>
-      </xsl:choose>
-      <input type="text" name="= skos:prefLabel" placeholder="Name&#x2026;"/>
-      <xsl:if test="false()">
-	<label><input type="checkbox" name="! skos:inScheme :" value="{$subject}"/> Import this entity</label>
+	      </xsl:when>
+	      <xsl:otherwise>
+		<input type="hidden" name="= rdf:type :" value="ibis:Network"/>
+	      </xsl:otherwise>
+	    </xsl:choose>
+	    <input type="text" name="= skos:prefLabel" placeholder="Name&#x2026;"/>
+	    <xsl:if test="false()">
+	      <label><input type="checkbox" name="! skos:inScheme :" value="{$subject}"/> Import this entity</label>
+	    </xsl:if>
+	    <button>Create</button>
+	    <button name="= {$space} cgto:focus :" value="$SUBJECT">+ Focus</button>
+	  </form>
+	</li>
       </xsl:if>
-      <button>Create</button>
-      <button name="= {$space} cgto:focus :" value="$SUBJECT">+ Focus</button>
-    </form>
-      </li>
     </ul>
   </footer>
 </xsl:template>
@@ -1346,8 +1560,8 @@
   <xsl:param name="schemes"  select="''"/>
   <xsl:param name="attached" select="''"/>
   <xsl:param name="focus"    select="''"/>
-  <xsl:param name="space">
-    <xsl:message terminate="yes">`space` parameter required</xsl:message>
+  <xsl:param name="state">
+    <xsl:message terminate="yes">`state` parameter required</xsl:message>
   </xsl:param>
   <xsl:param name="is-concept" select="false()"/>
 
@@ -1382,22 +1596,24 @@
 	</xsl:call-template>
       </a>
       <!-- 'set focus' button (if not focused, unconditional) -->
-      <form method="POST" action="">
-	<xsl:if test="$is-concept">
-	  <!-- 'detach' button if attached -->
-	  <xsl:choose>
-	    <xsl:when test="$is-attached">
-	      <button name="- skos:inScheme :" value="{$first}">Detach</button>
-	    </xsl:when>
+      <xsl:if test="string-length($state)">
+	<form method="POST" action="">
+	  <xsl:if test="$is-concept">
+	    <!-- 'detach' button if attached -->
+	    <xsl:choose>
+	      <xsl:when test="$is-attached">
+		<button name="- skos:inScheme :" value="{$first}">Detach</button>
+	      </xsl:when>
 	    <xsl:otherwise>
 	      <button name="skos:inScheme :" value="{$first}">Attach</button>
 	    </xsl:otherwise>
-	  </xsl:choose>
-	</xsl:if>
-	<xsl:if test="$first != $focus">
-	  <button name="= {$space} cgto:focus :" value="{$first}">Set Focus</button>
-	</xsl:if>
-      </form>
+	    </xsl:choose>
+	  </xsl:if>
+	  <xsl:if test="$first != $focus">
+	    <button name="= {$state} cgto:focus :" value="{$first}">Set Focus</button>
+	  </xsl:if>
+	</form>
+      </xsl:if>
     </li>
 
     <xsl:variable name="rest" select="normalize-space(substring-after($snorm, ' '))"/>
@@ -1406,7 +1622,7 @@
 	<xsl:with-param name="schemes"    select="$rest"/>
 	<xsl:with-param name="attached"   select="$attached"/>
 	<xsl:with-param name="focus"      select="$focus"/>
-	<xsl:with-param name="space"      select="$space"/>
+	<xsl:with-param name="state"      select="$state"/>
 	<xsl:with-param name="is-concept" select="$is-concept"/>
       </xsl:call-template>
     </xsl:if>

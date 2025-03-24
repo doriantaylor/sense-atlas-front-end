@@ -148,7 +148,7 @@
   <!--<xsl:variable name="vocabs" select="document('/13e45ee1-0b98-4d4b-9e74-a83a09e85030')"/>-->
   <xsl:variable name="vocabs" select="document('asset/vocabs')"/>
 
-  <xsl:variable name="match" select="$vocabs/rdf:RDF//*[self::rdfs:Class|self::owl:Class][contains($type-pad, concat(' ', @rdf:about, ' '))][1]"/>
+  <xsl:variable name="match" select="$vocabs/rdf:RDF//*[self::rdfs:Class|self::owl:Class][@rdf:about][contains($type-pad, concat(' ', @rdf:about, ' '))][1]"/>
 
   <xsl:message>woops <xsl:value-of select="name($match)"/><xsl:text> </xsl:text><xsl:value-of select="$match/@rdf:about"/></xsl:message>
 
@@ -169,7 +169,7 @@
       <xsl:with-param name="subject"       select="$subject"/>
       <xsl:with-param name="type"          select="$type"/>
       <xsl:with-param name="vocabs"        select="$vocabs"/>
-      <xsl:with-param name="match"         select="$match"/>
+      <xsl:with-param name="match"         select="$match[1]"/>
     </xsl:apply-templates>
   </head>
 
@@ -195,72 +195,6 @@
   </body>
 </html>
 
-</xsl:template>
-
-<xsl:template match="html:body">
-  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
-  <xsl:param name="resource-path" select="$base"/>
-  <xsl:param name="rewrite" select="''"/>
-  <xsl:param name="main"    select="false()"/>
-  <xsl:param name="heading" select="0"/>
-
-<body>
-  <xsl:apply-templates select="@*" mode="xc:attribute">
-    <xsl:with-param name="base"          select="$base"/>
-    <xsl:with-param name="resource-path" select="$resource-path"/>
-    <xsl:with-param name="rewrite"       select="$rewrite"/>
-  </xsl:apply-templates>
-
-  <xsl:variable name="subject">
-    <xsl:apply-templates select="." mode="rdfa:get-subject">
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="debug" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <xsl:variable name="type">
-    <xsl:apply-templates select="." mode="rdfa:object-resources">
-      <xsl:with-param name="subject" select="$subject"/>
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <xsl:variable name="type-pad" select="concat(' ', normalize-space($type), ' ')"/>
-
-  <!-- XXX UN-HARDCODE THIS -->
-  <!--<xsl:variable name="vocabs" select="document('/13e45ee1-0b98-4d4b-9e74-a83a09e85030')"/>-->
-  <xsl:variable name="vocabs" select="document('asset/vocabs')"/>
-
-  <xsl:variable name="match" select="$vocabs/rdf:RDF//*[self::rdfs:Class|self::owl:Class][contains($type-pad, concat(' ', @rdf:about, ' '))][1]"/>
-
-  <!--<xsl:message>woops <xsl:value-of select="name($match)"/><xsl:text> </xsl:text><xsl:value-of select="$match/@rdf:about"/></xsl:message>-->
-
-  <xsl:choose>
-    <xsl:when test="$match">
-      <xsl:message>matches: <xsl:value-of select="count($match)"/></xsl:message>
-      <!-- use the internal dispatcher -->
-      <xsl:apply-templates select="$match[1]">
-        <xsl:with-param name="base"          select="$base"/>
-        <xsl:with-param name="resource-path" select="$resource-path"/>
-        <xsl:with-param name="rewrite"       select="$rewrite"/>
-        <xsl:with-param name="main"          select="$main"/>
-        <xsl:with-param name="heading"       select="$heading"/>
-        <xsl:with-param name="current"       select="."/>
-      </xsl:apply-templates>
-    </xsl:when>
-    <xsl:otherwise>
-      <!-- otherwise just pass through -->
-      <xsl:apply-templates>
-        <xsl:with-param name="base"          select="$base"/>
-        <xsl:with-param name="resource-path" select="$resource-path"/>
-        <xsl:with-param name="rewrite"       select="$rewrite"/>
-        <xsl:with-param name="main"          select="$main"/>
-        <xsl:with-param name="heading"       select="$heading"/>
-      </xsl:apply-templates>
-    </xsl:otherwise>
-  </xsl:choose>
-</body>
 </xsl:template>
 
 <!--

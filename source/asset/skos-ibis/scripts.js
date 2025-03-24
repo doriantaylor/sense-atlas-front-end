@@ -7,7 +7,19 @@ document.addEventListener('load-graph', function () {
     this.rdfa  = new RDF.RDFaProcessor(
         this.graph, { base: window.location.href });
 
+    // okay first we grab this page and shove it in the graph
     this.rdfa.process(this);
+
+    // we actually need the focus here and we've already computed it
+    // in the template so the template should just expose that
+
+    // again the path to fetch the focus is:
+    // ?s (skos:inScheme|skos:topConceptOf|^skos:hasTopConcept)?/(sioc:has_space|^sioc:space_of)/cgto:index/cgto:user/cgto:state/cgto:focus ?focus
+    // and each one of these those steps has to be fetched and put in the graph
+
+    // orrr we can just shove that path in the <head> of the document and save ourselves the trouble
+
+    // orrrrrrrrrr we just don't care about this and render all the schemes at once
 
     const rdfv = RDF.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
     const ibis = RDF.Namespace('https://vocab.methodandstructure.com/ibis#');
@@ -58,8 +70,13 @@ document.addEventListener('load-graph', function () {
 	    const s2 = getSchemes(node.subject).map(x => dataviz.rewriteUUID(x));
 	    // console.log(s1, s2);
 	    if (s1.some(s => s2.some(x => x.equals(s)))) {
+		//if ([ibis('Network'), skos('node.type
 		if (!isEntity) return true;
-		return node.neighbours.length > 0 ? true : test(node.type);
+		console.log(node);
+
+		// returns the node if it's not the only one
+		// return node.neighbours.length > 0 ? true : test(node.type);
+		return test(node.type);
 	    }
 	    return false;
         },
@@ -72,13 +89,10 @@ document.addEventListener('load-graph', function () {
         preserveAspectRatio: 'xMidYMid meet', layering: 'Simplex',
         coord: 'Simplex', radius: 5, hyperbolic: true });
 
-    // grab the link
-    const link = this.querySelector(
-        'html > head > link[href][rel~="alternate"][type~="text/turtle"]');
-
     // install the window onload XXX also this conditional sucks
-    if (link && document.getElementById('force'))
-        this.dataviz.installFetchOnLoad(link.href, '#force');
+
+    if (document.getElementById('force'))
+        this.dataviz.installFetchOnLoad(schemes, '#force');
     else console.log("wah wah link not found");
 
     return true;

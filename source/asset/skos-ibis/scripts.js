@@ -72,7 +72,7 @@ document.addEventListener('load-graph', function () {
 	    if (s1.some(s => s2.some(x => x.equals(s)))) {
 		//if ([ibis('Network'), skos('node.type
 		if (!isEntity) return true;
-		console.log(node);
+		//console.log(node);
 
 		// returns the node if it's not the only one
 		// return node.neighbours.length > 0 ? true : test(node.type);
@@ -172,6 +172,8 @@ window.addEventListener('load', function () {
             option = list.querySelector(`option[value="${value}"]`);
 
             console.log('option', option);
+
+	    // XXX THIS WHOLE existing[0] BUSINESS IS BAD
 
             if (option) {
                 input.value = option.label;

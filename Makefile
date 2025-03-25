@@ -66,7 +66,7 @@ target/transform.xsl : target/asset/rdfa-util.xsl target/asset/cgto.xsl target/a
 xslt: clean-xslt target/transform.xsl target/asset/skos-ibis.xsl
 
 clean-xslt:
-	if [ -f target{asset,}/*.xsl ]; then $(RM) target/asset/*.xsl target/*.xsl ; fi
+	$(RM) -f target/asset/*.xsl target/*.xsl
 
 # (S)CSS
 

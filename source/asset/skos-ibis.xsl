@@ -5,6 +5,7 @@
 		xmlns:ibis="https://vocab.methodandstructure.com/ibis#"
                 xmlns:skos="http://www.w3.org/2004/02/skos/core#"
 		xmlns:cgto="https://vocab.methodandstructure.com/graph-tool#"
+		xmlns:pm="https://vocab.methodandstructure.com/process-model#"
 		xmlns:x="urn:x-dummy:"
                 xmlns:rdfa="http://www.w3.org/ns/rdfa#"
                 xmlns:xc="https://makethingsmakesense.com/asset/transclude#"
@@ -215,6 +216,50 @@
       <x:label>Concern Of</x:label>
     </x:prop>
   </x:class>
+  <!--
+  <x:class uri="https://vocab.methodandstructure.com/process-model#Goal" icon="&#xf140;">
+    <x:lprop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+    <x:label>Goal</x:label>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#response">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:label>Has Response</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Questioned By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#questions">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Questions</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggests">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:label>Suggests</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggested-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Suggested By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#generalizes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Generalizes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#specializes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Specializes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#concerns">
+      <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
+      <x:label>Concerns</x:label>
+    </x:prop>
+  </x:class>-->
 </x:sequence>
 
 <x:doc>
@@ -323,40 +368,6 @@
   <h3>Concept head</h3>
 </x:doc>
 
-<xsl:template match="html:head" mode="skos:head-generic">
-  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
-  <xsl:param name="resource-path" select="$base"/>
-  <xsl:param name="rewrite" select="''"/>
-  <xsl:param name="main"    select="false()"/>
-  <xsl:param name="heading" select="0"/>
-  <xsl:param name="subject">
-    <xsl:apply-templates select="." mode="rdfa:get-subject">
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="debug" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:param>
-
-  <xsl:apply-templates>
-    <xsl:with-param name="base"          select="$base"/>
-    <xsl:with-param name="resource-path" select="$resource-path"/>
-    <xsl:with-param name="rewrite"       select="$rewrite"/>
-    <xsl:with-param name="heading"       select="$heading"/>
-    <xsl:with-param name="subject"       select="$subject"/>
-  </xsl:apply-templates>
-
-  <!-- XXX get rid of this lol -->
-  <link rel="stylesheet" type="text/css" href="/asset/skos-ibis/style"/>
-  <link rel="stylesheet" type="text/css" href="/type/font-awesome"/>
-  <link rel="stylesheet" type="text/css" href="/type/noto-sans-symbols2"/>
-  <script type="text/javascript" src="/asset/rdf"></script>
-  <script type="text/javascript" src="/asset/rdf-viz"></script>
-  <script type="text/javascript" src="/asset/complex"></script>
-  <script type="text/javascript" src="/asset/d3"></script>
-  <script type="text/javascript" src="/asset/hierarchical"></script>
-  <script type="text/javascript" src="/asset/force-directed"></script>
-  <script type="text/javascript" src="/asset/skos-ibis/scripts"></script>
-
-</xsl:template>
 
 <xsl:template match="html:head" mode="skos:Concept">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -371,7 +382,7 @@
     </xsl:apply-templates>
   </xsl:param>
 
-  <xsl:apply-templates select="." mode="skos:head-generic">
+  <xsl:apply-templates select="." mode="cgto:head-generic">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
@@ -404,6 +415,7 @@
       <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
     </xsl:apply-templates>
   </xsl:param>
+
   <!--
       This will produce all the concept schemes this entity is known
       to participate in.
@@ -414,6 +426,19 @@
       <xsl:with-param name="predicates" select="'skos:inScheme skos:topConceptOf ^skos:hasTopConcept'"/>
     </xsl:apply-templates>
   </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="string-length(normalize-space($schemes))">
+      <!-- this is okay, continue -->
+      <!--<xsl:apply-templates select="." mode="skos:body-check-space">
+      </xsl:apply-templates>-->
+    </xsl:when>
+    <xsl:otherwise>
+      <!-- this concept is not attached to a concept scheme, so defer to a modal to create one -->
+      <!--<xsl:apply-templates select="." mode="skos:modal-attach-scheme">
+      </xsl:apply-templates>-->
+    </xsl:otherwise>
+  </xsl:choose>
 
   <!--
       Okay so first problem here is there may be multiple concept
@@ -567,6 +592,19 @@
   </xsl:apply-templates>
 </xsl:template>
 
+<xsl:template match="html:body" mode="skos:modal-attach-scheme">
+</xsl:template>
+
+<xsl:template match="html:body" mode="cgto:modal-attach-space">
+</xsl:template>
+
+<xsl:template match="html:*" mode="cgto:modal-attach-state">
+  <!-- we can only do this if we locate a user -->
+</xsl:template>
+
+<xsl:template match="html:body" mode="skos:actual-body">
+</xsl:template>
+
 <x:doc>
   <h2>skos:footer</h2>
   <p>This is a UI component for <code>skos:Concept</code> (i.e. <code>ibis:Entity</code>)-derived subjects, as well as <code>skos:ConceptScheme</code>/<code>ibis:Network</code> aggregates.</p>
@@ -705,17 +743,18 @@
   -->
   <xsl:variable name="all-schemes">
     <xsl:variable name="_">
-      <xsl:apply-templates select="document($space)/*" mode="rdfa:multi-object-resources">
-	<xsl:with-param name="base" select="$space"/>
+      <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
 	<xsl:with-param name="subjects" select="$space"/>
 	<xsl:with-param name="predicates" select="'http://rdfs.org/sioc/ns#space_of ^http://rdfs.org/sioc/ns#has_space'"/>
+	<xsl:with-param name="traverse" select="true()"/>
       </xsl:apply-templates>
     </xsl:variable>
+    <xsl:message>wat <xsl:value-of select="$_"/></xsl:message>
     <xsl:if test="string-length(normalize-space($_))">
       <xsl:apply-templates select="document($space)/*" mode="rdfa:filter-by-type">
 	<xsl:with-param name="subjects" select="$_"/>
 	<xsl:with-param name="classes" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
-	<xsl:with-param name="traverse" select="false()"/>
+	<xsl:with-param name="traverse" select="true()"/>
       </xsl:apply-templates>
     </xsl:if>
   </xsl:variable>
@@ -730,6 +769,15 @@
       </button>
     </form>
     <ul id="scheme-list" class="schemes">
+      <!--
+      <li>schemes: <xsl:value-of select="$schemes"/></li>
+      <li>all schemes: <xsl:value-of select="$all-schemes"/></li>
+      <li>space: <xsl:value-of select="$space"/></li>
+      <li>index: <xsl:value-of select="$index"/></li>
+      <li>user: <xsl:value-of select="$user"/></li>
+      <li>state: <xsl:value-of select="$state"/></li>
+      <li>focus: <xsl:value-of select="$focus"/></li>-->
+
       <xsl:call-template name="skos:scheme-item">
 	<xsl:with-param name="schemes"    select="$all-schemes"/>
 	<xsl:with-param name="attached"   select="$schemes"/>
@@ -756,7 +804,7 @@
 	      <label><input type="checkbox" name="! skos:inScheme :" value="{$subject}"/> Import this entity</label>
 	    </xsl:if>
 	    <button>Create</button>
-	    <button name="= {$space} cgto:focus :" value="$SUBJECT">+ Focus</button>
+	    <button name="= {$state} cgto:focus :" value="$SUBJECT">+ Focus</button>
 	  </form>
 	</li>
       </xsl:if>
@@ -1376,7 +1424,7 @@
     </xsl:apply-templates>
   </xsl:param>
 
-  <xsl:apply-templates select="." mode="skos:head-generic">
+  <xsl:apply-templates select="." mode="cgto:head-generic">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
@@ -1432,6 +1480,8 @@
         <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
         <input type="hidden" name="rdf:type :" value="skos:Concept"/>
         <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
+	<input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	<input type="hidden" name="dct:creator :" value="{$user}"/>
         <input type="text" name="= skos:prefLabel"/>
         <button class="fa fa-plus"/>
       </form>
@@ -1559,7 +1609,7 @@
       <xsl:with-param name="debug" select="false()"/>
     </xsl:apply-templates>
   </xsl:param>
-  <xsl:apply-templates select="." mode="skos:head-generic">
+  <xsl:apply-templates select="." mode="cgto:head-generic">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
@@ -1645,7 +1695,7 @@
 	<xsl:with-param name="object" select="$user"/>
 	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#owner'"/>
 	<xsl:with-param name="traverse" select="true()"/>
-	<xsl:with-param name="debug" select="true()"/>
+	<xsl:with-param name="debug" select="false()"/>
       </xsl:apply-templates>
     </xsl:if>
   </xsl:variable>
@@ -2343,7 +2393,7 @@
     </xsl:apply-templates>
   </xsl:param>
 
-  <xsl:apply-templates select="." mode="skos:head-generic">
+  <xsl:apply-templates select="." mode="cgto:head-generic">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
@@ -2365,6 +2415,35 @@
       <xsl:with-param name="debug" select="false()"/>
     </xsl:apply-templates>
   </xsl:param>
+
+  <xsl:variable name="space">
+    <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="subjects" select="$subject"/>
+      <!-- XXX there is a bug in the prefix resolution somewhere -->
+      <xsl:with-param name="predicates" select="'http://rdfs.org/sioc/ns#has_space ^http://rdfs.org/sioc/ns#space_of'"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="index">
+    <xsl:if test="string-length(normalize-space($space))">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$space"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#index'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="user">
+    <xsl:if test="string-length(normalize-space($index))">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$index"/>
+      <xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#user'"/>
+      <xsl:with-param name="traverse" select="true()"/>
+    </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
 
   <xsl:variable name="adjacents">
     <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
@@ -2410,6 +2489,8 @@
       <form method="POST" action="" accept-charset="utf-8">
         <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
         <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
+	<input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	<input type="hidden" name="dct:creator :" value="{$user}"/>
         <select name="= rdf:type :">
           <option value="ibis:Issue">Issue</option>
           <option value="ibis:Position">Position</option>
@@ -2457,6 +2538,8 @@
           <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
           <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
           <input type="hidden" name="rdf:type :" value="skos:Concept"/>
+	  <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	  <input type="hidden" name="dct:creator :" value="{$user}"/>
           <input type="text" name="= skos:prefLabel"/>
           <button class="fa fa-plus"/>
         </form>
@@ -2472,12 +2555,18 @@
     </article>
     <figure id="force" class="aside"/>
   </main>
+
+  <!--<h1>wtf <xsl:value-of select="$space"/></h1>-->
+
   <xsl:apply-templates select="." mode="skos:footer">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
     <xsl:with-param name="heading"       select="$heading"/>
     <xsl:with-param name="subject"       select="$subject"/>
+    <xsl:with-param name="space"         select="$space"/>
+    <xsl:with-param name="index"         select="$index"/>
+    <xsl:with-param name="user"          select="$user"/>
   </xsl:apply-templates>
 </xsl:template>
 

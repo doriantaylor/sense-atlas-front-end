@@ -197,29 +197,33 @@ export default class RDFViz {
         return curie;
     }
 
-    installFetchOnLoad (url, target) {
+    installFetchOnLoad (url, target, postamble) {
 	if (!(url instanceof Array)) url = [url];
         if (window) {
             // XXX this is dumb but due to https://bugzilla.mozilla.org/show_bug.cgi?id=325891
-            const event = e => {
-		// console.log('wat', this);
-		const fetcher = new RDF.Fetcher(this.graph);
+	    // console.log('wat', this);
+	    const fetcher = new RDF.Fetcher(this.graph);
+	    const me = this;
 
-		const fetches = url.map(
-		    u => fetcher.load(u, {
-			// this overrrides the actual <base href="">
-			// baseURI: window.location.href,
-			noRDFa: false }));
-
-		Promise.all(fetches).then(() => {
-                    console.log('lol', this);
-                    this.init();
-                    if (target) this.attach(target);
-                });
-            };
-            // console.log(document.readyState);
-            if (document.readyState === 'complete') event();
-            else window.addEventListener('load', event);
+	    fetcher.load(url, {
+		// this overrides the actual <base href="">
+		// baseURI: window.location.href,
+		noRDFa: false }).then(() => {
+		    console.log('graph loaded; initializing');
+		    me.init();
+		    const event = () => {
+			if (target) {
+			    me.attach(target);
+			    if (typeof postamble == 'function') {
+				console.log('calling postamble');
+				postamble();
+			    }
+			}
+		    };
+		    // console.log(document.readyState);
+		    if (document.readyState === 'complete') event();
+		    else window.addEventListener('load', event);
+		});
         }
         else console.error('window not available yet');
     }

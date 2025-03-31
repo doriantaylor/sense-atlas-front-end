@@ -318,8 +318,65 @@
 
 </xsl:template>
 
+<xsl:template match="html:head" mode="cgto:head-generic">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:apply-templates>
+    <xsl:with-param name="base"          select="$base"/>
+    <xsl:with-param name="resource-path" select="$resource-path"/>
+    <xsl:with-param name="rewrite"       select="$rewrite"/>
+    <xsl:with-param name="heading"       select="$heading"/>
+    <xsl:with-param name="subject"       select="$subject"/>
+  </xsl:apply-templates>
+
+  <!-- XXX get rid of this lol -->
+  <link rel="stylesheet" type="text/css" href="/asset/skos-ibis/style"/>
+  <link rel="stylesheet" type="text/css" href="/type/font-awesome"/>
+  <link rel="stylesheet" type="text/css" href="/type/noto-sans-symbols2"/>
+  <script type="text/javascript" src="/asset/rdf"></script>
+  <script type="text/javascript" src="/asset/rdf-viz"></script>
+  <script type="text/javascript" src="/asset/complex"></script>
+  <script type="text/javascript" src="/asset/d3"></script>
+  <script type="text/javascript" src="/asset/hierarchical"></script>
+  <script type="text/javascript" src="/asset/force-directed"></script>
+  <script type="text/javascript" src="/asset/skos-ibis/scripts"></script>
+
+</xsl:template>
+
 
 <!-- graph tool space -->
+
+<xsl:template match="html:head" mode="cgto:Space">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:apply-templates select="." mode="cgto:head-generic">
+    <xsl:with-param name="base"          select="$base"/>
+    <xsl:with-param name="resource-path" select="$resource-path"/>
+    <xsl:with-param name="rewrite"       select="$rewrite"/>
+    <xsl:with-param name="heading"       select="$heading"/>
+    <xsl:with-param name="subject"       select="$subject"/>
+  </xsl:apply-templates>
+</xsl:template>
 
 <xsl:template match="html:body" mode="cgto:Space">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -334,12 +391,43 @@
     </xsl:apply-templates>
   </xsl:variable>
 
-  <xsl:variable name="focus">
+  <xsl:variable name="index">
     <xsl:apply-templates select="." mode="rdfa:object-resources">
-      <xsl:with-param name="subject" select="$subject"/>
       <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="predicate" select="concat($CGTO, 'focus')"/>
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#index'"/>
     </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="user">
+    <xsl:if test="string-length(normalize-space($index))">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$index"/>
+      <xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#user'"/>
+      <xsl:with-param name="traverse" select="true()"/>
+    </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="state">
+    <xsl:if test="string-length(normalize-space($user))">
+      <xsl:apply-templates select="." mode="rdfa:subject-resources">
+	<xsl:with-param name="object" select="$user"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#owner'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+	<!--<xsl:with-param name="debug" select="true()"/>-->
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="focus">
+    <xsl:if test="string-length(normalize-space($state))">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$state"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#focus'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
   </xsl:variable>
 
   <xsl:choose>
@@ -364,6 +452,8 @@
         <xsl:with-param name="main" select="$main"/>
         <xsl:with-param name="heading" select="$heading"/>
         <xsl:with-param name="subject" select="$subject"/>
+	<xsl:with-param name="index" select="$index"/>
+	<xsl:with-param name="user" select="$user"/>
         <xsl:with-param name="focus" select="$focus"/>
       </xsl:apply-templates>
     </xsl:otherwise>

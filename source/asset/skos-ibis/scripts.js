@@ -72,7 +72,7 @@ document.addEventListener('load-graph', function () {
 	    if (s1.some(s => s2.some(x => x.equals(s)))) {
 		//if ([ibis('Network'), skos('node.type
 		if (!isEntity) return true;
-		//console.log(node);
+		// console.log(node);
 
 		// returns the node if it's not the only one
 		// return node.neighbours.length > 0 ? true : test(node.type);
@@ -91,16 +91,55 @@ document.addEventListener('load-graph', function () {
 
     // install the window onload XXX also this conditional sucks
 
+    const postamble = () => {
+	const OMO = function (e) {
+	    const t = e.target;
+	    const href = t.href ? t.href.baseVal || t.href :
+		  t.getAttribute('about');
+
+	    // it turns out that the selector 'a[href]' won't work on svg
+	    // so we have to filter them
+	    let elems = document.querySelectorAll(
+		t.ownerSVGElement ?
+		    'section.relations li[typeof]' : 'svg a[typeof]');
+
+	    // console.log(elems.length, e.type);
+
+	    const funcs = {
+		mouseenter: elem => elem.classList.add('fake-hover'),
+		mouseleave: elem => elem.classList.remove('fake-hover'),
+	    };
+
+	    Array.from(elems).filter(elem => {
+		const uri = elem.href ? elem.href.baseVal || elem.href :
+		      elem.getAttribute('about');
+		return uri == href;
+	    }).forEach(funcs[e.type]);
+
+	    return true;
+	};
+
+	Array.from(document.querySelectorAll(
+	    'section.relations li[typeof], svg a[typeof]')).forEach(elem => {
+		// console.log(elem);
+		elem.addEventListener('mouseenter', OMO);
+		elem.addEventListener('mouseleave', OMO);
+	    });
+    };
+
     if (document.getElementById('force'))
-        this.dataviz.installFetchOnLoad(schemes, '#force');
+        this.dataviz.installFetchOnLoad(schemes, '#force', postamble);
     else console.log("wah wah link not found");
 
     return true;
 });
 
-window.addEventListener('load', function () {
-    const ev = new Event('load-graph');
-    this.document.dispatchEvent(ev);
+document.addEventListener('readystatechange', function (e) {
+    if (this.readyState == 'interactive') {
+	console.log('state changed to interactive; now loading graph');
+	const ev = new Event('load-graph');
+	this.dispatchEvent(ev);
+    }
 });
 
 window.addEventListener('load', function () {

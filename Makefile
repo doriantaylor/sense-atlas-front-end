@@ -1,4 +1,5 @@
 # DEFINITIONS
+SHELL  = /bin/bash
 
 NOOP   = true
 NOECHO = @
@@ -23,7 +24,7 @@ LOCAL  = $(HOME)/clients/me
 
 .PHONY: all clean
 
-all: js css xslt
+all: js css xslt fonts
 
 clean:
 	$(RMRF) target
@@ -104,6 +105,13 @@ target/asset/skos-ibis/scripts.js : target/asset/skos-ibis
 js: $(foreach x,$(JS_ASSETS),target/asset/$(x))
 
 # FONTS
+
+fonts : target/type
+
+# XXX do a makefile for downloading/renaming these fonts
+target/type :
+	$(MD) target/type
+	$(CP) $(LOCAL)/extranet-boilerplate/type/{roboto,font-awesome,noto-sans-symbols2}{,.css} target/type
 
 
 # OTHER FILES

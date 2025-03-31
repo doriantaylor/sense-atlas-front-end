@@ -46,6 +46,7 @@ $PALETTE: (
     // hue 308
     "skos:Concept":       (#1a0b1a, #351c35, #613760, #804b7f,
                            #d198d1, #f3daf3, #d200d1, #ffd5fe),
+    
     // hue 260
     "ibis:generalizes":   (#0c0f20, #1e2340, #3a4372, #4e5a96,
                            #a2a8d2, #dfe1f3, #376afe, #dce0fe),
@@ -96,8 +97,61 @@ $PALETTE: (
                            #9db27d, #cbee8e, #628100, #bdf500),
     // hue 110
     "ibis:concern-of":    (#0d1209, #202818, #3e4a31, #536343,
-                           #98b37d, #c2f08e, #598300, #acf800)
+                           #98b37d, #c2f08e, #598300, #acf800),
 
+    // PM
+
+    // "pm:Goal":            (), // sc ibis:Issue
+    // "pm:Task":            (), // sc ibis:Position ∩ pm:Action
+    // "pm:Target":          (), // sc pm:Goal
+
+    // "pm:achieves":        (), // sp ibis:response
+    // "pm:achieved-by":     (),
+    // "pm:anchors":         (), // sp ibis:specializes
+    // "pm:anchored-by":     (),
+    // "pm:context":         (),
+    // "pm:context-of":      (),
+    // "pm:dependency":      (),
+    // "pm:dependency-of":   (),
+    // "pm:desires":         (), // sp ibis:endorses
+    // "pm:desire-of":       (),
+    // "pm:initiates":       (), // sp ibis:responds-to
+    // "pm:initiated-by":    (),
+    // "pm:method":          (),
+    // "pm:method-of":       (),
+    // "pm:outcome":         (),
+    // "pm:outcome-of":      (),
+    // "pm:performer":       (),
+    // "pm:performs":        (),
+    // "pm:responsible":     (),
+    // "pm:responsible-for": (),
+    // "pm:recipient":       (),
+    // "pm:recipient-of":    (),
+    // "pm:subtask":         (), // sp ibis:generalizes
+    // "pm:supertask":       (),
+    // "pm:variant":         (),
+    // "pm:variant-of":      (),
+
+    // people/orgs/products
+
+    // hue 200
+    "foaf:Person":                     (#0a1212, #1a2829, #344a4c, #476365,
+					#83b3b7, #abedf3, #00848a, #70f5fe),
+    // hue 235
+    "org:OrganizationalUnit":          (#0a1116, #1b272f, #364857, #486173,
+					#86b0cf, #d3e4f3, #007fae, #c8e6fe),
+    // hue 240
+    "org:FormalOrganization":          (#0a1117, #1b2631, #364859, #496076,
+					#8aaed2, #d6e3f3, #007eb6, #cde5fe),
+    // hue 245
+    "org:Organization":                (#0b1118, #1c2633, #36485c, #4a607a,
+					#91add2, #d8e3f3, #007cc1, #d1e3fe),
+    // hue 250
+    "org:OrganizationalCollaboration": (#0b111a, #1c2635, #374761, #4a5f80,
+					#97abd2, #dae2f3, #0079d0, #d5e2fe),
+    // hue 38
+    "gr:ProductOrService":             (#170e09, #312219, #514132, #775743,
+					#d59f7e, #f4ded3, #af6400, #fedbc9)
 );
 
 $ICONS: (

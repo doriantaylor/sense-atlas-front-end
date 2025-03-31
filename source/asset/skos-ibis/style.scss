@@ -527,7 +527,7 @@ html {
                     border-color: nth($pal, 2);
                     background-color: nth($pal, 5);
 
-                    &:hover, &:active {
+                    &:hover, &:active, &.fake-hover {
                         color: nth($pal, 3);
                         border-color: nth($pal, 3);
                         background-color: nth($pal, 6);
@@ -636,7 +636,7 @@ html {
                 fill: transparent;
             }
         }
-        &:hover, &.subject {
+        &:hover, &.subject, &.fake-hover {
             > circle {
                 fill: nth($pal, 6);
                 &.target {

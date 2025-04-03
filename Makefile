@@ -31,6 +31,7 @@ clean:
 
 target:
 	$(MD) target
+	$(CP) source/favicon.ico target
 
 target/asset: target
 	$(MD) target/asset

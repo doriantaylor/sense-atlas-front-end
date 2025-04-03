@@ -34,6 +34,8 @@ document.addEventListener('load-graph', function () {
     let types = this.graph.match(me, a).filter(
         s => RDF.isNamedNode(s.object)).map(s => s.object);
 
+    const entityTypes = ibisTypes.concat([skosc]);
+
     let isEntity = types.some(t => t.equals(skosc));
 
     if (ibisTypes.some(t => types.some(u => t.equals(u)))) {
@@ -55,7 +57,8 @@ document.addEventListener('load-graph', function () {
     // console.log(schemes);
 
     // test if these are the types we're after
-    const test = ts => ts.filter(t => types.some(x => x.equals(t))).length > 0;
+    const test = ts => ts.filter(
+	t => entityTypes.some(x => x.equals(t))).length > 0;
 
     // console.log(types);
 
@@ -64,15 +67,15 @@ document.addEventListener('load-graph', function () {
     // layering: Simplex LongestPath CoffmanGraham
     // coord: Simplex Quad Greedy Center
     const dataviz = this.dataviz = new HierRDF(this.graph, {
-        validateNode: function (node) {
+        validateNode: (node) => {
 	    // `this` goes missing because javascript
 	    const s1 = schemes.map(x => dataviz.rewriteUUID(x));
 	    const s2 = getSchemes(node.subject).map(x => dataviz.rewriteUUID(x));
 	    // console.log(s1, s2);
 	    if (s1.some(s => s2.some(x => x.equals(s)))) {
+		console.log(node);
 		//if ([ibis('Network'), skos('node.type
 		if (!isEntity) return true;
-		// console.log(node);
 
 		// returns the node if it's not the only one
 		// return node.neighbours.length > 0 ? true : test(node.type);
@@ -80,7 +83,8 @@ document.addEventListener('load-graph', function () {
 	    }
 	    return false;
         },
-        validateEdge: function (source, target) {
+        validateEdge: (source, target, predicate) => {
+	    console.log([source, target, predicate]);
             //return true;
             if (!isEntity) return true;
             return test(source.type) || test(target.type);

@@ -65,6 +65,8 @@ $CLASS_PALETTE: (
     "org:FormalOrganization":          (#0a1117, #1b2631, #364859, #496076,
 					#8aaed2, #d6e3f3, #007eb6, #cde5fe),
     // hue 245
+    "foaf:Organization":               (#0b1118, #1c2633, #36485c, #4a607a,
+					#91add2, #d8e3f3, #007cc1, #d1e3fe),
     "org:Organization":                (#0b1118, #1c2633, #36485c, #4a607a,
 					#91add2, #d8e3f3, #007cc1, #d1e3fe),
     // hue 250
@@ -95,118 +97,118 @@ $PROP_PALETTE: (
     // SKOS
 
     // hue 268
-    "skos:broader":       (#0f0d26, #232049, #4e4895, #5a54a0,
-                           #a9a6d2, #e1e0f3, #6e5dfe, #e1dffe),
+    "skos:broader":                    (#0f0d26, #232049, #4e4895, #5a54a0,
+					#a9a6d2, #e1e0f3, #6e5dfe, #e1dffe),
     // hue 266
-    "skos:narrower":      (#110d25, #261f48, #524792, #5e53a0,
-                           #aba6d2, #e2e0f3, #7859fe, #e2dffe),
+    "skos:narrower":                   (#110d25, #261f48, #524792, #5e53a0,
+					#aba6d2, #e2e0f3, #7859fe, #e2dffe),
     // hue 15
-    "skos:related":       (#1f0a09, #3e1b19, #7f3f3b, #914944,
-                           #d79c99, #f4dddc, #e32f00, #ffd9d8),
+    "skos:related":                    (#1f0a09, #3e1b19, #7f3f3b, #914944,
+					#d79c99, #f4dddc, #e32f00, #ffd9d8),
 
     // IBIS
 
     // hue 260
-    "ibis:generalizes":   (#0c0f20, #1e2340, #3a4372, #4e5a96,
-                           #a2a8d2, #dfe1f3, #376afe, #dce0fe),
+    "ibis:generalizes":                (#0c0f20, #1e2340, #3a4372, #4e5a96,
+					#a2a8d2, #dfe1f3, #376afe, #dce0fe),
     // hue 265
-    "ibis:specializes":   (#0d0e26, #202149, #3d3f80, #5456a0,
-                           #a6a7d2, #e0e0f3, #5b63fe, #dfe0fe),
+    "ibis:specializes":                (#0d0e26, #202149, #3d3f80, #5456a0,
+					#a6a7d2, #e0e0f3, #5b63fe, #dfe0fe),
     // hue 61
-    "ibis:suggests":      (#141009, #2b2419, #504531, #6a5c43,
-                           #bfa87d, #f4dfbd, #937200, #fedea1),
+    "ibis:suggests":                   (#141009, #2b2419, #504531, #6a5c43,
+					#bfa87d, #f4dfbd, #937200, #fedea1),
     // hue 55
-    "ibis:suggested-by":  (#151009, #2c2419, #524431, #6d5b43,
-                           #c5a67d, #f4dfc7, #9a6f00, #ffddb3),
+    "ibis:suggested-by":               (#151009, #2c2419, #524431, #6d5b43,
+					#c5a67d, #f4dfc7, #9a6f00, #ffddb3),
     // hue 35
-    "ibis:questions":     (#180e09, #322219, #5b4032, #785644,
-                           #d89e7e, #f4ded4, #b26300, #ffdbca),
+    "ibis:questions":                  (#180e09, #322219, #5b4032, #785644,
+					#d89e7e, #f4ded4, #b26300, #ffdbca),
     // hue 27
-    "ibis:questioned-by": (#1a0d09, #352019, #613d32, #805344,
-                           #d89d8b, #f4ddd8, #c15700, #ffdad1),
+    "ibis:questioned-by":              (#1a0d09, #352019, #613d32, #805344,
+					#d89d8b, #f4ddd8, #c15700, #ffdad1),
     // hue 350
-    "ibis:response":      (#1e0a11, #3c1a27, #6c3449, #8e4762,
-                           #d59bae, #f4dce3, #e50081, #ffd8e4),
+    "ibis:response":                   (#1e0a11, #3c1a27, #6c3449, #8e4762,
+					#d59bae, #f4dce3, #e50081, #ffd8e4),
     // hue 356
-    "ibis:responds-to":   (#1f0a10, #3d1a24, #6e3445, #90465c,
-                           #d59ba9, #f4dce1, #e80071, #fed8e1),
+    "ibis:responds-to":                (#1f0a10, #3d1a24, #6e3445, #90465c,
+					#d59ba9, #f4dce1, #e80071, #fed8e1),
     // hue 124
-    "ibis:supports":      (#0a1309, #1a2918, #354c31, #476543,
-                           #84b87d, #a9f59d, #2b8800, #78fe59),
+    "ibis:supports":                   (#0a1309, #1a2918, #354c31, #476543,
+					#84b87d, #a9f59d, #2b8800, #78fe59),
     // hue 120
-    "ibis:supported-by":  (#0b1209, #1c2818, #384b31, #4b6543,
-                           #8bb67d, #acf591, #3e8700, #80fe26),
+    "ibis:supported-by":               (#0b1209, #1c2818, #384b31, #4b6543,
+					#8bb67d, #acf591, #3e8700, #80fe26),
     // hue 9
-    "ibis:opposes":       (#20090b, #40191c, #723237, #95454a,
-                           #d69c9f, #f4ddde, #ed0035, #ffd9db),
+    "ibis:opposes":                    (#20090b, #40191c, #723237, #95454a,
+					#d69c9f, #f4ddde, #ed0035, #ffd9db),
     // hue 4
-    "ibis:opposed-by":    (#20090d, #3f1a20, #70333d, #934552,
-                           #d69ba3, #f4dcdf, #eb0054, #ffd9dd),
+    "ibis:opposed-by":                 (#20090d, #3f1a20, #70333d, #934552,
+					#d69ba3, #f4dcdf, #eb0054, #ffd9dd),
     // hue 105
-    "ibis:concerns":      (#0e1209, #212718, #4b563a, #566243,
-                           #9db27d, #cbee8e, #628100, #bdf500),
+    "ibis:concerns":                   (#0e1209, #212718, #4b563a, #566243,
+					#9db27d, #cbee8e, #628100, #bdf500),
     // hue 110
-    "ibis:concern-of":    (#0d1209, #202818, #3e4a31, #536343,
-                           #98b37d, #c2f08e, #598300, #acf800),
+    "ibis:concern-of":                 (#0d1209, #202818, #3e4a31, #536343,
+					#98b37d, #c2f08e, #598300, #acf800),
 
     // PM
 
     // hue 335 (sp ibis:response, pm:outcome; pm:Task -> pm:Goal)
-    "pm:achieves":        (#1d0b15, #3a1c2d, #693653, #8a496e,
-			   #d49ab9, #f4dce8, #e000a1, #ffd8ec),
+    "pm:achieves":                     (#1d0b15, #3a1c2d, #693653, #8a496e,
+					#d49ab9, #f4dce8, #e000a1, #ffd8ec),
     // hue 340
-    "pm:achieved-by":     (#1e0b14, #3b1b2b, #6a3650, #8b486a,
-			   #d59bb5, #f4dce6, #e20097, #ffd8e9),
+    "pm:achieved-by":                  (#1e0b14, #3b1b2b, #6a3650, #8b486a,
+					#d59bb5, #f4dce6, #e20097, #ffd8e9),
 
-    // hue 255 (sp ibis:specializes pm:Goal -> pm:Target)
-    "pm:anchors":         (#0c111d, #1d2539, #394667, #4c5e88,
-			   #9dabd2, #dde2f4, #0075e7, #d9e2ff),
+    // hue 255 (sp ibis:specializes pm:Target -> pm:Goal)
+    "pm:anchors":                      (#0c111d, #1d2539, #394667, #4c5e88,
+					#9dabd2, #dde2f4, #0075e7, #d9e2ff),
     // hue 260
-    "pm:anchored-by":     (#0c1020, #1e243f, #3a4470, #4e5b93,
-			   #a2a9d2, #dfe2f4, #2a6cff, #dce1ff),
+    "pm:anchored-by":                  (#0c1020, #1e243f, #3a4470, #4e5b93,
+					#a2a9d2, #dfe2f4, #2a6cff, #dce1ff),
 
     // hue 30 (pm:Action [pm:Task] -> pm:State [pm:Goal])
-    "pm:context":         (#1a0e09, #352119, #5f3f32, #7d5544,
-			   #d99e87, #f4ded7, #bc5c00, #ffdbcf),
+    "pm:context":                      (#1a0e09, #352119, #5f3f32, #7d5544,
+					#d99e87, #f4ded7, #bc5c00, #ffdbcf),
     // hue 35
-    "pm:contextualizes":  (#180f09, #332219, #5c4132, #795644,
-			   #d99e7f, #f4ded5, #b46200, #ffdbcc),
+    "pm:contextualizes":               (#180f09, #332219, #5c4132, #795644,
+					#d99e7f, #f4ded5, #b46200, #ffdbcc),
 
     // hue 55 (pm:Task -> pm:Task)
-    "pm:dependency":      (#151009, #2d2419, #534432, #6e5b44,
-			   #c5a67e, #f5dfc7, #9b7000, #ffddb4),
+    "pm:dependency":                   (#151009, #2d2419, #534432, #6e5b44,
+					#c5a67e, #f5dfc7, #9b7000, #ffddb4),
     // hue 50
-    "pm:dependency-of":   (#161009, #2e2419, #554432, #705b44,
-			   #c9a47e, #f4dfcc, #a06d00, #ffdcbc),
+    "pm:dependency-of":                (#161009, #2e2419, #554432, #705b44,
+					#c9a47e, #f4dfcc, #a06d00, #ffdcbc),
 
     // // sp ibis:endorses (foaf:Person -> pm:Goal)
     // "pm:desires":         (),
     // "pm:desire-of":       (),
 
     // hue 315 (sp ibis:responds-to pm:Target -> pm:Task)
-    "pm:initiates":       (#1b0b19, #371c34, #63375d, #834b7b,
-			   #d399ca, #f4dbf0, #d700c5, #ffd6f8),
+    "pm:initiates":                    (#1b0b19, #371c34, #63375d, #834b7b,
+					#d399ca, #f4dbf0, #d700c5, #ffd6f8),
     // hue 320
-    "pm:initiated-by":    (#1c0b18, #381c32, #65375b, #854a78,
-			   #d399c5, #f4dced, #d900bc, #ffd7f5),
+    "pm:initiated-by":                 (#1c0b18, #381c32, #65375b, #854a78,
+					#d399c5, #f4dced, #d900bc, #ffd7f5),
 
     // // (pm:Task -> foaf:Person)
     // "pm:involves":        (),
     // "pm:involved-in":     (),
 
     // hue 235 (sp ibis:specializes pm:Task -> pm:Method)
-    "pm:method":          (#0b1217, #1c2730, #364957, #496173,
-			   #87b0cf, #d4e5f4, #0080ae, #c9e6ff),
+    "pm:method":                       (#0b1217, #1c2730, #364957, #496173,
+					#87b0cf, #d4e5f4, #0080ae, #c9e6ff),
     // hue 230
-    "pm:instance":        (#0b1216, #1b272e, #364955, #496271,
-			   #86b1ca, #d1e6f4, #0081a7, #c3e8ff),
+    "pm:instance":                     (#0b1216, #1b272e, #364955, #496271,
+					#86b1ca, #d1e6f4, #0081a7, #c3e8ff),
 
     // hue 325 (pm:State -> pm:Action [pm:Task])
-    "pm:process":         (#1c0b17, #391c30, #663758, #864a75,
-			   #d49ac1, #f4dceb, #dc00b3, #ffd7f1),
+    "pm:process":                      (#1c0b17, #391c30, #663758, #864a75,
+					#d49ac1, #f4dceb, #dc00b3, #ffd7f1),
     // hue 330 (pm:Action [pm:Task] -> pm:State)
-    "pm:outcome":         (#1d0b16, #3a1c2f, #673655, #884971,
-			   #d49abd, #f4dcea, #de00aa, #ffd7ee),
+    "pm:outcome":                      (#1d0b16, #3a1c2f, #673655, #884971,
+					#d49abd, #f4dcea, #de00aa, #ffd7ee),
 
     // // (pm:Task -> foaf:Person)
     // "pm:performer":       (),
@@ -270,31 +272,31 @@ $PROP_PALETTE: (
     // "org:hasRegisteredSite":    (),
 
     // hue 160 (person-org mimic skos:related?)
-    "org:hasMember":            (#0a1310, #1a2923, #334c43, #46655a,
-				 #81b6a3, #97f4d5, #00876a, #28ffcb),
+    "org:hasMember":                   (#0a1310, #1a2923, #334c43, #46655a,
+					#81b6a3, #97f4d5, #00876a, #28ffcb),
     // hue 165
-    "org:memberOf":             (#0a1310, #1a2924, #344b44, #46645b,
-				 #81b6a6, #95f4da, #00876f, #07ffd4),
+    "org:memberOf":                    (#0a1310, #1a2924, #344b44, #46645b,
+					#81b6a6, #95f4da, #00876f, #07ffd4),
     // hue 170
-    "org:headOf":               (#0a1311, #1a2925, #344b46, #46645d,
-				 #82b5a9, #95f4df, #008674, #00fedc),
+    "org:headOf":                      (#0a1311, #1a2925, #344b46, #46645d,
+					#82b5a9, #95f4df, #008674, #00fedc),
 
     // hue 270 (inter-intra-organizational relations)
-    "org:hasSubOrganization":   (#110e25, #262048, #473d7f, #5f54a0,
-				 #aba6d2, #e2e0f4, #7959ff, #e2dfff),
+    "org:hasSubOrganization":          (#110e25, #262048, #473d7f, #5f54a0,
+					#aba6d2, #e2e0f4, #7959ff, #e2dfff),
     // hue 275
-    "org:subOrganizationOf":    (#140d23, #2a1f44, #4e3c79, #68519e,
-				 #b0a5d2, #e4e0f4, #8f4dff, #e6deff),
+    "org:subOrganizationOf":           (#140d23, #2a1f44, #4e3c79, #68519e,
+					#b0a5d2, #e4e0f4, #8f4dff, #e6deff),
     // hue 280
-    "org:hasUnit":              (#150d21, #2d1f41, #533b74, #6e5098,
-				 #b5a3d2, #e6dff4, #a23eff, #e9ddff),
+    "org:hasUnit":                     (#150d21, #2d1f41, #533b74, #6e5098,
+					#b5a3d2, #e6dff4, #a23eff, #e9ddff),
     // hue 285
-    "org:unitOf":               (#170c20, #2f1e3e, #573a6f, #734f92,
-				 #b9a2d2, #e8dff4, #b428ff, #ecdcff),
+    "org:unitOf":                      (#170c20, #2f1e3e, #573a6f, #734f92,
+					#b9a2d2, #e8dff4, #b428ff, #ecdcff),
 
     // hue 10
-    "org:linkedTo":             (#210a0b, #411a1c, #723336, #964549,
-				 #d79c9e, #f4ddde, #ee002c, #ffdadb),
+    "org:linkedTo":                    (#210a0b, #411a1c, #723336, #964549,
+					#d79c9e, #f4ddde, #ee002c, #ffdadb),
 
     // // change events
     // "org:changedBy":            (),
@@ -303,9 +305,9 @@ $PROP_PALETTE: (
     // "org:resultedIn":           ()
 );
 
-$PALETTE:    join($CLASS_PALETTE, $PROP_PALETTE);
 $CLASSES:    map-keys($CLASS_PALETTE);
 $PROPERTIES: map-keys($PROP_PALETTE);
+$PALETTE:    map-merge($CLASS_PALETTE, $PROP_PALETTE);
 
 $ICONS: (
     "skos:Concept":                    "\1f5ed",
@@ -314,7 +316,7 @@ $ICONS: (
     "ibis:Argument":                   "\f086",
     "pm:Goal":                         "\f11e",
     "pm:Task":                         "\f7d9",
-    "pm:Target":                       "\f149",
+    "pm:Target":                       "\f140",
     "foaf:Person":                     "\f007",
     "foaf:Group":                      "\f0c0",
     "foaf:Organization":               "\f1ad",

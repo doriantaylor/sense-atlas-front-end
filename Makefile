@@ -8,6 +8,7 @@ CP    = cp -a
 MD    = mkdir -p
 RM    = rm
 RMRF  = rm -rf
+FIND  = find
 CURL  = curl
 NPM   = npm
 PSASS = psass
@@ -72,8 +73,12 @@ clean-xslt:
 
 # (S)CSS
 
+clean-css:
+	$(FIND) target/ -type f -name \*.css -print0 | xargs -0 rm -f
+
 target/asset/skos-ibis/style.css : target/asset/skos-ibis
 	$(PSASS) -t expanded -o target/asset/skos-ibis/style.css source/asset/skos-ibis/style.scss
+
 
 css: target/asset/skos-ibis/style.css
 

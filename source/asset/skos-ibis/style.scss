@@ -568,6 +568,7 @@ html {
                 $pal: map-get($PALETTE, $class);
 
                 input[type="radio"][value="#{$class}"] {
+		    // @debug "#{$class} => #{$pal}";
                     color: nth($pal, 2);
                     border-color: nth($pal, 2);
                     background-color: nth($pal, 5);

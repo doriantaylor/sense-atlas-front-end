@@ -48,6 +48,14 @@
 </x:lprops>
 
 <x:inverses>
+  <!-- skos -->
+  <x:pair a="http://www.w3.org/2004/02/skos/core#related" b="http://www.w3.org/2004/02/skos/core#related"/>
+  <x:pair a="http://www.w3.org/2004/02/skos/core#narrower" b="http://www.w3.org/2004/02/skos/core#broader"/>
+  <x:pair a="http://www.w3.org/2004/02/skos/core#narrowerTransitive" b="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
+  <x:pair a="http://www.w3.org/2004/02/skos/core#narrowMatch" b="http://www.w3.org/2004/02/skos/core#broadMatch"/>
+  <x:pair a="http://www.w3.org/2004/02/skos/core#closeMatch" b="http://www.w3.org/2004/02/skos/core#closeMatch"/>
+  <x:pair a="http://www.w3.org/2004/02/skos/core#exactMatch" b="http://www.w3.org/2004/02/skos/core#exactMatch"/>
+  <!-- ibis -->
   <x:pair a="https://vocab.methodandstructure.com/ibis#concerns" b="https://vocab.methodandstructure.com/ibis#concern-of"/>
   <x:pair a="https://vocab.methodandstructure.com/ibis#endorses" b="https://vocab.methodandstructure.com/ibis#endorsed-by"/>
   <x:pair a="https://vocab.methodandstructure.com/ibis#generalizes" b="https://vocab.methodandstructure.com/ibis#specializes"/>
@@ -57,143 +65,14 @@
   <x:pair a="https://vocab.methodandstructure.com/ibis#response" b="https://vocab.methodandstructure.com/ibis#responds-to"/>
   <x:pair a="https://vocab.methodandstructure.com/ibis#supports" b="https://vocab.methodandstructure.com/ibis#supported-by"/>
   <x:pair a="https://vocab.methodandstructure.com/ibis#opposes" b="https://vocab.methodandstructure.com/ibis#opposed-by"/>
-  <x:pair a="http://www.w3.org/2004/02/skos/core#related" b="http://www.w3.org/2004/02/skos/core#related"/>
-  <x:pair a="http://www.w3.org/2004/02/skos/core#narrower" b="http://www.w3.org/2004/02/skos/core#broader"/>
-  <x:pair a="http://www.w3.org/2004/02/skos/core#narrowerTransitive" b="http://www.w3.org/2004/02/skos/core#broaderTransitive"/>
-  <x:pair a="http://www.w3.org/2004/02/skos/core#narrowMatch" b="http://www.w3.org/2004/02/skos/core#broadMatch"/>
-  <x:pair a="http://www.w3.org/2004/02/skos/core#closeMatch" b="http://www.w3.org/2004/02/skos/core#closeMatch"/>
-  <x:pair a="http://www.w3.org/2004/02/skos/core#exactMatch" b="http://www.w3.org/2004/02/skos/core#exactMatch"/>
+  <!-- pm -->
+  <x:pair a="https://vocab.methodandstructure.com/process-model#" b="https://vocab.methodandstructure.com/process-model#"/>
 </x:inverses>
 
 <!-- XXX i feel like some of this could be SHACL and the rest of it could be the ontologies themselves -->
 <!-- maybe make something better like an rdfa page iunno -->
 <x:sequence>
-  <x:class uri="https://vocab.methodandstructure.com/ibis#Issue" icon="&#xf071;">
-    <x:lprop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
-    <x:label>Issue</x:label>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#response">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
-      <x:label>Has Response</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Questioned By</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#questions">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Questions</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggests">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:label>Suggests</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggested-by">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Suggested By</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#generalizes">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Generalizes</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#specializes">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Specializes</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#concerns">
-      <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
-      <x:label>Concerns</x:label>
-    </x:prop>
-  </x:class>
-  <x:class uri="https://vocab.methodandstructure.com/ibis#Position" icon="&#xf0e3;">
-    <x:lprop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
-    <x:label>Position</x:label>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#responds-to">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Responds To</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#supported-by">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Supported By</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#opposed-by">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Opposed By</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Questioned By</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggests">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Suggests</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#generalizes">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
-      <x:label>Generalizes</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#specializes">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
-      <x:label>Specializes</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#concerns">
-      <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
-      <x:label>Concerns</x:label>
-    </x:prop>
-  </x:class>
-  <x:class uri="https://vocab.methodandstructure.com/ibis#Argument" icon="&#xf086;">
-    <x:lprop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
-    <x:label>Argument</x:label>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#supports">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
-      <x:label>Supports</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#opposes">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
-      <x:label>Opposes</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#response">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
-      <x:label>Has Response</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Questioned By</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggests">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Suggests</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggested-by">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Suggested By</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#generalizes">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Generalizes</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#specializes">
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Specializes</x:label>
-    </x:prop>
-    <x:prop uri="https://vocab.methodandstructure.com/ibis#concerns">
-      <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
-      <x:label>Concerns</x:label>
-    </x:prop>
-  </x:class>
+  <!-- skos -->
   <x:class uri="http://www.w3.org/2004/02/skos/core#Concept" icon="&#x1f5ed;">
     <x:lprop uri="http://www.w3.org/2004/02/skos/core#prefLabel"/>
     <x:label>Position</x:label>
@@ -213,44 +92,236 @@
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
       <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
       <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
       <x:label>Concern Of</x:label>
     </x:prop>
   </x:class>
-  <!--
-  <x:class uri="https://vocab.methodandstructure.com/process-model#Goal" icon="&#xf140;">
+  <!-- ibis -->
+  <x:class uri="https://vocab.methodandstructure.com/ibis#Issue" icon="&#xf071;">
     <x:lprop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
-    <x:label>Goal</x:label>
+    <x:label>Issue</x:label>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#response">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
       <x:label>Has Response</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
       <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
       <x:label>Questioned By</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questions">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
       <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
       <x:label>Questions</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#suggests">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
       <x:label>Suggests</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#suggested-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
-      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
       <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
       <x:label>Suggested By</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#generalizes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Generalizes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#specializes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Specializes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#concerns">
+      <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
+      <x:label>Concerns</x:label>
+    </x:prop>
+  </x:class>
+  <x:class uri="https://vocab.methodandstructure.com/ibis#Position" icon="&#xf0e3;">
+    <x:lprop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+    <x:label>Position</x:label>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#responds-to">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Responds To</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#supported-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Supported By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#opposed-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Opposed By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Questioned By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggests">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Suggests</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#generalizes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Generalizes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#specializes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Specializes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#concerns">
+      <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
+      <x:label>Concerns</x:label>
+    </x:prop>
+  </x:class>
+  <x:class uri="https://vocab.methodandstructure.com/ibis#Argument" icon="&#xf086;">
+    <x:lprop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+    <x:label>Argument</x:label>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#supports">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Supports</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#opposes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Opposes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#response">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Has Response</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Questioned By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggests">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Suggests</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggested-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Suggested By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#generalizes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Generalizes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#specializes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Specializes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#concerns">
+      <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
+      <x:label>Concerns</x:label>
+    </x:prop>
+  </x:class>
+  <!-- pm -->
+  <x:class uri="https://vocab.methodandstructure.com/process-model#Goal" icon="&#xf11e;">
+    <x:lprop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+    <x:label>Goal</x:label>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#achieved-by">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Achieved By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#anchored-by">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:label>Anchored By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#contextualizes">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Contextualizes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#response">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Has Response</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Questioned By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#questions">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Questions</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggests">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Suggests</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggested-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Suggested By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#generalizes">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
       <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
       <x:label>Generalizes</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#specializes">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
       <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
       <x:label>Specializes</x:label>
@@ -259,7 +330,145 @@
       <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
       <x:label>Concerns</x:label>
     </x:prop>
-  </x:class>-->
+  </x:class>
+  <x:class uri="https://vocab.methodandstructure.com/process-model#Task" icon="&#xf7d9;">
+    <x:lprop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+    <x:label>Task</x:label>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#achieves">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:label>Achieves</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#initiated-by">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:label>Initiated By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#context">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:label>Context</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#responds-to">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Responds To</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#supported-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Supported By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#opposed-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Opposed By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Questioned By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggests">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Suggests</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#subtask">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Subtask</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#supertask">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Subtask of</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#generalizes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Generalizes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#specializes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Specializes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#concerns">
+      <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
+      <x:label>Concerns</x:label>
+    </x:prop>
+  </x:class>
+    <x:class uri="https://vocab.methodandstructure.com/process-model#Target" icon="&#xf140;">
+    <x:lprop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+    <x:label>Target</x:label>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#achieved-by">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Achieved By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#anchored-by">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:label>Anchored By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#contextualizes">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Contextualizes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#response">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Has Response</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Questioned By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#questions">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Questions</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggests">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Suggests</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#suggested-by">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Suggested By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#generalizes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Generalizes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#specializes">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Specializes</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#concerns">
+      <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
+      <x:label>Concerns</x:label>
+    </x:prop>
+  </x:class>
 </x:sequence>
 
 <x:doc>
@@ -2220,6 +2429,12 @@
     </xsl:call-template>
   </xsl:variable>
 
+  <xsl:variable name="prefixes">
+    <xsl:apply-templates select="$current" mode="rdfa:merge-prefixes">
+      <xsl:with-param name="with" select="'ci: https://vocab.methodandstructure.com/content-inventory# cgto: https://vocab.methodandstructure.com/graph-tool# dct: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ ibis: https://vocab.methodandstructure.com/ibis# pm: https://vocab.methodandstructure.com/process-model# rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns# rdfs: http://www.w3.org/2000/01/rdf-schema# xsd: http://www.w3.org/2001/XMLSchema#'"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
   <xsl:variable name="sequence" select="document('')/xsl:stylesheet/x:sequence[1]"/>
   <!--<h1>focus <xsl:value-of select="$focus"/></h1>-->
 
@@ -2232,10 +2447,12 @@
 
     <xsl:for-each select="x:range">
       <xsl:variable name="class" select="$sequence/x:class[@uri = current()/@uri]"/>
+      <xsl:variable name="label" select="normalize-space($class/x:label[1])"/>
       <xsl:variable name="c-curie">
         <xsl:call-template name="rdfa:make-curie">
           <xsl:with-param name="uri" select="$class/@uri"/>
           <xsl:with-param name="node" select="$current"/>
+	  <xsl:with-param name="prefixes" select="$prefixes"/>
         </xsl:call-template>
       </xsl:variable>
 
@@ -2244,10 +2461,11 @@
         <xsl:call-template name="rdfa:make-curie-list">
           <xsl:with-param name="list" select="$lprop"/>
           <xsl:with-param name="node" select="$current"/>
+	  <xsl:with-param name="prefixes" select="$prefixes"/>
         </xsl:call-template>
       </xsl:variable>
       <!-- safari requires tabindex for :focus-within to work -->
-      <input tabindex="{count(preceding-sibling::x:range)}" type="radio" class="fa" name="$ type" value="{$c-curie}"/>
+      <input tabindex="{count(preceding-sibling::x:range)}" type="radio" class="fa" name="$ type" value="{$c-curie}" aria-label="{$label}" title="{$label}"/>
       <input about="{$c-curie}" class="new label" disabled="disabled" type="hidden" name="= {$lprop-curie} $" value="$label"/>
     </xsl:for-each>
     <input class="new" type="hidden" name="= rdf:type : $" value="$type"/>
@@ -2567,6 +2785,173 @@
     <xsl:with-param name="space"         select="$space"/>
     <xsl:with-param name="index"         select="$index"/>
     <xsl:with-param name="user"          select="$user"/>
+  </xsl:apply-templates>
+</xsl:template>
+
+
+<xsl:template match="html:head" mode="ibis:Entity">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:apply-templates select="." mode="cgto:head-generic">
+    <xsl:with-param name="base"          select="$base"/>
+    <xsl:with-param name="resource-path" select="$resource-path"/>
+    <xsl:with-param name="rewrite"       select="$rewrite"/>
+    <xsl:with-param name="heading"       select="$heading"/>
+    <xsl:with-param name="subject"       select="$subject"/>
+  </xsl:apply-templates>
+
+</xsl:template>
+
+<x:doc>
+  <h3>Entity body</h3>
+  <p>Resources we need:</p>
+  <ul>
+    <li>The <em>user</em>, if present, to determine whether the UI renders writing widgets, and to attribute changes/endorsements</li>
+    <li>The <em>focus</em> (contingent on the user), to determine which concept scheme (and/or IBIS network) to attach new entities to</li>
+  </ul>
+</x:doc>
+
+<xsl:template match="html:body" mode="pm:Goal">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="type">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <!--
+      this has gotta have all the same stuff as the skos concept
+  -->
+  <xsl:variable name="schemes">
+    <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
+      <xsl:with-param name="subjects" select="$subject"/>
+      <xsl:with-param name="predicates" select="'skos:inScheme skos:topConceptOf ^skos:hasTopConcept'"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="space">
+    <xsl:if test="string-length(normalize-space($schemes))">
+      <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
+	<xsl:with-param name="subjects" select="$schemes"/>
+	<!-- XXX there is a bug in the prefix resolution somewhere -->
+	<xsl:with-param name="predicates" select="'http://rdfs.org/sioc/ns#has_space ^http://rdfs.org/sioc/ns#space_of'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="index">
+    <xsl:if test="string-length(normalize-space($space))">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$space"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#index'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="user">
+    <xsl:if test="string-length(normalize-space($index))">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$index"/>
+      <xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#user'"/>
+      <xsl:with-param name="traverse" select="true()"/>
+    </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="state">
+    <xsl:if test="string-length(normalize-space($user))">
+      <xsl:apply-templates select="." mode="rdfa:subject-resources">
+	<xsl:with-param name="object" select="$user"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#owner'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+	<xsl:with-param name="debug" select="false()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="focus">
+    <xsl:if test="string-length(normalize-space($state))">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$state"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#focus'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <main>
+    <article>
+      <hgroup class="self">
+        <xsl:apply-templates select="." mode="ibis:process-self">
+          <xsl:with-param name="base"    select="$base"/>
+          <xsl:with-param name="subject" select="$subject"/>
+          <xsl:with-param name="type"    select="$type"/>
+        </xsl:apply-templates>
+      </hgroup>
+
+      <section class="relations">
+        <xsl:apply-templates select="." mode="ibis:process-neighbours">
+          <xsl:with-param name="base"          select="$base"/>
+          <xsl:with-param name="resource-path" select="$resource-path"/>
+          <xsl:with-param name="rewrite"       select="$rewrite"/>
+          <xsl:with-param name="main"          select="true()"/>
+          <xsl:with-param name="heading"       select="$heading"/>
+          <xsl:with-param name="subject"       select="$subject"/>
+          <xsl:with-param name="type"          select="$type"/>
+	  <xsl:with-param name="user"          select="$user"/>
+	  <xsl:with-param name="focus"         select="$focus"/>
+        </xsl:apply-templates>
+      </section>
+    </article>
+
+    <figure id="force" class="aside"/>
+    <xsl:apply-templates select="." mode="ibis:make-datalist">
+      <xsl:with-param name="base"          select="$base"/>
+      <xsl:with-param name="resource-path" select="$resource-path"/>
+      <xsl:with-param name="rewrite"       select="$rewrite"/>
+      <xsl:with-param name="main"          select="true()"/>
+      <xsl:with-param name="heading"       select="$heading"/>
+      <xsl:with-param name="subject"       select="$subject"/>
+      <xsl:with-param name="index"         select="$index"/>
+    </xsl:apply-templates>
+  </main>
+
+  <xsl:apply-templates select="." mode="skos:footer">
+    <xsl:with-param name="base"          select="$base"/>
+    <xsl:with-param name="resource-path" select="$resource-path"/>
+    <xsl:with-param name="rewrite"       select="$rewrite"/>
+    <xsl:with-param name="heading"       select="$heading"/>
+    <xsl:with-param name="subject"       select="$subject"/>
+    <xsl:with-param name="type"          select="$type"/>
+    <xsl:with-param name="schemes"       select="$schemes"/>
+    <xsl:with-param name="space"         select="$space"/>
+    <xsl:with-param name="index"         select="$index"/>
+    <xsl:with-param name="user"          select="$user"/>
+    <xsl:with-param name="state"         select="$state"/>
+    <xsl:with-param name="focus"         select="$focus"/>
   </xsl:apply-templates>
 </xsl:template>
 

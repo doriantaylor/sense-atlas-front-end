@@ -134,6 +134,86 @@
   </xsl:if>
 </xsl:template>
 
+<xsl:template name="rdfa:merge-one-prefix">
+  <xsl:param name="prefixes">
+    <xsl:message terminate="yes">`prefixes` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="prefix">
+    <xsl:message terminate="yes">`prefix` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="namespace">
+    <xsl:message terminate="yes">`namespace` parameter required</xsl:message>
+  </xsl:param>
+
+  <xsl:variable name="p" select="concat(' ', normalize-space($prefixes), ' ')"/>
+  <xsl:variable name="x" select="concat(' ', normalize-space($prefix), ' ')"/>
+  <xsl:variable name="n" select="concat(' ', normalize-space($namespace), ' ')"/>
+
+  <xsl:value-of select="normalize-space($prefixes)"/>
+  <xsl:if test="not(contains($p, $n))">
+    <xsl:text> </xsl:text>
+    <xsl:choose>
+      <xsl:when test="contains($p, $x)">
+	<xsl:value-of select="substring($prefix, 1, string-length($prefix) - 1)"/>
+	<xsl:text>0:</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+	<xsl:value-of select="normalize-space($prefix)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="normalize-space($namespace)"/>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template match="html:*" mode="rdfa:merge-prefixes" name="rdfa:merge-prefixes">
+  <xsl:param name="prefixes">
+    <xsl:apply-templates select="." mode="rdfa:prefix-stack"/>
+  </xsl:param>
+  <xsl:param name="with" select="''"/>
+
+  <xsl:variable name="p" select="normalize-space($prefixes)"/>
+  <xsl:variable name="w" select="normalize-space($with)"/>
+
+  <xsl:choose>
+    <xsl:when test="string-length($p) and string-length($w)">
+      <xsl:variable name="prefix">
+	<xsl:call-template name="str:safe-first-token">
+	  <xsl:with-param name="tokens" select="$w"/>
+	</xsl:call-template>
+      </xsl:variable>
+      <xsl:variable name="namespace">
+	<xsl:call-template name="str:safe-first-token">
+	  <xsl:with-param name="tokens" select="substring-after($w, ' ')"/>
+	</xsl:call-template>
+      </xsl:variable>
+
+      <xsl:variable name="pfx-out">
+	<xsl:call-template name="rdfa:merge-one-prefix">
+	  <xsl:with-param name="prefixes" select="$p"/>
+	  <xsl:with-param name="prefix" select="$prefix"/>
+	  <xsl:with-param name="namespace" select="$namespace"/>
+	</xsl:call-template>
+      </xsl:variable>
+
+      <xsl:variable name="rest" select="normalize-space(substring(substring-after($w, ' '), string-length($namespace) + 1))"/>
+
+      <xsl:choose>
+	<xsl:when test="string-length($rest)">
+	  <xsl:call-template name="rdfa:merge-prefixes">
+	    <xsl:with-param name="prefixes" select="$pfx-out"/>
+	    <xsl:with-param name="with" select="$rest"/>
+	  </xsl:call-template>
+	</xsl:when>
+	<xsl:otherwise><xsl:value-of select="$pfx-out"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:when test="string-length($w)"><xsl:value-of select="$w"/></xsl:when>
+    <xsl:when test="string-length($p)"><xsl:value-of select="$p"/></xsl:when>
+  </xsl:choose>
+
+</xsl:template>
+
 <xsl:template match="html:*" mode="rdfa:multi-object-resources">
   <xsl:param name="current"    select="."/>
   <xsl:param name="base" select="normalize-space(($current/ancestor-or-self::html:html/html:head/html:base[@href])[1]/@href)"/>

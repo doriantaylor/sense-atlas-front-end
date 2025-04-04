@@ -1,4 +1,32 @@
 #+STARTUP: showall hidestars indent
+* 2025-04-04
+Hopefully this will be the last file-based todo list and this thing can self-host going forward. There is obviously way more to do than just this but what's in this section is good enough for a private (pre-)alpha.
+** Templates
+- [ ] Create a template for ~pm:Goal~ (maybe not necessary?)
+- [ ] Create a template for ~pm:Task~
+- [ ] Create a template for ~pm:Target~
+- [ ] Create a (nicer) template for ~ibis:Network~ (and ~skos:ConceptScheme~)
+- [ ] Create a modal for setting a ~cgto:State~ for the current user if none found
+- [ ] Fix ~cgto:Space~ initial focus thinger
+- [ ] Add logic that removes editor UI when there is no current user detected
+- [ ] Either flesh out or remove the "Referenced by" bullet list
+- [ ] Migrate ~ibis:Entity~ to ~skos:prefLabel~ and ~skos:definition~ (vs ~rdf:value~)
+** Vocabs
+- [ ] Add inverse properties to PM ontology
+  - [ ] Also fix some of the property inheritances
+  - [ ] Don't forget to recut the ruby module
+- [ ] turn ~pm:State~ into ~ibis:State~ and make ~ibis:Issue~ a subclass (maybe?)
+** Back end
+- [ ] Fix missing prefixes in ~Intertwingler::Handler::Generated~
+- [ ] Add ~Last-Modified~ header to generated
+  - [ ] Add global modification time to ~RDF::LMDB::Repository~
+** JS
+- [ ] Get the nodes/edges to show up properly in the data visualization
+- [ ] Fix bug in ~mouseleave~ for adjacents
+- [ ] Modernize textarea UI so you don't have to click to commit it
+** CSS/Sass
+- [ ] Adjust palette
+- [ ] Solve for mobile (lol)
 * 2025-03-19
 The sort of idea here is to outline the resources and their behaviours
 ** Space

@@ -14,45 +14,34 @@ export default class RDFViz {
         org:  'http://www.w3.org/ns/org#',
         skos: 'http://www.w3.org/2004/02/skos/core#',
         ibis: 'https://vocab.methodandstructure.com/ibis#',
+        ci: 'https://vocab.methodandstructure.com/content-inventory#',
+        pm: 'https://vocab.methodandstructure.com/process-model#',
     }).reduce(
         // this will return `out` always
         (out, [key, value]) => (out[key] = new RDF.Namespace(value), out), {});
 
     static validTypes = [
-        'foaf:Agent', 'foaf:Person', 'org:Organization',
-        'org:FormalOrganization', 'org:OrganizationalUnit', 'skos:Concept',
-        'ibis:Issue', 'ibis:Position', 'ibis:Argument'];
+        'foaf:Agent', 'foaf:Person', 'foaf:Organization', 'org:Organization',
+        'org:FormalOrganization', 'org:OrganizationalCollaboration',
+	'org:OrganizationalUnit', 'skos:Concept',
+	'ibis:Issue', 'ibis:Position', 'ibis:Argument'];
 
     static labels = {
-        'foaf:Person':            'foaf:name',
-        'foaf:Organization':      'foaf:name',
-        'org:Organization':       'foaf:name',
-        'org:OrganizationalUnit': 'foaf:name',
-        'org:FormalOrganization': 'foaf:name',
-        'skos:Concept':           'skos:prefLabel',
-        'ibis:Issue':             'rdf:value',
-        'ibis:Position':          'rdf:value',
-        'ibis:Argument':          'rdf:value',
+        'foaf:Person':             'foaf:name',
+        'foaf:Organization':       'foaf:name',
+        'org:Organization':        'foaf:name',
+        'org:OrganizationalUnit':  'foaf:name',
+        'org:FormalOrganization':  'foaf:name',
+        'skos:Concept':            'skos:prefLabel',
+        'ibis:Issue':              'rdf:value',
+        'ibis:Position':           'rdf:value',
+        'ibis:Argument':           'rdf:value',
+        'pm:Goal':                 'rdf:value',
+        'pm:Task':                 'rdf:value',
+        'pm:Target':               'rdf:value',
     };
 
-    static inverses = {
-        // IBIS
-        'ibis:endorses':      'ibis:endorsed-by',
-        'ibis:concerns':      'ibis:concern-of',
-        'ibis:generalizes':   'ibis:specializes',
-        'ibis:specializes':   'ibis:generalizes',
-        'ibis:replaces':      'ibis:replaced-by',
-        'ibis:replaced-by':   'ibis:replaces',
-        'ibis:questions':     'ibis:questioned-by',
-        'ibis:questioned-by': 'ibis:questions',
-        'ibis:suggests':      'ibis:suggested-by',
-        'ibis:suggested-by':  'ibis:suggests',
-        'ibis:response':      'ibis:responds-to',
-        'ibis:responds-to':   'ibis:response',
-        'ibis:supports':      'ibis:supported-by',
-        'ibis:supported-by':  'ibis:supports',
-        'ibis:opposes':       'ibis:opposed-by',
-        'ibis:opposed-by':    'ibis:opposes',
+    static inverses = Object.entries({
         // SKOS
         'skos:related':            'skos:related',
         'skos:narrower':           'skos:broader',
@@ -63,11 +52,46 @@ export default class RDFViz {
         'skos:broadMatch':         'skos:narrowMatch',
         'skos:closeMatch':         'skos:closeMatch',
         'skos:exactMatch':         'skos:exactMatch',
-    };
+        // IBIS
+        'ibis:endorses':           'ibis:endorsed-by',
+        'ibis:concerns':           'ibis:concern-of',
+        'ibis:generalizes':        'ibis:specializes',
+        'ibis:specializes':        'ibis:generalizes',
+        'ibis:replaces':           'ibis:replaced-by',
+        'ibis:replaced-by':        'ibis:replaces',
+        'ibis:questions':          'ibis:questioned-by',
+        'ibis:questioned-by':      'ibis:questions',
+        'ibis:suggests':           'ibis:suggested-by',
+        'ibis:suggested-by':       'ibis:suggests',
+        'ibis:response':           'ibis:responds-to',
+        'ibis:responds-to':        'ibis:response',
+        'ibis:supports':           'ibis:supported-by',
+        'ibis:supported-by':       'ibis:supports',
+        'ibis:opposes':            'ibis:opposed-by',
+        'ibis:opposed-by':         'ibis:opposes',
+	// PM
+	'pm:achieves':             'pm:achieved-by',
+	'pm:anchors':              'pm:anchored-by',
+	'pm:context':              'pm:contextualizes',
+	'pm:dependency':           'pm:dependency-of',
+	'pm:initiates':            'pm:initiated-by',
+	'pm:method':               'pm:instance',
+	'pm:process':              'pm:outcome',
+	'pm:subtask':              'pm:supertask',
+	'pm:variant':              'pm:variant',
+	// FOAF/ORG
+	'org:hasMember':           'org:memberOf',
+	'org:hasSubOrganization':  'org:subOrganizatonOf',
+	'org:hasUnit':             'org:unitOf',
+    }).reduce((out, [key, value]) => {
+	out[key]   = value;
+	out[value] = key;
+	return out;
+    }, {});
 
-    static symmetric = ['skos:related'];
-      // layering: Simplex LongestPath CoffmanGraham
-      // coord: Simplex Quad Greedy Center
+    static symmetric = ['skos:related', 'foaf:knows', 'pm:variant'];
+    // layering: Simplex LongestPath CoffmanGraham
+    // coord: Simplex Quad Greedy Center
 
     // note these have been munged from what we actually want them to
     // be so the sugiyama graph is tighter

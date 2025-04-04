@@ -30,6 +30,7 @@
 
 <xsl:variable name="RDFS" select="'http://www.w3.org/2000/01/rdf-schema#'"/>
 <xsl:variable name="IBIS" select="'https://vocab.methodandstructure.com/ibis#'"/>
+<xsl:variable name="PM"   select="'https://vocab.methodandstructure.com/process-model#'"/>
 <xsl:variable name="CGTO" select="'https://vocab.methodandstructure.com/graph-tool#'"/>
 <xsl:variable name="BIBO" select="'http://purl.org/ontology/bibo/'"/>
 <xsl:variable name="DCT"  select="'http://purl.org/dc/terms/'"/>
@@ -66,7 +67,20 @@
   <x:pair a="https://vocab.methodandstructure.com/ibis#supports" b="https://vocab.methodandstructure.com/ibis#supported-by"/>
   <x:pair a="https://vocab.methodandstructure.com/ibis#opposes" b="https://vocab.methodandstructure.com/ibis#opposed-by"/>
   <!-- pm -->
-  <x:pair a="https://vocab.methodandstructure.com/process-model#" b="https://vocab.methodandstructure.com/process-model#"/>
+  <x:pair a="https://vocab.methodandstructure.com/process-model#achieves" b="https://vocab.methodandstructure.com/process-model#achieved-by"/>
+  <x:pair a="https://vocab.methodandstructure.com/process-model#anchors" b="https://vocab.methodandstructure.com/process-model#anchored-by"/>
+  <x:pair a="https://vocab.methodandstructure.com/process-model#context" b="https://vocab.methodandstructure.com/process-model#contextualizes"/>
+  <x:pair a="https://vocab.methodandstructure.com/process-model#dependency" b="https://vocab.methodandstructure.com/process-model#dependency-of"/>
+  <x:pair a="https://vocab.methodandstructure.com/process-model#initiates" b="https://vocab.methodandstructure.com/process-model#initiated-by"/>
+  <x:pair a="https://vocab.methodandstructure.com/process-model#method" b="https://vocab.methodandstructure.com/process-model#instance"/>
+  <x:pair a="https://vocab.methodandstructure.com/process-model#process" b="https://vocab.methodandstructure.com/process-model#outcome"/>
+  <x:pair a="https://vocab.methodandstructure.com/process-model#subtask" b="https://vocab.methodandstructure.com/process-model#supertask"/>
+  <x:pair a="https://vocab.methodandstructure.com/process-model#variant" b="https://vocab.methodandstructure.com/process-model#variant"/>
+  <!-- foaf/org -->
+  <x:pair a="http://xmlns.com/foaf/0.1/knows" b="http://xmlns.com/foaf/0.1/knows"/>
+  <x:pair a="http://www.w3.org/ns/org#hasMember" b="http://www.w3.org/ns/org#memberOf"/>
+  <x:pair a="http://www.w3.org/ns/org#hasSubOrganization" b="http://www.w3.org/ns/org#subOrganizatonOf"/>
+  <x:pair a="http://www.w3.org/ns/org#hasUnit" b="http://www.w3.org/ns/org#unitOf"/>
 </x:inverses>
 
 <!-- XXX i feel like some of this could be SHACL and the rest of it could be the ontologies themselves -->
@@ -381,7 +395,7 @@
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/process-model#supertask">
       <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
-      <x:label>Subtask of</x:label>
+      <x:label>Subtask Of</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#generalizes">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
@@ -2694,6 +2708,30 @@
     </xsl:apply-templates>
   </xsl:variable>
 
+  <xsl:variable name="goals">
+    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
+      <xsl:with-param name="subjects" select="$adjacents"/>
+      <xsl:with-param name="classes" select="concat($PM, 'Goal')"/>
+      <xsl:with-param name="traverse" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="tasks">
+    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
+      <xsl:with-param name="subjects" select="$adjacents"/>
+      <xsl:with-param name="classes" select="concat($PM, 'Task')"/>
+      <xsl:with-param name="traverse" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="targets">
+    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
+      <xsl:with-param name="subjects" select="$adjacents"/>
+      <xsl:with-param name="classes" select="concat($PM, 'Target')"/>
+      <xsl:with-param name="traverse" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
   <xsl:variable name="concepts">
     <xsl:apply-templates select="." mode="rdfa:filter-by-type">
       <xsl:with-param name="subjects" select="$adjacents"/>
@@ -2745,6 +2783,39 @@
           <ul>
             <xsl:apply-templates select="." mode="skos:scheme-item">
               <xsl:with-param name="resources" select="$arguments"/>
+              <xsl:with-param name="lprop" select="concat($rdfa:RDF-NS, 'value')"/>
+            </xsl:apply-templates>
+          </ul>
+        </section>
+      </xsl:if>
+      <xsl:if test="string-length(normalize-space($goals))">
+        <section>
+          <h3>Goals</h3>
+          <ul>
+            <xsl:apply-templates select="." mode="skos:scheme-item">
+              <xsl:with-param name="resources" select="$goals"/>
+              <xsl:with-param name="lprop" select="concat($rdfa:RDF-NS, 'value')"/>
+            </xsl:apply-templates>
+          </ul>
+        </section>
+      </xsl:if>
+      <xsl:if test="string-length(normalize-space($tasks))">
+        <section>
+          <h3>Tasks</h3>
+          <ul>
+            <xsl:apply-templates select="." mode="skos:scheme-item">
+              <xsl:with-param name="resources" select="$tasks"/>
+              <xsl:with-param name="lprop" select="concat($rdfa:RDF-NS, 'value')"/>
+            </xsl:apply-templates>
+          </ul>
+        </section>
+      </xsl:if>
+      <xsl:if test="string-length(normalize-space($targets))">
+        <section>
+          <h3>Targets</h3>
+          <ul>
+            <xsl:apply-templates select="." mode="skos:scheme-item">
+              <xsl:with-param name="resources" select="$targets"/>
               <xsl:with-param name="lprop" select="concat($rdfa:RDF-NS, 'value')"/>
             </xsl:apply-templates>
           </ul>

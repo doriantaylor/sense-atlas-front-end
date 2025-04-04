@@ -22,23 +22,34 @@ document.addEventListener('load-graph', function () {
     // orrrrrrrrrr we just don't care about this and render all the schemes at once
 
     const rdfv = RDF.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+    const foaf = RDF.Namespace('http://xmlns.com/foaf/0.1/');
+    const org  = RDF.Namespace('http://www.w3.org/ns/org#');
     const ibis = RDF.Namespace('https://vocab.methodandstructure.com/ibis#');
+    const pm   = RDF.Namespace('https://vocab.methodandstructure.com/process-model#');
     const skos = RDF.Namespace('http://www.w3.org/2004/02/skos/core#');
     const xhv  = RDF.Namespace('http://www.w3.org/1999/xhtml/vocab#');
 
-    const ibisTypes = ['Issue', 'Position', 'Argument'].map(t => ibis(t));
-    const skosc = skos('Concept');
+    const skosc       = skos('Concept');
+    const ibisTypes   = ['Issue', 'Position', 'Argument'].map(t => ibis(t));
+    const pmTypes     = ['Goal', 'Task', 'Target'].map(t => pm(t));
+    const foafTypes   = ['Agent', 'Person', 'Organization'].map(t => foaf(t));
+    const orgTypes    = ['Organization', 'FormalOrganization',
+			 'OrganizationalCollaboration', 'OrganizationalUnit',
+			 'Role', 'Post', 'Membership', 'Site'].map(t => org(t));
+    const entityTypes = [skosc].concat(ibisTypes, pmTypes, foafTypes, orgTypes);
 
     const me = RDF.sym(window.location.href);
     const a  = rdfv('type');
-    let types = this.graph.match(me, a).filter(
+
+    // get "my" RDF types
+    let myTypes = this.graph.match(me, a).filter(
         s => RDF.isNamedNode(s.object)).map(s => s.object);
 
-    const entityTypes = ibisTypes.concat([skosc]);
+    // XXX this little bit is supposed to negotiate whether we're in
+    // ibis or skos, but should we do it with the others?
+    let isEntity = myTypes.some(t => t.equals(skosc));
 
-    let isEntity = types.some(t => t.equals(skosc));
-
-    if (ibisTypes.some(t => types.some(u => t.equals(u)))) {
+    if (ibisTypes.some(t => myTypes.some(u => t.equals(u)))) {
         isEntity = true;
         types = ibisTypes;
     }
@@ -67,13 +78,16 @@ document.addEventListener('load-graph', function () {
     // layering: Simplex LongestPath CoffmanGraham
     // coord: Simplex Quad Greedy Center
     const dataviz = this.dataviz = new HierRDF(this.graph, {
+	validTypes: entityTypes,
         validateNode: (node) => {
+	    return true;
 	    // `this` goes missing because javascript
 	    const s1 = schemes.map(x => dataviz.rewriteUUID(x));
 	    const s2 = getSchemes(node.subject).map(x => dataviz.rewriteUUID(x));
 	    // console.log(s1, s2);
 	    if (s1.some(s => s2.some(x => x.equals(s)))) {
 		console.log(node);
+		return true;
 		//if ([ibis('Network'), skos('node.type
 		if (!isEntity) return true;
 
@@ -85,7 +99,7 @@ document.addEventListener('load-graph', function () {
         },
         validateEdge: (source, target, predicate) => {
 	    console.log([source, target, predicate]);
-            //return true;
+            return true;
             if (!isEntity) return true;
             return test(source.type) || test(target.type);
         },

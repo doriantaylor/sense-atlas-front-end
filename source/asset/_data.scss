@@ -196,14 +196,14 @@ $PROP_PALETTE: (
     // "pm:involves":        (),
     // "pm:involved-in":     (),
 
-    // hue 235 (sp ibis:specializes pm:Task -> pm:Method)
+    // hue 235 (sp ibis:specializes pm:Action [pm:Task] -> pm:Method)
     "pm:method":                       (#0b1217, #1c2730, #364957, #496173,
 					#87b0cf, #d4e5f4, #0080ae, #c9e6ff),
     // hue 230
     "pm:instance":                     (#0b1216, #1b272e, #364955, #496271,
 					#86b1ca, #d1e6f4, #0081a7, #c3e8ff),
 
-    // hue 325 (pm:State -> pm:Action [pm:Task])
+    // hue 325 (ibis:State -> pm:Action [pm:Task])
     "pm:process":                      (#1c0b17, #391c30, #663758, #864a75,
 					#d49ac1, #f4dceb, #dc00b3, #ffd7f1),
     // hue 330 (pm:Action [pm:Task] -> pm:State)
@@ -215,12 +215,12 @@ $PROP_PALETTE: (
     // "pm:performs":        (),
 
     // // (pm:Task -> foaf:Person)
-    // "pm:responsible":     (),
-    // "pm:responsible-for": (),
-
-    // // (pm:Task -> foaf:Person)
     // "pm:recipient":       (),
     // "pm:recipient-of":    (),
+
+    // // (pm:Task -> foaf:Person)
+    // "pm:responsible":     (),
+    // "pm:responsible-for": (),
 
     // hue 245 (sp ibis:generalizes pm:Task -> pm:Task)
     "pm:subtask":                      (#0b111b, #1d2636, #384761, #4b5f80,

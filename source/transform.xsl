@@ -342,7 +342,7 @@
     <xsl:message terminate="yes">`current` parameter required.</xsl:message>
   </xsl:param>
 
-  <xsl:apply-templates select="$current" mode="ibis:Entity">
+  <xsl:apply-templates select="$current" mode="pm:Goal">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
@@ -363,7 +363,7 @@
     <xsl:message terminate="yes">`current` parameter required.</xsl:message>
   </xsl:param>
 
-  <xsl:apply-templates select="$current" mode="ibis:Entity">
+  <xsl:apply-templates select="$current" mode="pm:Task">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
@@ -384,7 +384,7 @@
     <xsl:message terminate="yes">`current` parameter required.</xsl:message>
   </xsl:param>
 
-  <xsl:apply-templates select="$current" mode="ibis:Entity">
+  <xsl:apply-templates select="$current" mode="pm:Target">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>

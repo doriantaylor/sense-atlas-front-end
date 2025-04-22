@@ -197,6 +197,7 @@ export default class HierRDF extends RDFViz {
         // take a third pass to prune out the extraneous nodes
         for (const [k, rec] of Object.entries(nmap)) {
             if (validateNode && !validateNode(rec)) {
+                //console.log(rec);
                 rec.neighbours.forEach(n => {
                     const v = n.value;
                     if ((lmap[k] || {})[v]) delete lmap[k][v];

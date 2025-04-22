@@ -4,26 +4,35 @@ Hopefully this will be the last file-based todo list and this thing can self-hos
 ** Templates
 - [ ] Create a template for ~pm:Goal~ (maybe not necessary?)
 - [ ] Create a template for ~pm:Task~
+  - [ ] Create a new ~<datalist>~ for autofilling ~foaf:Agent~ entities
 - [ ] Create a template for ~pm:Target~
 - [ ] Create a (nicer) template for ~ibis:Network~ (and ~skos:ConceptScheme~)
+- [ ] Create a new toggle widget that goes between issue/argument/goal/target and position/task
+- [ ] Create ~ibis:endorsed-by~ relations widget, i.e. the ability to /like/ an entity
 - [ ] Create a modal for setting a ~cgto:State~ for the current user if none found
 - [ ] Fix ~cgto:Space~ initial focus thinger
-- [ ] Add logic that removes editor UI when there is no current user detected
+  - (aka the "home page" if there's nothing else on the site)
+- [ ] Add logic that removes editing UI when there is no current user detected
 - [ ] Either flesh out or remove the "Referenced by" bullet list
+  - the issue here is /subtracting/ all the other properties that already have representation in the UI
 - [ ] Migrate ~ibis:Entity~ to ~skos:prefLabel~ and ~skos:definition~ (vs ~rdf:value~)
 ** Vocabs
-- [ ] Add inverse properties to PM ontology
-  - [ ] Also fix some of the property inheritances
-  - [ ] Don't forget to recut the ruby module
-- [ ] turn ~pm:State~ into ~ibis:State~ and make ~ibis:Issue~ a subclass (maybe?)
+- [X] Add inverse properties to PM ontology
+  - [X] Also fix some of the property inheritances
+  - [X] Don't forget to recut the ruby module
+- [X] Turn ~pm:State~ into ~ibis:State~ and make ~ibis:Issue~ a subclass (maybe?)
 ** Back end
-- [ ] Fix missing prefixes in ~Intertwingler::Handler::Generated~
-- [ ] Add ~Last-Modified~ header to generated
-  - [ ] Add global modification time to ~RDF::LMDB::Repository~
+- [X] Fix missing prefixes in ~Intertwingler::Handler::Generated~
+- [-] Add rudimentary caching
+  - [X] Add ~Last-Modified~ header to ~Generated~ handler
+    - [X] Add global modification time to ~RDF::LMDB::Repository~
+  - [ ] Add ~Last-Modified~ to ~Catalogue~ handlers as well
 ** JS
-- [ ] Get the nodes/edges to show up properly in the data visualization
+- [X] Get the nodes/edges to show up properly in the data visualization
+- [ ] Generalize out the autofill script for ~foaf:Agent~
 - [ ] Fix bug in ~mouseleave~ for adjacents
 - [ ] Modernize textarea UI so you don't have to click to commit it
+- [ ] /Stretch/: fix the geometry on the hyperbolic graph.
 ** CSS/Sass
 - [ ] Adjust palette
 - [ ] Solve for mobile (lol)

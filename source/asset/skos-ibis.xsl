@@ -28,16 +28,21 @@
 
 <!--<xsl:variable name="uri:DEBUG" select="true()"/>-->
 
-<xsl:variable name="RDFS" select="'http://www.w3.org/2000/01/rdf-schema#'"/>
+<xsl:variable name="RDF" select="$rdfa:RDF-NS"/>
+<xsl:variable name="RDFS" select="$rdfa:RDFS-NS"/>
 <xsl:variable name="IBIS" select="'https://vocab.methodandstructure.com/ibis#'"/>
 <xsl:variable name="PM"   select="'https://vocab.methodandstructure.com/process-model#'"/>
 <xsl:variable name="CGTO" select="'https://vocab.methodandstructure.com/graph-tool#'"/>
 <xsl:variable name="BIBO" select="'http://purl.org/ontology/bibo/'"/>
 <xsl:variable name="DCT"  select="'http://purl.org/dc/terms/'"/>
+<xsl:variable name="FOAF" select="'http://xmlns.com/foaf/0.1/'"/>
+<xsl:variable name="ORG"  select="'http://www.w3.org/ns/org#'"/>
+<xsl:variable name="PROV" select="'http://www.w3.org/ns/prov#'"/>
 <xsl:variable name="QB"   select="'http://purl.org/linked-data/cube#'"/>
 <xsl:variable name="SIOC" select="'http://rdfs.org/sioc/ns#'"/>
 <xsl:variable name="SKOS" select="'http://www.w3.org/2004/02/skos/core#'"/>
 <xsl:variable name="XHV"  select="'http://www.w3.org/1999/xhtml/vocab#'"/>
+<xsl:variable name="XSD"  select="$rdfa:XSD-NS"/>
 
 <x:lprops>
   <x:prop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
@@ -412,7 +417,7 @@
       <x:label>Concerns</x:label>
     </x:prop>
   </x:class>
-    <x:class uri="https://vocab.methodandstructure.com/process-model#Target" icon="&#xf140;">
+  <x:class uri="https://vocab.methodandstructure.com/process-model#Target" icon="&#xf140;">
     <x:lprop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
     <x:label>Target</x:label>
     <x:prop uri="https://vocab.methodandstructure.com/process-model#achieved-by">
@@ -482,6 +487,22 @@
       <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
       <x:label>Concerns</x:label>
     </x:prop>
+  </x:class>
+  <!-- foaf/org -->
+  <x:class uri="http://xmlns.com/foaf/0.1/Person" icon="&#xf007;">
+    <x:prop uri="http://xmlns.com/foaf/0.1/knows">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+    </x:prop>
+  </x:class>
+  <x:class uri="http://xmlns.com/foaf/0.1/Group" icon="&#xf0c0;">
+  </x:class>
+  <x:class uri="http://www.w3.org/ns/org#Organization" icon="&#xf1ad;">
+  </x:class>
+  <x:class uri="http://www.w3.org/ns/org#FormalOrganization" icon="&#xed45;">
+  </x:class>
+  <x:class uri="http://www.w3.org/ns/org#OrganizationalUnit" icon="&#xe594;">
+  </x:class>
+  <x:class uri="http://www.w3.org/ns/org#OrganizationalCollaboration" icon="&#xf2b5;">
   </x:class>
 </x:sequence>
 
@@ -1222,6 +1243,10 @@
 
 </xsl:template>
 
+<x:doc>
+  <h2>skos:footer-option</h2>
+</x:doc>
+
 <xsl:template match="html:*" mode="skos:footer-option">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="candidates">
@@ -1286,6 +1311,9 @@
     </xsl:if>
 </xsl:template>
 
+<x:doc>
+  <h2>skos:process-self</h2>
+</x:doc>
 
 <xsl:template match="html:*" mode="skos:process-self">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -1371,16 +1399,73 @@
   <xsl:with-param name="base" select="$base"/>
   <xsl:with-param name="subject" select="$subject"/>
 </xsl:apply-templates>
+
 <xsl:apply-templates select="." mode="skos:literal-form">
   <xsl:with-param name="base" select="$base"/>
   <xsl:with-param name="subject" select="$subject"/>
   <xsl:with-param name="predicate" select="concat($SKOS, 'hiddenLabel')"/>
   <xsl:with-param name="heading" select="'Hidden Labels'"/>
 </xsl:apply-templates>
+
 <xsl:apply-templates select="." mode="skos:object-form">
   <xsl:with-param name="base" select="$base"/>
   <xsl:with-param name="subject" select="$subject"/>
 </xsl:apply-templates>
+
+<xsl:apply-templates select="." mode="skos:created-by">
+  <xsl:with-param name="base" select="$base"/>
+  <xsl:with-param name="subject" select="$subject"/>
+</xsl:apply-templates>
+
+</xsl:template>
+
+<x:doc>
+  <h2>skos:created-by</h2>
+</x:doc>
+
+<xsl:template match="html:*" mode="skos:created-by">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:variable name="created">
+    <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="predicate" select="'http://purl.org/dc/terms/created'"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="creator">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="predicate" select="'http://purl.org/dc/terms/creator'"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="name">
+    <xsl:if test="string-length(normalize-space($creator))">
+      <xsl:variable name="_">
+	<xsl:call-template name="uri:document-for-uri">
+	  <xsl:with-param name="uri" select="$creator"/>
+	</xsl:call-template>
+    </xsl:variable>
+    <xsl:apply-templates select="document($_)/*" mode="rdfa:object-literal-quick">
+      <xsl:with-param name="subject" select="$creator"/>
+      <xsl:with-param name="predicate" select="'http://xmlns.com/foaf/0.1/name'"/>
+    </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
   <span class="date" property="dct:created" content="{substring-before($created, $rdfa:UNIT-SEP)}" datatype="{substring-after($created, $rdfa:UNIT-SEP)}">Created <xsl:value-of select="substring-before($created, 'T')"/>
   <xsl:if test="string-length($creator)">
     <xsl:text> by </xsl:text>
@@ -2010,33 +2095,28 @@
       <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
     </xsl:apply-templates>
   </xsl:param>
-  <xsl:param name="index">
-    <xsl:message terminate="yes">`index` parameter required</xsl:message>
-  </xsl:param>
-
-  <xsl:variable name="spaces">
+  <xsl:param name="spaces">
     <xsl:apply-templates select="." mode="skos:get-spaces">
       <xsl:with-param name="subject" select="$subject"/>
       <xsl:with-param name="type" select="$type"/>
     </xsl:apply-templates>
-  </xsl:variable>
+  </xsl:param>
+  <xsl:param name="index">
+    <xsl:message terminate="yes">`index` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="search-types" select="concat($SKOS, 'Concept')"/>
+  <xsl:param name="inferred" select="true()"/>
+  <xsl:param name="id" select="'big-friggin-list'"/>
+
 
   <xsl:variable name="inventories">
     <xsl:apply-templates select="document($index)/*" mode="cgto:find-inventories-by-class">
-      <xsl:with-param name="classes"><!--
-        <xsl:value-of select="concat($IBIS, 'Issue')"/>
-        <xsl:text> </xsl:text>
-        <xsl:value-of select="concat($IBIS, 'Position')"/>
-        <xsl:text> </xsl:text>
-        <xsl:value-of select="concat($IBIS, 'Argument')"/>
-        <xsl:text> </xsl:text>-->
-        <xsl:value-of select="concat($SKOS, 'Concept')"/>
-      </xsl:with-param>
-      <xsl:with-param name="inferred" select="true()"/>
+      <xsl:with-param name="classes" select="$search-types"/>
+      <xsl:with-param name="inferred" select="$inferred"/>
     </xsl:apply-templates>
   </xsl:variable>
 
-  <datalist id="big-friggin-list">
+  <datalist id="{$id}">
     <xsl:if test="string-length(normalize-space($inventories))">
       <xsl:apply-templates select="." mode="ibis:datalist-start">
         <xsl:with-param name="inventories" select="$inventories"/>
@@ -2295,21 +2375,11 @@
       <button class="fa fa-sync" title="Save Text"></button>
     </form>
   </h1>
-  <span class="date" property="dct:created" content="{substring-before($created, $rdfa:UNIT-SEP)}" datatype="{substring-after($created, $rdfa:UNIT-SEP)}">Created <xsl:value-of select="substring-before($created, 'T')"/>
-  <xsl:if test="string-length($creator)">
-    <xsl:text> by </xsl:text>
-    <a rel="dct:creator" href="{$creator}">
-      <xsl:choose>
-	<xsl:when test="string-length($name)">
-	  <span property="foaf:name">
-	    <xsl:value-of select="substring-before($name, $rdfa:UNIT-SEP)"/>
-	  </span>
-	</xsl:when>
-	<xsl:otherwise><xsl:value-of select="$creator"/></xsl:otherwise>
-      </xsl:choose>
-    </a>
-  </xsl:if>
-  </span>
+
+  <xsl:apply-templates select="." mode="skos:created-by">
+    <xsl:with-param name="base" select="$base"/>
+    <xsl:with-param name="subject" select="$subject"/>
+  </xsl:apply-templates>
 
   <xsl:apply-templates select="." mode="skos:referenced-by-inset">
     <xsl:with-param name="base" select="$base"/>
@@ -2406,6 +2476,10 @@
 
 </xsl:template>
 
+<x:doc>
+  <h3>ibis:add-relation</h3>
+</x:doc>
+
 <xsl:template match="x:prop" mode="ibis:add-relation">
   <xsl:param name="base" select="/.."/>
   <xsl:param name="current" select="/.."/>
@@ -2490,6 +2564,10 @@
     <input class="existing" disabled="disabled" type="hidden" name="! skos:inScheme {$focus} : $" value="$SUBJECT"/>
   </form>
 </xsl:template>
+
+<x:doc>
+  <h3>ibis:link-stack</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="ibis:link-stack">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -2751,6 +2829,9 @@
           <option value="ibis:Issue">Issue</option>
           <option value="ibis:Position">Position</option>
           <option value="ibis:Argument">Argument</option>
+          <option value="pm:Goal">Goal</option>
+          <option value="pm:Task">Task</option>
+          <option value="pm:Target">Target</option>
         </select>
         <input type="text" name="= rdf:value"/>
         <button class="fa fa-plus"/>
@@ -2859,39 +2940,11 @@
   </xsl:apply-templates>
 </xsl:template>
 
-
-<xsl:template match="html:head" mode="ibis:Entity">
-  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
-  <xsl:param name="resource-path" select="$base"/>
-  <xsl:param name="rewrite" select="''"/>
-  <xsl:param name="main"    select="false()"/>
-  <xsl:param name="heading" select="0"/>
-  <xsl:param name="subject">
-    <xsl:apply-templates select="." mode="rdfa:get-subject">
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="debug" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:param>
-  <xsl:apply-templates select="." mode="cgto:head-generic">
-    <xsl:with-param name="base"          select="$base"/>
-    <xsl:with-param name="resource-path" select="$resource-path"/>
-    <xsl:with-param name="rewrite"       select="$rewrite"/>
-    <xsl:with-param name="heading"       select="$heading"/>
-    <xsl:with-param name="subject"       select="$subject"/>
-  </xsl:apply-templates>
-
-</xsl:template>
-
 <x:doc>
-  <h3>Entity body</h3>
-  <p>Resources we need:</p>
-  <ul>
-    <li>The <em>user</em>, if present, to determine whether the UI renders writing widgets, and to attribute changes/endorsements</li>
-    <li>The <em>focus</em> (contingent on the user), to determine which concept scheme (and/or IBIS network) to attach new entities to</li>
-  </ul>
+  <h2>Process Model Entities</h2>
 </x:doc>
 
-<xsl:template match="html:body" mode="pm:Goal">
+<xsl:template match="html:body" mode="pm:body-generic">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="resource-path" select="$base"/>
   <xsl:param name="rewrite" select="''"/>
@@ -2976,10 +3029,11 @@
   <main>
     <article>
       <hgroup class="self">
-        <xsl:apply-templates select="." mode="ibis:process-self">
+        <xsl:apply-templates select="." mode="pm:process-self">
           <xsl:with-param name="base"    select="$base"/>
           <xsl:with-param name="subject" select="$subject"/>
           <xsl:with-param name="type"    select="$type"/>
+          <xsl:with-param name="user"    select="$user"/>
         </xsl:apply-templates>
       </hgroup>
 
@@ -2999,6 +3053,7 @@
     </article>
 
     <figure id="force" class="aside"/>
+
     <xsl:apply-templates select="." mode="ibis:make-datalist">
       <xsl:with-param name="base"          select="$base"/>
       <xsl:with-param name="resource-path" select="$resource-path"/>
@@ -3008,6 +3063,19 @@
       <xsl:with-param name="subject"       select="$subject"/>
       <xsl:with-param name="index"         select="$index"/>
     </xsl:apply-templates>
+
+    <xsl:apply-templates select="." mode="ibis:make-datalist">
+      <xsl:with-param name="base"          select="$base"/>
+      <xsl:with-param name="resource-path" select="$resource-path"/>
+      <xsl:with-param name="rewrite"       select="$rewrite"/>
+      <xsl:with-param name="main"          select="true()"/>
+      <xsl:with-param name="heading"       select="$heading"/>
+      <xsl:with-param name="subject"       select="$subject"/>
+      <xsl:with-param name="index"         select="$index"/>
+      <xsl:with-param name="search-types"  select="concat($FOAF, 'Person')"/>
+      <xsl:with-param name="id"            select="'agents'"/>
+    </xsl:apply-templates>
+
   </main>
 
   <xsl:apply-templates select="." mode="skos:footer">
@@ -3024,6 +3092,630 @@
     <xsl:with-param name="state"         select="$state"/>
     <xsl:with-param name="focus"         select="$focus"/>
   </xsl:apply-templates>
+</xsl:template>
+
+<x:doc>
+  <h3>pm:process-self</h3>
+  <p>This is a really crappy dispatcher for the <q>self</q> part of the UI lozenge-y thing.</p>
+</x:doc>
+
+<xsl:template match="html:*" mode="pm:process-self">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="type">
+    <xsl:apply-templates select="." mode="rdfa:get-type">
+      <xsl:with-param name="base"    select="$base"/>
+      <xsl:with-param name="subject" select="$subject"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="user">
+    <xsl:message terminate="yes">`user` parameter required</xsl:message>
+  </xsl:param>
+
+  <xsl:variable name="type-padded" select="concat(' ', normalize-space($type), ' ')"/>
+
+  <xsl:choose>
+    <xsl:when test="contains($type-padded, concat(' ', $PM, 'Target '))">
+      <xsl:apply-templates select="." mode="pm:process-target">
+      </xsl:apply-templates>
+    </xsl:when>
+    <xsl:when test="contains($type-padded, concat(' ', $PM, 'Task '))">
+      <xsl:apply-templates select="." mode="pm:process-task">
+      </xsl:apply-templates>
+    </xsl:when>
+    <xsl:when test="contains($type-padded, concat(' ', $PM, 'Goal '))">
+      <xsl:apply-templates select="." mode="pm:process-goal">
+      </xsl:apply-templates>
+    </xsl:when>
+    <xsl:otherwise>
+      <p>Unknown type (<strong><xsl:value-of select="$type"/></strong>)</p>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<x:doc>
+  <h3>pm:Goal (head)</h3>
+</x:doc>
+
+<xsl:template match="html:head" mode="pm:Goal">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:apply-templates select="." mode="cgto:head-generic">
+    <xsl:with-param name="base"    select="$base"/>
+    <xsl:with-param name="subject" select="$subject"/>
+  </xsl:apply-templates>
+</xsl:template>
+
+<x:doc>
+  <h3>pm:Goal (body)</h3>
+</x:doc>
+
+<xsl:template match="html:body" mode="pm:Goal">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+
+  <xsl:apply-templates select="." mode="pm:body-generic">
+    <xsl:with-param name="base"          select="$base"/>
+    <xsl:with-param name="resource-path" select="$resource-path"/>
+    <xsl:with-param name="rewrite"       select="$rewrite"/>
+    <xsl:with-param name="main"          select="$main"/>
+    <xsl:with-param name="heading"       select="$heading"/>
+  </xsl:apply-templates>
+</xsl:template>
+
+<x:doc>
+  <h3>pm:process-goal</h3>
+</x:doc>
+
+<xsl:template match="html:*" mode="pm:process-goal">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:variable name="value">
+    <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="predicate" select="concat($RDF, 'value')"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <h1 class="heading">
+    <form accept-charset="utf-8" action="" class="description" method="POST">
+      <textarea class="heading" name="= rdf:value"><xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/></textarea>
+      <button class="fa fa-sync" title="Save Text"></button>
+    </form>
+  </h1>
+
+  <xsl:apply-templates select="." mode="skos:created-by">
+    <xsl:with-param name="base" select="$base"/>
+    <xsl:with-param name="subject" select="$subject"/>
+  </xsl:apply-templates>
+
+  <!-- who wants this goal? -->
+  <section>
+    <h3>Wanted by:</h3>
+    <xsl:call-template name="cgto:resource-list">
+      <xsl:with-param name="base"        select="$base"/>
+      <xsl:with-param name="subject"     select="$subject"/>
+      <xsl:with-param name="predicate"   select="concat($PM, 'performer')"/>
+      <xsl:with-param name="resources">
+        <xsl:apply-templates select="." mode="rdfa:object-resources">
+          <xsl:with-param name="base"      select="$base"/>
+          <xsl:with-param name="subject"   select="$subject"/>
+          <xsl:with-param name="predicate" select="concat($PM, 'wanted-by')"/>
+        </xsl:apply-templates>
+      </xsl:with-param>
+      <xsl:with-param name="label-prop"  select="concat($FOAF, 'name')"/>
+      <xsl:with-param name="new-type"    select="concat($FOAF, 'Person')"/>
+      <xsl:with-param name="datalist-id" select="'agents'"/>
+    </xsl:call-template>
+  </section>
+
+  <!-- who else endorses this goal? -->
+
+</xsl:template>
+
+<x:doc>
+  <h3>pm:Task (head)</h3>
+</x:doc>
+
+<xsl:template match="html:head" mode="pm:Task">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:apply-templates select="." mode="cgto:head-generic">
+    <xsl:with-param name="base"    select="$base"/>
+    <xsl:with-param name="subject" select="$subject"/>
+  </xsl:apply-templates>
+</xsl:template>
+
+<x:doc>
+  <h3>pm:Task (body)</h3>
+</x:doc>
+
+<xsl:template match="html:body" mode="pm:Task">
+  <xsl:apply-templates select="." mode="pm:body-generic"/>
+</xsl:template>
+
+<x:doc>
+  <h3>pm:process-task</h3>
+</x:doc>
+
+<xsl:template match="html:*" mode="pm:process-task">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:variable name="value">
+    <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="predicate" select="concat($RDF, 'value')"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <h1 class="heading">
+    <form accept-charset="utf-8" action="" class="description" method="POST">
+      <textarea class="heading" name="= rdf:value"><xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/></textarea>
+      <button class="fa fa-sync" title="Save Text"></button>
+    </form>
+  </h1>
+
+  <p>
+    <!-- when did it start -->
+    <xsl:variable name="started">
+      <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
+        <xsl:with-param name="base" select="$base"/>
+        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="predicate" select="concat($PROV, 'startedAtTime')"/>
+        <xsl:with-param name="datatype" select="concat($XSD, 'dateTime')"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+    <form accept-charset="utf-8" action="" method="POST">
+      <label>Started: <input type="datetime-local" name="= prov:startedAtTime ^xsd:dateTime" value="{substring-before($started, $rdfa:UNIT-SEP)}"/></label>
+    </form>
+    <!-- when did it end -->
+    <xsl:variable name="ended">
+      <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
+        <xsl:with-param name="base" select="$base"/>
+        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="predicate" select="concat($PROV, 'endedAtTime')"/>
+        <xsl:with-param name="datatype" select="concat($XSD, 'dateTime')"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+    <form accept-charset="utf-8" action="" method="POST">
+      <label>Ended: <input type="datetime-local" name="= prov:endedAtTime ^xsd:dateTime" value="{substring-before($ended, $rdfa:UNIT-SEP)}"/></label>
+    </form>
+    <!-- (other PROV stuff??) -->
+  </p>
+
+  <!-- who endorses this task? -->
+
+  <section>
+    <xsl:variable name="performers">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+        <xsl:with-param name="base"      select="$base"/>
+        <xsl:with-param name="subject"   select="$subject"/>
+        <xsl:with-param name="predicate" select="concat($PM, 'performer')"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+    <xsl:variable name="responsible">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+        <xsl:with-param name="base"      select="$base"/>
+        <xsl:with-param name="subject"   select="$subject"/>
+        <xsl:with-param name="predicate" select="concat($PM, 'responsible')"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+    <xsl:variable name="recipients">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+        <xsl:with-param name="base"      select="$base"/>
+        <xsl:with-param name="subject"   select="$subject"/>
+        <xsl:with-param name="predicate" select="concat($PM, 'recipient')"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+    <xsl:variable name="involved">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+        <xsl:with-param name="base"      select="$base"/>
+        <xsl:with-param name="subject"   select="$subject"/>
+        <xsl:with-param name="predicate" select="concat($PM, 'involved')"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+
+    <!-- who is performing this task -->
+    <div>
+      <h3>Performed By:</h3>
+      <xsl:call-template name="cgto:resource-list">
+        <xsl:with-param name="base"        select="$base"/>
+        <xsl:with-param name="subject"     select="$subject"/>
+        <xsl:with-param name="predicate"   select="concat($PM, 'performer')"/>
+        <xsl:with-param name="resources"   select="$performers"/>
+        <xsl:with-param name="new-type"    select="concat($FOAF, 'Person')"/>
+        <xsl:with-param name="label-prop"  select="concat($FOAF, 'name')"/>
+        <xsl:with-param name="datalist-id" select="'agents'"/>
+      </xsl:call-template>
+    </div>
+    <!-- who is responsible -->
+    <div>
+      <h3>Responsible Parties:</h3>
+      <xsl:call-template name="cgto:resource-list">
+        <xsl:with-param name="base"        select="$base"/>
+        <xsl:with-param name="subject"     select="$subject"/>
+        <xsl:with-param name="predicate"   select="concat($PM, 'responsible')"/>
+        <xsl:with-param name="resources"   select="$performers"/>
+        <xsl:with-param name="new-type"    select="concat($FOAF, 'Person')"/>
+        <xsl:with-param name="label-prop"  select="concat($FOAF, 'name')"/>
+        <xsl:with-param name="datalist-id" select="'agents'"/>
+      </xsl:call-template>
+    </div>
+    <!-- who is the recipient of the result -->
+    <div>
+      <h3>Recipient of Result:</h3>
+      <xsl:call-template name="cgto:resource-list">
+        <xsl:with-param name="base"        select="$base"/>
+        <xsl:with-param name="subject"     select="$subject"/>
+        <xsl:with-param name="predicate"   select="concat($PM, 'recipient')"/>
+        <xsl:with-param name="resources"   select="$performers"/>
+        <xsl:with-param name="new-type"    select="concat($FOAF, 'Person')"/>
+        <xsl:with-param name="label-prop"  select="concat($FOAF, 'name')"/>
+        <xsl:with-param name="datalist-id" select="'agents'"/>
+      </xsl:call-template>
+    </div>
+    <!-- who else is involved -->
+    <div>
+      <h3>Otherwise Involved:</h3>
+      <xsl:call-template name="cgto:resource-list">
+        <xsl:with-param name="base"        select="$base"/>
+        <xsl:with-param name="subject"     select="$subject"/>
+        <xsl:with-param name="predicate"   select="concat($PM, 'involved')"/>
+        <xsl:with-param name="resources"   select="$performers"/>
+        <xsl:with-param name="new-type"    select="concat($FOAF, 'Person')"/>
+        <xsl:with-param name="label-prop"  select="concat($FOAF, 'name')"/>
+        <xsl:with-param name="datalist-id" select="'agents'"/>
+      </xsl:call-template>
+    </div>
+  </section>
+
+  <section>
+    <!-- what was the actual outcome after the fact (this can be multiple things) -->
+  </section>
+
+  <!-- other stuff like see also and notes -->
+
+  <!-- (these are probably going to be neighbours) -->
+  <!-- what is the expected outcome (this is the target) -->
+  <!-- what goal is achieved -->
+</xsl:template>
+
+<x:doc>
+  <h3>pm:Target (head)</h3>
+</x:doc>
+
+<xsl:template match="html:head" mode="pm:Target">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:apply-templates select="." mode="cgto:head-generic">
+    <xsl:with-param name="base"    select="$base"/>
+    <xsl:with-param name="subject" select="$subject"/>
+  </xsl:apply-templates>
+</xsl:template>
+
+<x:doc>
+  <h3>pm:Target (body)</h3>
+</x:doc>
+
+<xsl:template match="html:body" mode="pm:Target">
+  <xsl:apply-templates select="." mode="pm:body-generic"/>
+</xsl:template>
+
+<x:doc>
+  <h3>pm:process-target</h3>
+</x:doc>
+
+<xsl:template match="html:*" mode="pm:process-target">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:variable name="value">
+    <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="predicate" select="concat($RDF, 'value')"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <h1 class="heading">
+    <form accept-charset="utf-8" action="" class="description" method="POST">
+      <textarea class="heading" name="= rdf:value"><xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/></textarea>
+      <button class="fa fa-sync" title="Save Text"></button>
+    </form>
+  </h1>
+  <!-- who wants this target? -->
+
+  <!-- who endorses this target? -->
+</xsl:template>
+
+<x:doc>
+  <h2>cgto:resource-list</h2>
+  <p>This is tentatively going to be moved to the CGTO template. The goal is to create a <code>&lt;ul&gt;</code> of resources connected by a given predicate, and such that the last entry in the list is a form to add a new entry.</p>
+</x:doc>
+
+<!-- XXX make these part of CGTO -->
+
+<xsl:template name="cgto:resource-list">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="predicate">
+    <xsl:message terminate="yes">`predicate` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="resources">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="predicate" select="$predicate"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="new-type">
+    <xsl:message terminate="yes">`new-type` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="label-prop" select="concat($RDF, 'value')"/>
+  <xsl:param name="datalist-id"/>
+  <xsl:param name="prefixes"/>
+
+  <xsl:variable name="actual-prefixes">
+    <xsl:variable name="_">
+      <xsl:apply-templates select="." mode="rdfa:prefix-stack"/>
+    </xsl:variable>
+
+    <xsl:choose>
+      <xsl:when test="string-length(normalize-space($prefixes))">
+        <xsl:apply-templates select="." mode="rdfa:merge-prefixes">
+          <xsl:with-param name="prefixes" select="$_"/>
+          <xsl:with-param name="with" select="$prefixes"/>
+        </xsl:apply-templates>
+      </xsl:when>
+      <xsl:otherwise><xsl:value-of select="$_"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="p-curie">
+    <xsl:call-template name="rdfa:make-curie">
+      <xsl:with-param name="uri" select="$predicate"/>
+      <xsl:with-param name="prefixes" select="$actual-prefixes"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="c-curie">
+    <xsl:call-template name="rdfa:make-curie">
+      <xsl:with-param name="uri" select="$new-type"/>
+      <xsl:with-param name="prefixes" select="$actual-prefixes"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="lprop-curie">1
+    <xsl:call-template name="rdfa:make-curie">
+      <xsl:with-param name="uri" select="$label-prop"/>
+      <xsl:with-param name="prefixes" select="$actual-prefixes"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <ul>
+    <!-- already added -->
+    <xsl:call-template name="cgto:resource-list-items">
+      <xsl:with-param name="resources" select="$resources"/>
+      <xsl:with-param name="predicate" select="$predicate"/>
+    </xsl:call-template>
+
+    <!-- add new / link existing -->
+    <li>
+      <form method="POST" action="" accept-charset="utf-8">
+        <input class="new" type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+        <input class="new" type="hidden" name="= rdf:type : $" value="{$new-type}"/>
+        <input class="new label" type="hidden" about="{$c-curie}" disabled="disabled" name="= {$lprop-curie} $" value="$label"/>
+        <input class="existing" type="hidden" disabled="disabled" name="{$p-curie} :"/>
+        <input tabindex="0" type="text" name="$ label">
+          <xsl:if test="$datalist-id">
+            <xsl:attribute name="list"><xsl:value-of select="$datalist-id"/></xsl:attribute>
+            <xsl:attribute name="autocomplete">off</xsl:attribute>
+          </xsl:if>
+        </input>
+      </form>
+    </li>
+  </ul>
+</xsl:template>
+
+<xsl:template name="cgto:resource-list-items">
+  <xsl:param name="resources"/>
+  <xsl:param name="predicate"/>
+  <xsl:param name="label-p"/>
+  <xsl:param name="prefixes"/>
+
+  <xsl:variable name="rs" select="normalize-space($resources)"/>
+
+  <xsl:if test="string-length($rs)">
+
+    <xsl:variable name="first">
+      <xsl:call-template name="str:safe-first-token">
+        <xsl:with-param name="tokens" select="$rs"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:variable name="type">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+        <xsl:with-param name="subject" select="$first"/>
+        <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+
+    <li>
+      <a rel="{$predicate}" href="{$first}" typeof="{$type}">
+        <span>
+          <xsl:apply-templates select="." mode="cgto:literal-content">
+            <xsl:with-param name="prefixes"  select="$prefixes"/>
+            <xsl:with-param name="subject"   select="$first"/>
+            <xsl:with-param name="predicate" select="$label-p"/>
+            <xsl:with-param name="prefixes"  select="$prefixes"/>
+          </xsl:apply-templates>
+        </span>
+      </a>
+      <form method="POST" action="" accept-charset="utf-8">
+        <button name="- {$predicate} :" value="{$first}"/>
+      </form>
+    </li>
+
+    <xsl:variable name="rest" select="substring-after($rs, ' ')"/>
+    <xsl:if test="string-length($rest)">
+      <xsl:call-template name="cgto:resource-list-items">
+        <xsl:with-param name="resources" select="$rest"/>
+        <xsl:with-param name="predicate" select="$predicate"/>
+        <xsl:with-param name="label-p"   select="$label-p"/>
+        <xsl:with-param name="prefixes"  select="$prefixes"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:if>
+
+</xsl:template>
+
+<x:doc>
+  <h3><code>cgto:literal-content</code></h3>
+  <p>This template spits out some attributes and a text node. You supply the enclosing element and other attributes (but don't put a <code>property</code>, <code>datatype</code>, or <code>xml:lang</code> in it, or the template will blow up).</p>
+  <dl>
+    <dt><code>base</code></dt>
+    <dd>You can pass in the <code>base href</code> to save it the effort of re-fetching it.</dd>
+    <dt><code>prefixes</code></dt>
+    <dd>Any additional prefixes that may not already be in the document, in the form of an RDFa <code>prefix</code> attribute, for CURIEs.</dd>
+    <dt><code>subject</code></dt>
+    <dd>Likewise the subject, or otherwise override if it's not the same as the base.</dd>
+    <dt><code>predicate</code></dt>
+    <dd>This is the only mandatory parameter, the predicate associated with the label.</dd>
+    <dt><code>object</code></dt>
+    <dd>This is the actual label, and will be derived from the subject and the predicate, but if overridden, the value passed in must be a raw literal with <code>$rdfa:UNIT-SEP</code> delimiting the language/datatype (whether it has one or not).</dd>
+    <dt><code>content</code></dt>
+    <dd>If non-empty, this will place the label content (if present) in the <code>content</code> attribute and create a text node with this content instead.</dd>
+    <dt><code>noop</code></dt>
+    <dd>This will place the URL of the subject if no label is found (unless the <code>content</code> parameter is set, then it's that).</dd>
+  </dl>
+</x:doc>
+
+<xsl:template match="html:*" mode="cgto:literal-content">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="prefixes"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="predicate">
+    <xsl:message terminate="yes">`predicate` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="object">
+    <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="predicate" select="$predicate"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="content"/>
+  <xsl:param name="noop" select="false()"/>
+
+  <xsl:choose>
+    <xsl:when test="string-length($object)">
+      <xsl:variable name="pfx">
+        <xsl:apply-templates select="." mode="rdfa:merge-prefixes">
+          <xsl:with-param name="with" select="prefixes"/>
+        </xsl:apply-templates>
+      </xsl:variable>
+
+      <xsl:variable name="p-curie">
+        <xsl:call-template name="rdfa:make-curie">
+          <xsl:with-param name="uri" select="$predicate"/>
+        </xsl:call-template>
+      </xsl:variable>
+
+      <xsl:variable name="label" select="substring-before($object, $rdfa:UNIT-SEP)"/>
+      <xsl:variable name="label-type">
+        <xsl:if test="not(starts-with(substring-after($object, $rdfa:UNIT-SEP), '@'))">
+          <xsl:value-of select="substring-after($object, $rdfa:UNIT-SEP)"/>
+        </xsl:if>
+      </xsl:variable>
+      <xsl:variable name="label-lang">
+        <xsl:if test="starts-with(substring-after($object, $rdfa:UNIT-SEP), '@')">
+          <xsl:value-of select="substring-after($object, concat($rdfa:UNIT-SEP, '@'))"/>
+        </xsl:if>
+      </xsl:variable>
+
+      <xsl:attribute name="property"><xsl:value-of select="$p-curie"/></xsl:attribute>
+
+      <xsl:if test="$label-type">
+        <xsl:variable name="d-curie">
+          <xsl:call-template name="rdfa:make-curie">
+            <xsl:with-param name="uri" select="$label-type"/>
+          </xsl:call-template>
+        </xsl:variable>
+        <xsl:attribute name="datatype"><xsl:value-of select="$label-type"/></xsl:attribute>
+      </xsl:if>
+
+      <xsl:if test="$label-lang">
+        <xsl:attribute name="xml:lang"><xsl:value-of select="$label-lang"/></xsl:attribute>
+      </xsl:if>
+
+      <xsl:choose>
+        <xsl:when test="string-length($content)">
+          <xsl:attribute name="content"><xsl:value-of select="$label"/></xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise><xsl:value-of select="$label"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:when test="string-length($content)">
+      <xsl:value-of select="$content"/>
+    </xsl:when>
+    <xsl:when test="$noop"><xsl:value-of select="$subject"/></xsl:when>
+  </xsl:choose>
 </xsl:template>
 
 </xsl:stylesheet>

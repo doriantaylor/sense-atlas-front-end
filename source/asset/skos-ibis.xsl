@@ -490,19 +490,142 @@
   </x:class>
   <!-- foaf/org -->
   <x:class uri="http://xmlns.com/foaf/0.1/Person" icon="&#xf007;">
+    <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
+    <x:label>Person</x:label>
     <x:prop uri="http://xmlns.com/foaf/0.1/knows">
       <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Knows</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#memberOf">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>In Organization</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#headOf">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Head Of</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#reportsTo">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Reports To</x:label>
     </x:prop>
   </x:class>
   <x:class uri="http://xmlns.com/foaf/0.1/Group" icon="&#xf0c0;">
+    <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
+    <x:label>Group</x:label>
+    <x:prop uri="http://xmlns.com/foaf/0.1/member">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Has Member</x:label>
+    </x:prop>
   </x:class>
   <x:class uri="http://www.w3.org/ns/org#Organization" icon="&#xf1ad;">
+    <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
+    <x:label>Organization</x:label>
+    <x:prop uri="http://www.w3.org/ns/org#hasMember">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Has Member</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#hasSubOrganization">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Has Sub-Organization</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#hasUnit">
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:label>Has Unit</x:label>
+    </x:prop>
   </x:class>
   <x:class uri="http://www.w3.org/ns/org#FormalOrganization" icon="&#xed45;">
+    <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
+    <x:label>Formal Organization</x:label>
+    <x:prop uri="http://www.w3.org/ns/org#hasMember">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Has Member</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#hasSubOrganization">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Has Sub-Organization</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#subOrganizationOf">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Sub-Organization Of</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#hasUnit">
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:label>Has Unit</x:label>
+    </x:prop>
   </x:class>
   <x:class uri="http://www.w3.org/ns/org#OrganizationalUnit" icon="&#xe594;">
+    <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
+    <x:label>Organizational Unit</x:label>
+    <x:prop uri="http://www.w3.org/ns/org#hasMember">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Has Member</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#hasSubOrganization">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Has Sub-Organization</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#subOrganizationOf">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Sub-Organization Of</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#hasUnit">
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:label>Has Unit</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#unitOf">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Unit Of</x:label>
+    </x:prop>
   </x:class>
   <x:class uri="http://www.w3.org/ns/org#OrganizationalCollaboration" icon="&#xf2b5;">
+    <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
+    <x:label>Organizational Collaboration</x:label>
+    <x:prop uri="http://www.w3.org/ns/org#hasMember">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Has Member</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#hasSubOrganization">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Has Sub-Organization</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#subOrganizationOf">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Sub-Organization Of</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#hasUnit">
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:label>Has Unit</x:label>
+    </x:prop>
   </x:class>
 </x:sequence>
 
@@ -3302,6 +3425,7 @@
         <xsl:with-param name="datatype" select="concat($XSD, 'dateTime')"/>
       </xsl:apply-templates>
     </xsl:variable>
+    <xsl:comment><xsl:value-of select="$started"/></xsl:comment>
     <form accept-charset="utf-8" action="" method="POST">
       <label>Started: <input type="datetime-local" name="= prov:startedAtTime ^xsd:dateTime" value="{substring-before($started, $rdfa:UNIT-SEP)}"/></label>
     </form>

@@ -3,7 +3,7 @@ import { babel }      from '@rollup/plugin-babel';
 import resolve        from '@rollup/plugin-node-resolve';
 import nodePolyfills  from 'rollup-plugin-polyfill-node';
 import commonjs       from '@rollup/plugin-commonjs';
-import pkg            from './package.json' assert { type: 'json' };
+import pkg            from './package.json' with { type: 'json' };
 
 const PLUGINS = [
     // so Rollup can find its dependencies

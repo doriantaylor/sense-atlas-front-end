@@ -126,6 +126,10 @@
       <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
       <x:label>Has Response</x:label>
     </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#dependency-of">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Dependency of</x:label>
+    </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
       <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
@@ -242,6 +246,10 @@
       <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
       <x:label>Has Response</x:label>
     </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#dependency-of">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Dependency of</x:label>
+    </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
       <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
@@ -298,6 +306,10 @@
       <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
       <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
       <x:label>Has Response</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#dependency-of">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Dependency of</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
@@ -380,6 +392,13 @@
       <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
       <x:label>Opposed By</x:label>
     </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#dependency">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:label>Depends on</x:label>
+    </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
       <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
@@ -436,6 +455,10 @@
       <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
       <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
       <x:label>Has Response</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#dependency-of">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Dependency of</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
@@ -1878,11 +1901,39 @@
   <xsl:param name="subject">
     <xsl:apply-templates select="." mode="rdfa:get-subject">
       <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="debug" select="false()"/>
     </xsl:apply-templates>
   </xsl:param>
 
+  <xsl:variable name="space">
+    <xsl:if test="string-length(normalize-space($subject))">
+      <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
+	<xsl:with-param name="subjects" select="$subject"/>
+	<!-- XXX there is a bug in the prefix resolution somewhere -->
+	<xsl:with-param name="predicates" select="'http://rdfs.org/sioc/ns#has_space ^http://rdfs.org/sioc/ns#space_of'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
 
+  <xsl:variable name="index">
+    <xsl:if test="string-length(normalize-space($space))">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$space"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#index'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="user">
+    <xsl:if test="string-length(normalize-space($index))">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$index"/>
+      <xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#user'"/>
+      <xsl:with-param name="traverse" select="true()"/>
+    </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
 
   <xsl:variable name="top-concepts">
     <xsl:apply-templates select="." mode="rdfa:object-resources">
@@ -1931,19 +1982,16 @@
     </article>
     <figure id="force" class="aside"/>
   </main>
+
   <xsl:apply-templates select="." mode="skos:footer">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
     <xsl:with-param name="heading"       select="$heading"/>
     <xsl:with-param name="subject"       select="$subject"/>
-    <xsl:with-param name="type"          select="$type"/>
-    <xsl:with-param name="schemes"       select="$subject"/>
     <xsl:with-param name="space"         select="$space"/>
     <xsl:with-param name="index"         select="$index"/>
     <xsl:with-param name="user"          select="$user"/>
-    <xsl:with-param name="state"         select="$state"/>
-    <xsl:with-param name="focus"         select="$focus"/>
   </xsl:apply-templates>
 </xsl:template>
 
@@ -2149,6 +2197,14 @@
           <xsl:with-param name="subject" select="$subject"/>
           <xsl:with-param name="type"    select="$type"/>
         </xsl:apply-templates>
+        <!--
+        <p>subject: <xsl:value-of select="$subject"/></p>
+        <p>type: <xsl:value-of select="$type"/></p>
+        <p>schemes: <xsl:value-of select="$schemes"/></p>
+        <p>space: <xsl:value-of select="$space"/></p>
+        <p>index: <xsl:value-of select="$index"/></p>
+        <p>user: <xsl:value-of select="$user"/></p>
+        <p>focus: <xsl:value-of select="$focus"/></p>-->
       </hgroup>
 
       <section class="relations">
@@ -2162,7 +2218,7 @@
           <xsl:with-param name="type"          select="$type"/>
 	  <xsl:with-param name="user"          select="$user"/>
 	  <xsl:with-param name="focus"         select="$focus"/>
-        </xsl:apply-templates>
+          </xsl:apply-templates>
       </section>
     </article>
     <!--<h1>index: <xsl:value-of select="$index"/> user: <xsl:value-of select="$user"/> state: <xsl:value-of select="$state"/> focus: <xsl:value-of select="$focus"/></h1>-->
@@ -2885,6 +2941,14 @@
     </xsl:apply-templates>
   </xsl:variable>
 
+  <!--
+  <p>subject: <xsl:value-of select="$subject"/></p>
+  <p>space: <xsl:value-of select="$space"/></p>
+  <p>index: <xsl:value-of select="$index"/></p>
+  <p>user: <xsl:value-of select="$user"/></p>
+  <p>adjacents: <xsl:value-of select="$adjacents"/></p>
+  -->
+
   <xsl:variable name="issues">
     <xsl:apply-templates select="." mode="rdfa:filter-by-type">
       <xsl:with-param name="subjects" select="$adjacents"/>
@@ -3050,7 +3114,6 @@
   </main>
 
   <!--<h1>wtf <xsl:value-of select="$space"/></h1>-->
-
   <xsl:apply-templates select="." mode="skos:footer">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
@@ -3338,7 +3401,7 @@
 
   <!-- who wants this goal? -->
   <section>
-    <h3>Wanted by:</h3>
+    <h5>Wanted by:</h5>
     <xsl:call-template name="cgto:resource-list">
       <xsl:with-param name="base"        select="$base"/>
       <xsl:with-param name="subject"     select="$subject"/>
@@ -3427,7 +3490,7 @@
     </xsl:variable>
     <xsl:comment><xsl:value-of select="$started"/></xsl:comment>
     <form accept-charset="utf-8" action="" method="POST">
-      <label>Started: <input type="datetime-local" name="= prov:startedAtTime ^xsd:dateTime" value="{substring-before($started, $rdfa:UNIT-SEP)}"/></label>
+      <label>Started: <input type="datetime-local" name="= prov:startedAtTime ^xsd:dateTime" value="{$started}"/></label>
     </form>
     <!-- when did it end -->
     <xsl:variable name="ended">
@@ -3439,7 +3502,7 @@
       </xsl:apply-templates>
     </xsl:variable>
     <form accept-charset="utf-8" action="" method="POST">
-      <label>Ended: <input type="datetime-local" name="= prov:endedAtTime ^xsd:dateTime" value="{substring-before($ended, $rdfa:UNIT-SEP)}"/></label>
+      <label>Ended: <input type="datetime-local" name="= prov:endedAtTime ^xsd:dateTime" value="{$ended}"/></label>
     </form>
     <!-- (other PROV stuff??) -->
   </p>
@@ -3478,7 +3541,7 @@
 
     <!-- who is performing this task -->
     <div>
-      <h3>Performed By:</h3>
+      <h5>Performed By:</h5>
       <xsl:call-template name="cgto:resource-list">
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>
@@ -3491,7 +3554,7 @@
     </div>
     <!-- who is responsible -->
     <div>
-      <h3>Responsible Parties:</h3>
+      <h5>Responsible Parties:</h5>
       <xsl:call-template name="cgto:resource-list">
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>
@@ -3504,7 +3567,7 @@
     </div>
     <!-- who is the recipient of the result -->
     <div>
-      <h3>Recipient of Result:</h3>
+      <h5>Recipient of Result:</h5>
       <xsl:call-template name="cgto:resource-list">
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>
@@ -3517,7 +3580,7 @@
     </div>
     <!-- who else is involved -->
     <div>
-      <h3>Otherwise Involved:</h3>
+      <h5>Otherwise Involved:</h5>
       <xsl:call-template name="cgto:resource-list">
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>

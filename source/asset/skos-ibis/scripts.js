@@ -337,6 +337,70 @@ window.addEventListener('load', function () {
 
     });
 
+    // submit the form if you see an enter key with a control or meta
+    // modifier and the value is valid
+    const commitDateTime = function (e) {
+        if (this.validity.valid) {
+            if (e.code == 'Enter' && (e.metaKey || e.ctrlKey)) {
+                // deal with event stuff
+                e.preventDefault();
+                e.stopPropagation();
+
+                const now = new Date();
+
+                // turns out this will fudge the local time representation
+                // const val = new Date(Date.parse(this.value));
+
+                // turns out actually that you can do this
+                const val = this.valueAsDate;
+
+                // note the date is in local time
+
+                // okay try this?
+                // this.formNoValidate = true;
+                // this.form.noValidate = true;
+
+                // set the type to text quickly
+                this.type = 'text';
+
+                // …and this will coerce the time zone to zulu already
+                // this.setAttribute('value',val.toISOString());
+                const offsetMs = now.getTimezoneOffset() * 60000;
+                this.value = (new Date(val.valueOf() + offsetMs)).toISOString();
+
+                console.log(`set datetime value to ${this.value}`);
+
+                // so all there's left to do is:
+                this.form.submit();
+            }
+            else console.log('waiting for an enter key…');
+        }
+        else console.log(`datetime value ${this.value} is invalid`);
+    };
+
+    Array.from(
+        this.document.querySelectorAll('input[type="datetime-local"]')
+    ).forEach(elem => {
+        console.log(elem);
+
+        // lol god
+        let num = Date.parse(elem.getAttribute('value'));
+        if (!isNaN(num)) {
+            // get local time
+            let now = new Date();
+
+            // get tz offset
+            let tzMs = now.getTimezoneOffset() * 60000;
+            let val  = new Date(num - tzMs);
+
+            let valStr = val.toISOString();
+
+            elem.value = valStr.substring(0, valStr.lastIndexOf(':'));
+        }
+
+        elem.addEventListener('keydown', commitDateTime);
+    });
+
     // these are for the concept scheme/issue network selector overlay
     // at the bottom of the screen
 

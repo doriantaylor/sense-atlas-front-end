@@ -221,7 +221,7 @@ export default class HierRDF extends RDFViz {
             ['', '.subject'].forEach(x => {
                 defs.append('marker').attr('id', id + x)
                     .attr('markerWidth', 10).attr('markerHeight', 7)
-                    .attr('refX', -2.5).attr('refY', 3.5).attr('orient', 'auto')
+                    .attr('refX', 12.5).attr('refY', 3.5).attr('orient', 'auto')
                     .append('polygon').attr('points', '0,0 10,3.5 0,7')
                     .attr('class', () => x ? 'subject' : null)
                     .attr('about', about);

@@ -96,21 +96,29 @@ export default class RDFViz {
     // note these have been munged from what we actually want them to
     // be so the sugiyama graph is tighter
     static prefer = {
-        'ibis:concern-of':    'ibis:concerns',
-        'ibis:endorsed-by':   'ibis:endorses',
-        'ibis:specializes':   'ibis:generalizes',
-        'ibis:replaced-by':   'ibis:replaces',
+        'ibis:concern-of':   'ibis:concerns',
+        'ibis:endorsed-by':  'ibis:endorses',
+        'ibis:specializes':  'ibis:generalizes',
+        'ibis:replaced-by':  'ibis:replaces',
         // 'ibis:questioned-by': 'ibis:questions',
-        'ibis:questions': 'ibis:questioned-by',
-        'ibis:suggested-by':  'ibis:suggests',
+        'ibis:questions':    'ibis:questioned-by',
+        'ibis:suggested-by': 'ibis:suggests',
         // 'ibis:response':      'ibis:responds-to',
-        'ibis:responds-to':   'ibis:response',
+        'ibis:responds-to':  'ibis:response',
         // 'ibis:supported-by':  'ibis:supports',
         'ibis:supports':     'ibis:supported-by',
         // 'ibis:opposed-by':    'ibis:opposes',
-        'ibis:opposes':   'ibis:opposed-by',
+        'ibis:opposes':      'ibis:opposed-by',
         // 'skos:narrower':      'skos:broader',
-        'skos:broader': 'skos:narrower',
+        'skos:broader':      'skos:narrower',
+	'pm:achieves':       'pm:achieved-by',
+        'pm:anchored-by':    'pm:anchors', // target on top
+        'pm:contextualizes': 'pm:context',
+        'pm:dependency-of':  'pm:dependency',
+	'pm:initiates':      'pm:initiated-by',
+	'pm:method':         'pm:instance',
+        'pm:outcome':	     'pm:process',
+        'pm:supertask':	     'pm:subtask',
     };
 
     constructor (graph, rdfParams = {}, d3Params = {}) {

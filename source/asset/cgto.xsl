@@ -117,7 +117,7 @@
       <xsl:with-param name="uri" select="$subject"/>
     </xsl:call-template>
   </xsl:variable>
- 
+
   <xsl:variable name="ours">
     <xsl:variable name="root" select="document($doc)/*"/>
     <xsl:apply-templates select="rdfa:object-resources">

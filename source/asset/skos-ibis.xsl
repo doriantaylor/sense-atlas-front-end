@@ -949,6 +949,7 @@
           <xsl:with-param name="heading"       select="$heading"/>
           <xsl:with-param name="subject"       select="$subject"/>
           <xsl:with-param name="type"          select="$type"/>
+	  <xsl:with-param name="schemes"       select="$schemes"/>
 	  <xsl:with-param name="user"          select="$user"/>
 	  <xsl:with-param name="focus"         select="$focus"/>
         </xsl:apply-templates>
@@ -1169,6 +1170,7 @@
       <li>focus: <xsl:value-of select="$focus"/></li>-->
 
       <xsl:call-template name="skos:scheme-item">
+	<xsl:with-param name="subject"    select="$subject"/>
 	<xsl:with-param name="schemes"    select="$all-schemes"/>
 	<xsl:with-param name="attached"   select="$schemes"/>
 	<xsl:with-param name="focus"      select="$focus"/>
@@ -1176,9 +1178,11 @@
 	<xsl:with-param name="is-concept" select="not($is-scheme)"/>
       </xsl:call-template>
       <xsl:if test="string-length($state)">
+        <!-- get the neighbours of $subject filtered by type -->
 	<li>
 	  <form class="new-scheme" method="POST" action="">
 	    <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+            <input type="hidden" name="! sioc:space_of :" value="{$space}"/>
 	    <xsl:choose>
 	      <xsl:when test="false()">
 		<label><input name="= rdf:type :" type="radio" value="ibis:Network" checked="checked"/> IBIS Network</label>
@@ -1313,14 +1317,18 @@
   <h2>skos:scheme-item</h2>
   <p>okay so this is supposed consume a space-delimited queue of addresses recursively and produce a list of things.</p>
   <p>it needs to know</p>
+  <p>XXX THIS IS A DUPLICATE NAME, there is a mode="skos:scheme-item" above </p>
 </x:doc>
 
 <xsl:template name="skos:scheme-item">
   <xsl:param name="schemes"  select="''"/>
   <xsl:param name="attached" select="''"/>
   <xsl:param name="focus"    select="''"/>
+  <xsl:param name="subject">
+    <xsl:message terminate="yes">skos:scheme-item: `subject` parameter required</xsl:message>
+  </xsl:param>
   <xsl:param name="state">
-    <xsl:message terminate="yes">`state` parameter required</xsl:message>
+    <xsl:message terminate="yes">skos:scheme-item: `state` parameter required</xsl:message>
   </xsl:param>
   <xsl:param name="is-concept" select="false()"/>
 
@@ -1363,9 +1371,9 @@
 	      <xsl:when test="$is-attached">
 		<button name="- skos:inScheme :" value="{$first}">Detach</button>
 	      </xsl:when>
-	    <xsl:otherwise>
-	      <button name="skos:inScheme :" value="{$first}">Attach</button>
-	    </xsl:otherwise>
+	      <xsl:otherwise>
+	        <button name="skos:inScheme :" value="{$first}">Attach</button>
+	      </xsl:otherwise>
 	    </xsl:choose>
 	  </xsl:if>
 	  <xsl:if test="$first != $focus">
@@ -1378,6 +1386,7 @@
     <xsl:variable name="rest" select="normalize-space(substring-after($snorm, ' '))"/>
     <xsl:if test="string-length($rest)">
       <xsl:call-template name="skos:scheme-item">
+	<xsl:with-param name="subject"    select="$subject"/>
 	<xsl:with-param name="schemes"    select="$rest"/>
 	<xsl:with-param name="attached"   select="$attached"/>
 	<xsl:with-param name="focus"      select="$focus"/>
@@ -1387,6 +1396,13 @@
     </xsl:if>
   </xsl:if>
 
+</xsl:template>
+
+<x:doc>
+  <h3>skos:hidden-subject-inscheme</h3>
+</x:doc>
+
+<xsl:template name="skos:hidden-subject-inscheme">
 </xsl:template>
 
 <x:doc>
@@ -1629,6 +1645,10 @@
   </span>
 </xsl:template>
 
+<x:doc>
+  <h3>skos:literal-form</h3>
+</x:doc>
+
 <xsl:template match="html:*" mode="skos:literal-form">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="subject">
@@ -1733,6 +1753,10 @@
   </xsl:if>
 </xsl:template>
 
+<x:doc>
+  <h3>skos:object-form</h3>
+</x:doc>
+
 <xsl:template match="html:*" mode="skos:object-form">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="subject">
@@ -1743,6 +1767,7 @@
   </xsl:param>
   <xsl:param name="predicate" select="concat($RDFS, 'seeAlso')"/>
   <xsl:param name="heading" select="'See Also'"/>
+  <xsl:param name="can-write" select="false()"/>
 
   <xsl:variable name="objects">
     <xsl:apply-templates select="." mode="rdfa:object-resources">
@@ -1759,21 +1784,29 @@
     <ul>
       <xsl:apply-templates select="." mode="skos:object-form-entry">
         <xsl:with-param name="predicate" select="$predicate"/>
-        <xsl:with-param name="objects"    select="$objects"/>
+        <xsl:with-param name="objects"   select="$objects"/>
+        <xsl:with-param name="can-write" select="$can-write"/>
       </xsl:apply-templates>
+      <xsl:if test="$can-write">
       <li>
         <form method="POST" action="" accept-charset="utf-8">
           <input type="text" name="{$predicate} :"/>
           <button class="fa fa-plus"/>
         </form>
       </li>
+      </xsl:if>
     </ul>
   </aside>
 </xsl:template>
 
+<x:doc>
+  <h3>skos:object-form-entry</h3>
+</x:doc>
+
 <xsl:template match="html:*" mode="skos:object-form-entry">
   <xsl:param name="predicate"/>
   <xsl:param name="objects"/>
+  <xsl:param name="can-write"/>
 
   <xsl:variable name="o" select="normalize-space($objects)"/>
 
@@ -1817,7 +1850,9 @@
 	    <xsl:otherwise><xsl:value-of select="$first"/></xsl:otherwise>
 	  </xsl:choose>
 	</a>
-	<button class="disconnect fa fa-times" name="- {$predicate} :" value="{$first}"></button>
+        <xsl:if test="$can-write">
+	  <button class="disconnect fa fa-times" name="- {$predicate} :" value="{$first}"></button>
+        </xsl:if>
       </form>
     </li>
     <xsl:variable name="rest" select="substring-after($o, ' ')"/>
@@ -1829,6 +1864,10 @@
     </xsl:if>
   </xsl:if>
 </xsl:template>
+
+<x:doc>
+  <h3>skos:object-form-label</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="skos:object-form-label">
   <xsl:param name="subject"/>
@@ -1995,6 +2034,11 @@
   </xsl:apply-templates>
 </xsl:template>
 
+<x:doc>
+  <h3>skos:scheme-item MODE</h3>
+  <p>we really need to sort out this terminology</p>
+</x:doc>
+
 <xsl:template match="html:*" mode="skos:scheme-item">
   <xsl:param name="resources">
     <xsl:message terminate="yes">`resources` parameter required</xsl:message>
@@ -2074,7 +2118,6 @@
     <li>The <em>space</em>, to fetch CSS/JavaScript for the whole app</li>
   </ul>
 </x:doc>
-
 
 <xsl:template match="html:head" mode="ibis:Entity">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -2196,6 +2239,7 @@
           <xsl:with-param name="base"    select="$base"/>
           <xsl:with-param name="subject" select="$subject"/>
           <xsl:with-param name="type"    select="$type"/>
+          <xsl:with-param name="user"    select="$user"/>
         </xsl:apply-templates>
         <!--
         <p>subject: <xsl:value-of select="$subject"/></p>
@@ -2216,6 +2260,7 @@
           <xsl:with-param name="heading"       select="$heading"/>
           <xsl:with-param name="subject"       select="$subject"/>
           <xsl:with-param name="type"          select="$type"/>
+	  <xsl:with-param name="schemes"       select="$schemes"/>
 	  <xsl:with-param name="user"          select="$user"/>
 	  <xsl:with-param name="focus"         select="$focus"/>
           </xsl:apply-templates>
@@ -2248,6 +2293,98 @@
     <xsl:with-param name="state"         select="$state"/>
     <xsl:with-param name="focus"         select="$focus"/>
   </xsl:apply-templates>
+</xsl:template>
+
+<x:doc>
+  <h3>ibis:endorsements</h3>
+</x:doc>
+
+<xsl:template match="html:*" mode="ibis:endorsements">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:message terminate="yes">`subject` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="user">
+    <xsl:message terminate="yes">`user` parameter required</xsl:message>
+  </xsl:param>
+
+  <xsl:variable name="endorsements">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="predicate" select="concat($IBIS, 'endorsed-by')"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+  <xsl:variable name="i-endorse" select="string-length($user) and contains(concat(' ', normalize-space($endorsements), ' '), concat(' ', normalize-space($user), ' '))"/>
+
+  <xsl:message>endorsements: <xsl:value-of select="$endorsements"/></xsl:message>
+
+  <ul rel="ibis:endorsed-by">
+    <xsl:call-template name="ibis:one-endorsement">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="endorsements" select="$endorsements"/>
+      <xsl:with-param name="user" select="$user"/>
+    </xsl:call-template>
+
+    <xsl:if test="string-length($user)">
+      <li>
+        <form method="POST" action="">
+          <xsl:choose>
+            <xsl:when test="$i-endorse">
+              <button name="- ibis:endorsed-by :" value="{$user}" class="fa-solid fa-thumbs-up"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <button name="ibis:endorsed-by :" value="{$user}" class="fa-regular fa-thumbs-up"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </form>
+      </li>
+    </xsl:if>
+  </ul>
+</xsl:template>
+
+<x:doc>
+  <h3>ibis:endorsements</h3>
+</x:doc>
+
+<xsl:template name="ibis:one-endorsement">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="endorsements">
+    <xsl:message terminate="yes">`endorsements` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="user">
+    <xsl:message terminate="yes">`user` parameter required</xsl:message>
+  </xsl:param>
+
+  <xsl:variable name="first">
+    <xsl:call-template name="str:safe-first-token">
+      <xsl:with-param name="tokens" select="$endorsements"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:if test="string-length($first)">
+    <xsl:variable name="name">
+      <xsl:variable name="_">
+        <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
+          <xsl:with-param name="base"      select="$base"/>
+          <xsl:with-param name="subject"   select="$first"/>
+          <xsl:with-param name="predicate" select="concat($FOAF, 'name')"/>
+        </xsl:apply-templates>
+      </xsl:variable>
+      <xsl:value-of select="substring-before($_, $rdfa:UNIT-SEP)"/>
+    </xsl:variable>
+
+    <li><a href="{$first}" property="foaf:name"><xsl:value-of select="$name"/></a></li>
+
+    <xsl:variable name="rest" select="substring-after(normalize-space($endorsements), ' ')"/>
+    <xsl:if test="$rest">
+      <xsl:call-template name="ibis:one-endorsement">
+        <xsl:with-param name="base"         select="$base"/>
+        <xsl:with-param name="endorsements" select="$rest"/>
+        <xsl:with-param name="user"         select="$user"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:if>
 </xsl:template>
 
 <x:doc>
@@ -2379,6 +2516,10 @@
   </xsl:if>
 </xsl:template>
 
+<x:doc>
+  <h3>ibis:datalist-options</h3>
+</x:doc>
+
 <xsl:template match="html:*" mode="ibis:datalist-options">
   <xsl:param name="inventories">
     <xsl:message terminate="yes">`inventories` parameter required</xsl:message>
@@ -2422,6 +2563,10 @@
     </xsl:if>
   </xsl:if>
 </xsl:template>
+
+<x:doc>
+  <h3>ibis:actual-option</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="ibis:actual-option">
   <xsl:param name="inventory">
@@ -2485,12 +2630,16 @@
   </xsl:if>
 </xsl:template>
 
+<x:doc>
+  <h3>ibis:process-self</h3>
+</x:doc>
+
 <xsl:template match="html:*" mode="ibis:process-self">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="resource-path" select="$base"/>
-  <xsl:param name="rewrite" select="''"/>
-  <xsl:param name="main"    select="false()"/>
-  <xsl:param name="heading" select="0"/>
+  <xsl:param name="rewrite"       select="''"/>
+  <xsl:param name="main"          select="false()"/>
+  <xsl:param name="heading"       select="0"/>
 
   <xsl:param name="subject">
     <xsl:apply-templates select="." mode="rdfa:get-subject">
@@ -2507,6 +2656,12 @@
     </xsl:apply-templates>
   </xsl:param>
 
+  <xsl:param name="user">
+    <xsl:message terminate="yes">`user` parameter required</xsl:message>
+  </xsl:param>
+
+  <xsl:param name="can-write" select="normalize-space($user) != ''"/>
+
   <xsl:variable name="value">
     <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
       <xsl:with-param name="subject" select="$subject"/>
@@ -2519,7 +2674,7 @@
     <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
       <xsl:with-param name="subject" select="$subject"/>
       <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="predicate" select="'http://purl.org/dc/terms/created'"/>
+      <xsl:with-param name="predicate" select="concat($DCT, 'created')"/>
     </xsl:apply-templates>
   </xsl:variable>
 
@@ -2527,7 +2682,7 @@
     <xsl:apply-templates select="." mode="rdfa:object-resources">
       <xsl:with-param name="subject" select="$subject"/>
       <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="predicate" select="'http://purl.org/dc/terms/creator'"/>
+      <xsl:with-param name="predicate" select="concat($DCT, 'creator')"/>
     </xsl:apply-templates>
   </xsl:variable>
 
@@ -2540,19 +2695,27 @@
     </xsl:variable>
     <xsl:apply-templates select="document($_)/*" mode="rdfa:object-literal-quick">
       <xsl:with-param name="subject" select="$creator"/>
-      <xsl:with-param name="predicate" select="'http://xmlns.com/foaf/0.1/name'"/>
+      <xsl:with-param name="predicate" select="concat($FOAF, 'name')"/>
     </xsl:apply-templates>
     </xsl:if>
   </xsl:variable>
 
   <h1 class="heading">
-    <xsl:call-template name="ibis:toggle-list">
-      <xsl:with-param name="type" select="$type"/>
-    </xsl:call-template>
-    <form accept-charset="utf-8" action="" class="description" method="POST">
-      <textarea class="heading" name="= rdf:value"><xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/></textarea>
-      <button class="fa fa-sync" title="Save Text"></button>
-    </form>
+    <xsl:choose>
+      <xsl:when test="$can-write">
+        <xsl:call-template name="ibis:toggle-list">
+          <xsl:with-param name="type" select="$type"/>
+        </xsl:call-template>
+        <form accept-charset="utf-8" action="" class="description" method="POST">
+          <textarea class="heading" name="= rdf:value"><xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/></textarea>
+          <button class="fa fa-sync" title="Save Text"></button>
+        </form>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:attribute name="property">rdf:value</xsl:attribute>
+        <xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </h1>
 
   <xsl:apply-templates select="." mode="skos:created-by">
@@ -2563,20 +2726,35 @@
   <xsl:apply-templates select="." mode="skos:referenced-by-inset">
     <xsl:with-param name="base" select="$base"/>
     <xsl:with-param name="subject" select="$subject"/>
+    <xsl:with-param name="can-write" select="$can-write"/>
   </xsl:apply-templates>
 
   <xsl:apply-templates select="." mode="skos:object-form">
     <xsl:with-param name="base" select="$base"/>
     <xsl:with-param name="subject" select="$subject"/>
+    <xsl:with-param name="can-write" select="$can-write"/>
   </xsl:apply-templates>
 
+  <xsl:apply-templates select="." mode="ibis:endorsements">
+    <xsl:with-param name="base" select="$base"/>
+    <xsl:with-param name="subject" select="$subject"/>
+    <xsl:with-param name="user" select="$user"/>
+  </xsl:apply-templates>
 </xsl:template>
+
+<x:doc>
+  <h3>skos:referenced-by-inset</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="skos:referenced-by-inset">
   <aside>
     <h5>Referenced By</h5>
   </aside>
 </xsl:template>
+
+<x:doc>
+  <h3>ibis:process-neighbours</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="ibis:process-neighbours">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -2597,6 +2775,9 @@
       <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
     </xsl:apply-templates>
   </xsl:param>
+  <xsl:param name="schemes">
+    <xsl:message terminate="yes">`schemes` parameter required</xsl:message>
+  </xsl:param>
   <xsl:param name="user">
     <xsl:message terminate="yes">`user` parameter required</xsl:message>
   </xsl:param>
@@ -2604,9 +2785,12 @@
     <xsl:message terminate="yes">`focus` parameter required</xsl:message>
   </xsl:param>
 
+  <xsl:variable name="has-focus" select="string-length(normalize-space($focus)) and contains(concat(' ', normalize-space($schemes), ' '), concat(' ', $focus, ' '))"/>
+  <xsl:variable name="can-write" select="$user and $has-focus"/>
 
   <xsl:variable name="current" select="."/>
   <xsl:variable name="sequence" select="document('')/xsl:stylesheet/x:sequence[1]"/>
+
 
   <xsl:for-each select="$sequence/x:class[@uri = $type]/x:prop">
     <xsl:variable name="targets">
@@ -2616,6 +2800,7 @@
         <xsl:with-param name="predicate" select="@uri"/>
       </xsl:apply-templates>
     </xsl:variable>
+    <xsl:variable name="has-targets" select="normalize-space($targets) != ''"/>
 
     <xsl:variable name="curie">
       <xsl:call-template name="rdfa:make-curie">
@@ -2626,31 +2811,37 @@
 
     <xsl:comment>curie: <xsl:value-of select="$curie"/></xsl:comment>
 
-    <section about="{@uri}">
-      <h3 property="rdfs:label"><xsl:value-of select="x:label"/></h3>
-      <xsl:apply-templates select="." mode="ibis:add-relation">
-        <xsl:with-param name="base"    select="$base"/>
-        <xsl:with-param name="current" select="$current"/>
-        <xsl:with-param name="subject" select="$subject"/>
-        <xsl:with-param name="user"    select="$user"/>
-        <xsl:with-param name="focus"   select="$focus"/>
-      </xsl:apply-templates>
-      <xsl:if test="normalize-space($targets)">
-	<ul><!-- about="{$base}" rel="{$curie}">-->
-	  <xsl:attribute name="about"/>
-	  <xsl:attribute name="rel"><xsl:value-of select="$curie"/></xsl:attribute>
-        <xsl:apply-templates select="$current" mode="ibis:link-stack">
-          <xsl:with-param name="base"          select="$base"/>
-          <xsl:with-param name="resource-path" select="$resource-path"/>
-          <xsl:with-param name="rewrite"       select="$rewrite"/>
-          <xsl:with-param name="main"          select="$main"/>
-          <xsl:with-param name="heading"       select="$heading"/>
-          <xsl:with-param name="predicate"     select="@uri"/>
-          <xsl:with-param name="stack"         select="$targets"/>
-        </xsl:apply-templates>
-      </ul>
-      </xsl:if>
-    </section>
+    <xsl:if test="$can-write or $has-targets">
+      <section about="{@uri}">
+        <h3 property="rdfs:label"><xsl:value-of select="x:label"/></h3>
+        <xsl:if test="$can-write">
+          <xsl:apply-templates select="." mode="ibis:add-relation">
+            <xsl:with-param name="base"    select="$base"/>
+            <xsl:with-param name="current" select="$current"/>
+            <xsl:with-param name="subject" select="$subject"/>
+            <xsl:with-param name="schemes" select="$schemes"/>
+            <xsl:with-param name="user"    select="$user"/>
+            <xsl:with-param name="focus"   select="$focus"/>
+          </xsl:apply-templates>
+        </xsl:if>
+        <xsl:if test="$has-targets">
+	  <ul><!-- about="{$base}" rel="{$curie}">-->
+	    <xsl:attribute name="about"/>
+	    <xsl:attribute name="rel"><xsl:value-of select="$curie"/></xsl:attribute>
+            <xsl:apply-templates select="$current" mode="ibis:link-stack">
+              <xsl:with-param name="base"          select="$base"/>
+              <xsl:with-param name="resource-path" select="$resource-path"/>
+              <xsl:with-param name="rewrite"       select="$rewrite"/>
+              <xsl:with-param name="main"          select="$main"/>
+              <xsl:with-param name="heading"       select="$heading"/>
+              <xsl:with-param name="predicate"     select="@uri"/>
+              <xsl:with-param name="stack"         select="$targets"/>
+              <xsl:with-param name="can-write"     select="$can-write"/>
+            </xsl:apply-templates>
+          </ul>
+        </xsl:if>
+      </section>
+    </xsl:if>
   </xsl:for-each>
 
 </xsl:template>
@@ -2667,6 +2858,9 @@
       <xsl:with-param name="base" select="$base"/>
       <xsl:with-param name="debug" select="false()"/>
     </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="schemes">
+    <xsl:message terminate="yes">`schemes` parameter required</xsl:message>
   </xsl:param>
   <xsl:param name="user">
     <xsl:message terminate="yes">`user` parameter required</xsl:message>
@@ -2710,7 +2904,12 @@
     <input class="new" type="hidden" name="{$i-curie} :" value="{$base}"/>
     <input class="new" type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
     <input class="new" type="hidden" name="dct:creator :" value="{$user}"/>
+    <!-- not sure yet if i want this to attach to all schemes or just the focused one -->
     <input class="new" type="hidden" name="skos:inScheme :" value="{$focus}"/>
+    <!--
+    <xsl:apply-templates select="$current" mode="ibis:add-hidden-inscheme">
+      <xsl:with-param name="schemes" select="$schemes"/>
+    </xsl:apply-templates>-->
 
     <xsl:for-each select="x:range">
       <xsl:variable name="class" select="$sequence/x:class[@uri = current()/@uri]"/>
@@ -2745,6 +2944,37 @@
 </xsl:template>
 
 <x:doc>
+  <h3>ibis:add-hidden-inscheme</h3>
+  <p>This just iterates over a set of schemes and creates potentially multiple hidden fields with skos:inScheme.</p>
+</x:doc>
+
+<xsl:template match="html:*" mode="ibis:add-hidden-inscheme">
+  <xsl:param name="schemes">
+    <xsl:message terminate="yes">`schemes` parameter required</xsl:message>
+  </xsl:param>
+
+  <xsl:variable name="snorm" select="normalize-space($schemes)"/>
+
+  <xsl:if test="string-length($snorm)">
+    <xsl:variable name="first">
+      <xsl:call-template name="str:safe-first-token">
+        <xsl:with-param name="tokens" select="$schemes"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:comment>wat</xsl:comment>
+    <input class="new" type="hidden" name="skos:inScheme :" value="{$first}"/>
+
+    <xsl:variable name="rest" select="substring-after($snorm, ' ')"/>
+    <xsl:if test="string-length($rest)">
+      <xsl:apply-templates select="." mode="ibis:add-hidden-inscheme">
+        <xsl:with-param name="schemes" select="$rest"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:if>
+</xsl:template>
+
+<x:doc>
   <h3>ibis:link-stack</h3>
 </x:doc>
 
@@ -2757,6 +2987,7 @@
 
   <xsl:param name="predicate" select="''"/>
   <xsl:param name="stack" select="''"/>
+  <xsl:param name="can-write" select="false()"/>
 
   <xsl:variable name="s" select="normalize-space($stack)"/>
 
@@ -2821,8 +3052,10 @@
 
     <li about="{$first}" typeof="{$type-curie}">
       <form accept-charset="utf-8" action="" method="POST">
-        <input name="-! {$i-curie} :" type="hidden" value="{$first}"/>
-        <button class="disconnect fa fa-unlink" name="- {$p-curie} :" value="{$first}"></button>
+        <xsl:if test="$can-write">
+          <input name="-! {$i-curie} :" type="hidden" value="{$first}"/>
+          <button class="disconnect fa fa-unlink" name="- {$p-curie} :" value="{$first}"></button>
+        </xsl:if>
         <a href="{$first}" property="{$label-curie}">
           <xsl:value-of select="substring-before($label, $rdfa:UNIT-SEP)"/>
         </a>
@@ -2837,14 +3070,21 @@
         <xsl:with-param name="main"          select="$main"/>
         <xsl:with-param name="heading"       select="$heading"/>
         <xsl:with-param name="predicate"     select="$predicate"/>
-        <xsl:with-param name="stack" select="$rest"/>
+        <xsl:with-param name="stack"         select="$rest"/>
+        <xsl:with-param name="can-write"     select="$can-write"/>
       </xsl:apply-templates>
     </xsl:if>
   </xsl:if>
 </xsl:template>
 
+<x:doc>
+  <h3>ibis:toggle-list</h3>
+</x:doc>
+
 <xsl:template name="ibis:toggle-list">
   <xsl:param name="type" select="'https://vocab.methodandstructure.com/ibis#Issue'"/>
+
+  <xsl:variable name="tpad" select="concat(' ', normalize-space($type), ' ')"/>
 
   <form accept-charset="utf-8" action="" class="types" method="POST">
     <button class="set-type fa fa-exclamation-triangle" name="= rdf:type :" title="Convert to Issue" value="ibis:Issue">
@@ -3232,6 +3472,7 @@
           <xsl:with-param name="heading"       select="$heading"/>
           <xsl:with-param name="subject"       select="$subject"/>
           <xsl:with-param name="type"          select="$type"/>
+	  <xsl:with-param name="schemes"       select="$schemes"/>
 	  <xsl:with-param name="user"          select="$user"/>
 	  <xsl:with-param name="focus"         select="$focus"/>
         </xsl:apply-templates>
@@ -3755,6 +3996,11 @@
     </li>
   </ul>
 </xsl:template>
+
+<x:doc>
+  <h3>cgto:resource-list-items</h3>
+  <p>what's this doing here?</p>
+</x:doc>
 
 <xsl:template name="cgto:resource-list-items">
   <xsl:param name="resources"/>

@@ -578,7 +578,7 @@ html {
                         background-color: nth($pal, 6);
                     }
                     &::before {
-			font-family: "Font Awesome 5 Free", "Noto Sans Symbols2";
+			font-family: "Font Awesome 6 Free", "Noto Sans Symbols2";
                         content: "\f0c1\2009#{$icon}";
                     }
                     &:checked {

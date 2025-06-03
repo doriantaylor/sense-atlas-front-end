@@ -27,6 +27,11 @@
   <h2>Utilities</h2>
 </x:doc>
 
+<x:doc>
+  <h3>str:safe-first-token</h3>
+  <p>Returns a (normalized) first token, or the only token if it's the only token.</p>
+</x:doc>
+
 <xsl:template name="str:safe-first-token">
   <xsl:param name="tokens">
     <xsl:message terminate="yes">`tokens` parameter required</xsl:message>
@@ -42,6 +47,10 @@
   </xsl:choose>
 
 </xsl:template>
+
+<x:doc>
+  <h3>str:token-union</h3>
+</x:doc>
 
 <xsl:template name="str:token-union">
   <xsl:param name="left"/>
@@ -77,6 +86,10 @@
   </xsl:choose>
 
 </xsl:template>
+
+<x:doc>
+  <h3>str:token-minus</h3>
+</x:doc>
 
 <xsl:template name="str:token-minus">
   <xsl:param name="tokens"/>
@@ -134,6 +147,10 @@
   </xsl:if>
 </xsl:template>
 
+<x:doc>
+  <h3>rdfa:merge-one-prefix</h3>
+</x:doc>
+
 <xsl:template name="rdfa:merge-one-prefix">
   <xsl:param name="prefixes">
     <xsl:message terminate="yes">`prefixes` parameter required</xsl:message>
@@ -165,6 +182,10 @@
     <xsl:value-of select="normalize-space($namespace)"/>
   </xsl:if>
 </xsl:template>
+
+<x:doc>
+  <h3>rdfa:merge-prefixes</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="rdfa:merge-prefixes" name="rdfa:merge-prefixes">
   <xsl:param name="prefixes">
@@ -213,6 +234,10 @@
   </xsl:choose>
 
 </xsl:template>
+
+<x:doc>
+  <h3>rdfa:multi-object-resources</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="rdfa:multi-object-resources">
   <xsl:param name="current"    select="."/>
@@ -287,6 +312,10 @@
   </xsl:if>
 </xsl:template>
 
+<x:doc>
+  <h3>rdfa:get-type</h3>
+</x:doc>
+
 <xsl:template match="html:*" mode="rdfa:get-type">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="subject">
@@ -303,6 +332,10 @@
 </xsl:template>
 
 <!-- okay actual templates now -->
+
+<x:doc>
+  <h3>default <code>&lt;head&gt;</code></h3>
+</x:doc>
 
 <xsl:template match="html:head">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -356,6 +389,10 @@
   </head>
 </xsl:template>
 
+<x:doc>
+  <h3>rdfa:get-meta</h3>
+</x:doc>
+
 <xsl:template match="html:*" mode="rdfa:get-meta">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="resource-path" select="$base"/>
@@ -388,6 +425,10 @@
     <xsl:with-param name="predicate" select="concat($XHV, 'meta')"/>
   </xsl:apply-templates>
 </xsl:template>
+
+<x:doc>
+  <h3>rdfa:add-meta-meta</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="rdfa:add-meta-meta">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -498,6 +539,10 @@
   </xsl:choose>
 </xsl:template>
 
+<x:doc>
+  <h3>rdfa:filter-by-predicate-object</h3>
+</x:doc>
+
 <xsl:template match="html:*" mode="rdfa:filter-by-predicate-object">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="subjects" select="''"/>
@@ -585,6 +630,10 @@
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
+
+<x:doc>
+  <h3>rdfa:filter-by-type</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="rdfa:filter-by-type">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>

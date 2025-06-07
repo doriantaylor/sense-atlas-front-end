@@ -1,2 +1,5 @@
+ibis
 target/
 js/node_modules
+*.tar.gz
+*.zip

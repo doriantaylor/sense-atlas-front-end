@@ -11,7 +11,12 @@
 		xmlns="http://www.w3.org/1999/xhtml"
 		exclude-result-prefixes="html str uri rdfa xc x">
 
-<xsl:import href="rdfa-util"/>
+<xsl:import href="/asset/rdfa-util"/>
+
+<x:doc>
+  <h1>Collaborative Graph Tool Space</h1>
+  <p>This template manages what is effectively the <q>home page</q> for collaborative graph tools like <a href="https://senseatlas.net/">Sense Atlas</a>.</p>
+</x:doc>
 
 <!-- too bad firefox still has no namespace:: axis -->
 <xsl:variable name="RDF"  select="$rdfa:RDF-NS"/>
@@ -24,247 +29,10 @@
 <xsl:variable name="XSD"  select="$rdfa:XSD-NS"/>
 
 <x:doc>
-  <h1>Graph tool UI</h1>
-  <p>This stylesheet handles UI peculiar to the collaborative graph tool ontology.</p>
+  <h2>Main body</h2>
 </x:doc>
 
-<x:doc>
-  <h2>cgto:get-spaces</h2>
-  <p>The subject either <em>is</em> a <code>cgto:Space</code> or is related to it by one degree.</p>
-</x:doc>
-
-<xsl:template match="html:*" mode="cgto:get-spaces">
-  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
-  <xsl:param name="subject">
-    <xsl:apply-templates select="." mode="rdfa:get-subject">
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="debug" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:param>
-  <xsl:param name="type">
-    <xsl:apply-templates select="." mode="rdfa:object-resources">
-      <xsl:with-param name="subject" select="$subject"/>
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
-    </xsl:apply-templates>
-  </xsl:param>
-
-  <xsl:variable name="type-xx">
-    <xsl:call-template name="str:token-intersection">
-      <xsl:with-param name="left" select="$type"/>
-      <xsl:with-param name="right" select="concat($CGTO, 'Space')"/>
-    </xsl:call-template>
-  </xsl:variable>
-
-  <xsl:choose>
-    <xsl:when test="string-length(normalize-space($type-xx))">
-      <xsl:value-of select="$subject"/>
-    </xsl:when>
-    <xsl:otherwise>
-      <xsl:variable name="_">
-	<xsl:apply-templates select="." mode="rdfa:object-resources">
-	  <xsl:with-param name="subject" select="$subject"/>
-	  <xsl:with-param name="base" select="$base"/>
-	  <xsl:with-param name="predicate" select="concat($SIOC, 'has_space')"/>
-	</xsl:apply-templates>
-	<xsl:text> </xsl:text>
-	<xsl:apply-templates select="." mode="rdfa:subject-resources">
-          <xsl:with-param name="object" select="$subject"/>
-          <xsl:with-param name="base" select="$base"/>
-          <xsl:with-param name="predicate" select="concat($SIOC, 'space_of')"/>
-	</xsl:apply-templates>
-	<xsl:text> </xsl:text>
-	<xsl:apply-templates select="." mode="rdfa:subject-resources">
-          <xsl:with-param name="object" select="$subject"/>
-          <xsl:with-param name="base" select="$base"/>
-          <xsl:with-param name="predicate" select="concat($CGTO, 'focus')"/>
-	</xsl:apply-templates>
-      </xsl:variable>
-      <xsl:call-template name="str:unique-tokens">
-	<xsl:with-param name="string" select="normalize-space($_)"/>
-      </xsl:call-template>
-    </xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
-
-<x:doc>
-  <h2>cgto:find-summaries</h2>
-  <p></p>
-</x:doc>
-
-<!-- extremely specific i know but we use this more than once -->
-<xsl:template match="html:*" mode="cgto:find-summaries">
-  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
-  <xsl:param name="origins">
-    <xsl:apply-templates select="." mode="cgto:get-spaces">
-      <xsl:with-param name="base" select="$base"/>
-    </xsl:apply-templates>
-  </xsl:param>
-  <xsl:param name="relations">
-    <xsl:message terminate="yes">`relations` parameter required</xsl:message>
-  </xsl:param>
-  <xsl:param name="debug" select="$rdfa:DEBUG"/>
-
-  <xsl:variable name="indices">
-    <xsl:apply-templates select="." mode="rdfa:find-relations">
-      <xsl:with-param name="resources" select="$origins"/>
-      <xsl:with-param name="predicate" select="concat($CGTO, 'index')"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <xsl:if test="$debug">
-    <xsl:message>cgto:find-summaries: metas: <xsl:value-of select="$metas"/></xsl:message>
-  </xsl:if>
-
-  <xsl:variable name="candidates">
-    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
-      <xsl:with-param name="subjects" select="$indices"/>
-      <xsl:with-param name="class" select="concat($CGTO, 'Index')"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <xsl:if test="$debug">
-    <xsl:message>cgto:find-summaries: <xsl:value-of select="$candidates"/></xsl:message>
-  </xsl:if>
-
-  <xsl:choose>
-    <xsl:when test="string-length(normalize-space($relations))">
-      <xsl:apply-templates select="." mode="rdfa:find-relations">
-        <xsl:with-param name="resources" select="$candidates"/>
-        <xsl:with-param name="predicate" select="$relations"/>
-      </xsl:apply-templates>
-    </xsl:when>
-    <xsl:otherwise><xsl:value-of select="$candidates"/></xsl:otherwise>
-  </xsl:choose>
-</xsl:template>
-
-<!-- okay you run this *on* the index -->
-
-<xsl:template match="html:*" mode="cgto:find-inventories-by-class">
-  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
-  <xsl:param name="subject">
-    <xsl:apply-templates select="." mode="rdfa:get-subject">
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="debug" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:param>
-  <xsl:param name="classes">
-    <xsl:message terminate="yes">`classes` parameter required</xsl:message>
-  </xsl:param>
-  <xsl:param name="summaries">
-    <xsl:apply-templates select="." mode="rdfa:find-relations">
-      <xsl:with-param name="resources" select="$subject"/>
-      <xsl:with-param name="predicate" select="concat($CGTO, 'by-class')"/>
-    </xsl:apply-templates>
-  </xsl:param>
-  <xsl:param name="inferred" select="false()"/>
-
-  <!--<xsl:message>lol summaries <xsl:value-of select="$summaries"/></xsl:message>-->
-
-  <xsl:if test="string-length(normalize-space($summaries))">
-    <xsl:variable name="observations">
-      <xsl:variable name="_">
-        <xsl:apply-templates select="." mode="rdfa:find-relations">
-          <xsl:with-param name="resources" select="$summaries"/>
-          <xsl:with-param name="predicate" select="concat($QB, 'dataSet')"/>
-          <xsl:with-param name="reverse"   select="true()"/>
-        </xsl:apply-templates>
-      </xsl:variable>
-
-      <!--<xsl:message>did this net anything? <xsl:value-of select="$_"/></xsl:message>-->
-
-      <xsl:choose>
-        <xsl:when test="string-length(normalize-space($classes))">
-          <xsl:apply-templates select="." mode="rdfa:filter-by-predicate-object">
-            <xsl:with-param name="subjects" select="$_"/>
-            <xsl:with-param name="predicate" select="concat($CGTO, 'class')"/>
-            <xsl:with-param name="object" select="$classes"/>
-          </xsl:apply-templates>
-        </xsl:when>
-        <xsl:otherwise><xsl:value-of select="$_"/></xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-
-    <!--<xsl:message>observations: <xsl:value-of select="$observations"/></xsl:message>-->
-
-    <xsl:variable name="p">
-      <xsl:choose>
-	<xsl:when test="$inferred">inferred</xsl:when>
-	<xsl:otherwise>asserted</xsl:otherwise>
-      </xsl:choose>
-    </xsl:variable>
-
-    <xsl:apply-templates select="." mode="rdfa:find-relations">
-      <xsl:with-param name="resources" select="$observations"/>
-      <xsl:with-param name="predicate" select="concat($CGTO, $p, '-subjects')"/>
-    </xsl:apply-templates>
-
-  </xsl:if>
-
-</xsl:template>
-
-<xsl:template match="html:head" mode="cgto:head-generic">
-  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
-  <xsl:param name="resource-path" select="$base"/>
-  <xsl:param name="rewrite" select="''"/>
-  <xsl:param name="main"    select="false()"/>
-  <xsl:param name="heading" select="0"/>
-  <xsl:param name="subject">
-    <xsl:apply-templates select="." mode="rdfa:get-subject">
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="debug" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:param>
-
-  <xsl:apply-templates>
-    <xsl:with-param name="base"          select="$base"/>
-    <xsl:with-param name="resource-path" select="$resource-path"/>
-    <xsl:with-param name="rewrite"       select="$rewrite"/>
-    <xsl:with-param name="heading"       select="$heading"/>
-    <xsl:with-param name="subject"       select="$subject"/>
-  </xsl:apply-templates>
-
-  <!-- XXX get rid of this lol -->
-  <link rel="stylesheet" type="text/css" href="/type/roboto"/>
-  <link rel="stylesheet" type="text/css" href="/type/font-awesome"/>
-  <link rel="stylesheet" type="text/css" href="/type/noto-sans-symbols2"/>
-  <link rel="stylesheet" type="text/css" href="/asset/skos-ibis/style"/>
-  <script type="text/javascript" src="/asset/rdf"></script>
-  <script type="text/javascript" src="/asset/rdf-viz"></script>
-  <script type="text/javascript" src="/asset/complex"></script>
-  <script type="text/javascript" src="/asset/d3"></script>
-  <script type="text/javascript" src="/asset/hierarchical"></script>
-  <script type="text/javascript" src="/asset/force-directed"></script>
-  <script type="text/javascript" src="/asset/skos-ibis/scripts"></script>
-
-</xsl:template>
-
-
-<!-- graph tool space -->
-
-<xsl:template match="html:head" mode="cgto:Space">
-  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
-  <xsl:param name="resource-path" select="$base"/>
-  <xsl:param name="rewrite" select="''"/>
-  <xsl:param name="main"    select="false()"/>
-  <xsl:param name="heading" select="0"/>
-  <xsl:param name="subject">
-    <xsl:apply-templates select="." mode="rdfa:get-subject">
-      <xsl:with-param name="base" select="$base"/>
-      <xsl:with-param name="debug" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:param>
-
-  <xsl:apply-templates select="." mode="cgto:head-generic">
-    <xsl:with-param name="base"          select="$base"/>
-    <xsl:with-param name="resource-path" select="$resource-path"/>
-    <xsl:with-param name="rewrite"       select="$rewrite"/>
-    <xsl:with-param name="heading"       select="$heading"/>
-    <xsl:with-param name="subject"       select="$subject"/>
-  </xsl:apply-templates>
-</xsl:template>
-
-<xsl:template match="html:body" mode="cgto:Space">
+<xsl:template match="html:body" mode="rdfa:body-content">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="resource-path" select="$base"/>
   <xsl:param name="rewrite" select="''"/>
@@ -415,6 +183,10 @@
     </ul>
   </xsl:if>
 </xsl:template>
+
+<x:doc>
+  <h3>cgto:resource-list-items</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="cgto:resource-list-items">
   <xsl:param name="resources">
@@ -660,6 +432,9 @@
 
 </xsl:template>
 
+<x:doc>
+  
+
 <xsl:template match="html:*" mode="cgto:show-focus">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="resource-path" select="$base"/>
@@ -709,6 +484,10 @@
   </main>
 
 </xsl:template>
+
+<x:doc>
+  <h3>space-cartouche</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="cgto:space-cartouche">
   <xsl:param name="resources">
@@ -766,7 +545,7 @@
 
 </xsl:template>
 
-<!-- -->
+<!-- uhh this is gonna have to be moved -->
 
 <xsl:template match="html:body" mode="cgto:Error">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>

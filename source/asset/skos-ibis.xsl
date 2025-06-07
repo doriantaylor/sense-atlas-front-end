@@ -128,7 +128,7 @@
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/process-model#dependency-of">
       <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
-      <x:label>Dependency of</x:label>
+      <x:label>Dependency Of</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
@@ -248,7 +248,7 @@
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/process-model#dependency-of">
       <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
-      <x:label>Dependency of</x:label>
+      <x:label>Dependency Of</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
@@ -309,7 +309,7 @@
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/process-model#dependency-of">
       <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
-      <x:label>Dependency of</x:label>
+      <x:label>Dependency Of</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
@@ -397,7 +397,7 @@
       <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
       <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
       <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
-      <x:label>Depends on</x:label>
+      <x:label>Depends On</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
@@ -458,7 +458,7 @@
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/process-model#dependency-of">
       <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
-      <x:label>Dependency of</x:label>
+      <x:label>Dependency Of</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#questioned-by">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>

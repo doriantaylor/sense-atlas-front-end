@@ -3643,7 +3643,7 @@
   <!-- who wants this goal? -->
   <section>
     <h5>Wanted by:</h5>
-    <xsl:call-template name="cgto:resource-list">
+    <xsl:call-template name="cgto:editable-resource-list">
       <xsl:with-param name="base"        select="$base"/>
       <xsl:with-param name="subject"     select="$subject"/>
       <xsl:with-param name="predicate"   select="concat($PM, 'performer')"/>
@@ -3783,7 +3783,7 @@
     <!-- who is performing this task -->
     <div>
       <h5>Performed By:</h5>
-      <xsl:call-template name="cgto:resource-list">
+      <xsl:call-template name="cgto:editable-resource-list">
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>
         <xsl:with-param name="predicate"   select="concat($PM, 'performer')"/>
@@ -3796,7 +3796,7 @@
     <!-- who is responsible -->
     <div>
       <h5>Responsible Parties:</h5>
-      <xsl:call-template name="cgto:resource-list">
+      <xsl:call-template name="cgto:editable-resource-list">
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>
         <xsl:with-param name="predicate"   select="concat($PM, 'responsible')"/>
@@ -3809,7 +3809,7 @@
     <!-- who is the recipient of the result -->
     <div>
       <h5>Recipient of Result:</h5>
-      <xsl:call-template name="cgto:resource-list">
+      <xsl:call-template name="cgto:editable-resource-list">
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>
         <xsl:with-param name="predicate"   select="concat($PM, 'recipient')"/>
@@ -3822,7 +3822,7 @@
     <!-- who else is involved -->
     <div>
       <h5>Otherwise Involved:</h5>
-      <xsl:call-template name="cgto:resource-list">
+      <xsl:call-template name="cgto:editable-resource-list">
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>
         <xsl:with-param name="predicate"   select="concat($PM, 'involved')"/>
@@ -3905,13 +3905,13 @@
 </xsl:template>
 
 <x:doc>
-  <h2>cgto:resource-list</h2>
+  <h2>cgto:editable-resource-list</h2>
   <p>This is tentatively going to be moved to the CGTO template. The goal is to create a <code>&lt;ul&gt;</code> of resources connected by a given predicate, and such that the last entry in the list is a form to add a new entry.</p>
 </x:doc>
 
 <!-- XXX make these part of CGTO -->
 
-<xsl:template name="cgto:resource-list">
+<xsl:template name="cgto:editable-resource-list">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="subject">
     <xsl:apply-templates select="." mode="rdfa:get-subject">
@@ -3974,7 +3974,7 @@
 
   <ul>
     <!-- already added -->
-    <xsl:call-template name="cgto:resource-list-items">
+    <xsl:call-template name="cgto:editable-resource-list-items">
       <xsl:with-param name="resources" select="$resources"/>
       <xsl:with-param name="predicate" select="$predicate"/>
     </xsl:call-template>
@@ -3998,11 +3998,11 @@
 </xsl:template>
 
 <x:doc>
-  <h3>cgto:resource-list-items</h3>
+  <h3>cgto:editable-resource-list-items</h3>
   <p>what's this doing here?</p>
 </x:doc>
 
-<xsl:template name="cgto:resource-list-items">
+<xsl:template name="cgto:editable-resource-list-items">
   <xsl:param name="resources"/>
   <xsl:param name="predicate"/>
   <xsl:param name="label-p"/>
@@ -4043,7 +4043,7 @@
 
     <xsl:variable name="rest" select="substring-after($rs, ' ')"/>
     <xsl:if test="string-length($rest)">
-      <xsl:call-template name="cgto:resource-list-items">
+      <xsl:call-template name="cgto:editable-resource-list-items">
         <xsl:with-param name="resources" select="$rest"/>
         <xsl:with-param name="predicate" select="$predicate"/>
         <xsl:with-param name="label-p"   select="$label-p"/>

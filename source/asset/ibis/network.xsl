@@ -140,22 +140,24 @@
 
   <main>
     <article>
-      <form method="POST" action="" accept-charset="utf-8">
-        <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-        <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
-	<input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
-	<input type="hidden" name="dct:creator :" value="{$user}"/>
-        <select name="= rdf:type :">
-          <option value="ibis:Issue">Issue</option>
-          <option value="ibis:Position">Position</option>
-          <option value="ibis:Argument">Argument</option>
-          <option value="pm:Goal">Goal</option>
-          <option value="pm:Task">Task</option>
-          <option value="pm:Target">Target</option>
-        </select>
-        <input type="text" name="= rdf:value"/>
-        <button class="fa fa-plus"/>
-      </form>
+      <xsl:if test="string-length($user)">
+        <form method="POST" action="" accept-charset="utf-8">
+          <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+          <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
+	  <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	  <input type="hidden" name="dct:creator :" value="{$user}"/>
+          <select name="= rdf:type :">
+            <option value="ibis:Issue">Issue</option>
+            <option value="ibis:Position">Position</option>
+            <option value="ibis:Argument">Argument</option>
+            <option value="pm:Goal">Goal</option>
+            <option value="pm:Task">Task</option>
+            <option value="pm:Target">Target</option>
+          </select>
+          <input type="text" name="= rdf:value"/>
+          <button class="fa fa-plus"/>
+        </form>
+      </xsl:if>
       <xsl:if test="string-length(normalize-space($issues))">
         <section>
           <h3>Issues</h3>

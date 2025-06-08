@@ -193,6 +193,7 @@
       </section>
     </article>
     <figure id="force" class="aside"/>
+
     <xsl:call-template name="skos:make-datalist">
       <xsl:with-param name="base"          select="$base"/>
       <xsl:with-param name="resource-path" select="$resource-path"/>
@@ -202,6 +203,19 @@
       <xsl:with-param name="subject"       select="$subject"/>
       <xsl:with-param name="index"         select="$index"/>
     </xsl:call-template>
+
+    <xsl:call-template name="skos:make-datalist">
+      <xsl:with-param name="base"          select="$base"/>
+      <xsl:with-param name="resource-path" select="$resource-path"/>
+      <xsl:with-param name="rewrite"       select="$rewrite"/>
+      <xsl:with-param name="main"          select="true()"/>
+      <xsl:with-param name="heading"       select="$heading"/>
+      <xsl:with-param name="subject"       select="$subject"/>
+      <xsl:with-param name="index"         select="$index"/>
+      <xsl:with-param name="search-types"  select="concat($FOAF, 'Person')"/>
+      <xsl:with-param name="id"            select="'agents'"/>
+    </xsl:call-template>
+
   </main>
 
   <xsl:call-template name="skos:footer">

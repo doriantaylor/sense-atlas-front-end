@@ -48,8 +48,11 @@ $(TARGET)/asset/skos: $(TARGET)/asset
 $(TARGET)/asset/ibis: $(TARGET)/asset
 	$(MD) $(TARGET)/asset/ibis
 
-$(TARGET)/asset/skos-ibis: $(TARGET)/asset
-	$(MD) $(TARGET)/asset/skos-ibis
+$(TARGET)/asset/pm: $(TARGET)/asset
+	$(MD) $(TARGET)/asset/pm
+
+# $(TARGET)/asset/skos-ibis: $(TARGET)/asset
+# 	$(MD) $(TARGET)/asset/skos-ibis
 
 # OUT-OF-REPO XSLT
 
@@ -86,6 +89,15 @@ $(TARGET)/asset/ibis/entity.xsl : $(TARGET)/asset/ibis $(TARGET)/asset/skos/conc
 $(TARGET)/asset/ibis/network.xsl : $(TARGET)/asset/ibis $(TARGET)/asset/skos/concept-scheme.xsl
 	$(CP) $(SOURCE)/asset/ibis/network.xsl $(TARGET)/asset/ibis
 
+$(TARGET)/asset/pm/goal.xsl : $(TARGET)/asset/pm $(TARGET)/asset/ibis/entity.xsl
+	$(CP) $(SOURCE)/asset/pm/goal.xsl $(TARGET)/asset/pm
+
+$(TARGET)/asset/pm/task.xsl : $(TARGET)/asset/pm $(TARGET)/asset/ibis/entity.xsl
+	$(CP) $(SOURCE)/asset/pm/task.xsl $(TARGET)/asset/pm
+
+$(TARGET)/asset/pm/target.xsl : $(TARGET)/asset/pm $(TARGET)/asset/ibis/entity.xsl
+	$(CP) $(SOURCE)/asset/pm/target.xsl $(TARGET)/asset/pm
+
 # $(TARGET)/asset/skos-ibis.xsl : $(TARGET)/asset/cgto.xsl $(TARGET)/asset/rdfa-util.xsl
 # 	$(CP) $(SOURCE)/asset/skos-ibis.xsl $(TARGET)/asset
 
@@ -96,7 +108,9 @@ $(TARGET)/asset/ibis/network.xsl : $(TARGET)/asset/ibis $(TARGET)/asset/skos/con
 xslt: clean-xslt \
 	$(TARGET)/asset/cgto/space.xsl $(TARGET)/asset/cgto/error.xsl \
 	$(TARGET)/asset/skos/concept.xsl $(TARGET)/asset/skos/concept-scheme.xsl \
-	$(TARGET)/asset/ibis/entity.xsl $(TARGET)/asset/ibis/network.xsl
+	$(TARGET)/asset/ibis/entity.xsl $(TARGET)/asset/ibis/network.xsl \
+	$(TARGET)/asset/pm/goal.xsl $(TARGET)/asset/pm/task.xsl \
+	$(TARGET)/asset/pm/target.xsl
 
 clean-xslt:
 	$(FIND) $(TARGET)/ -type f -name \*.xsl -print0 | xargs -0 rm -f

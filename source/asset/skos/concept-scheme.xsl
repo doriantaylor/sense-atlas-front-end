@@ -87,15 +87,17 @@
 
   <main>
     <article>
-      <form method="POST" action="" accept-charset="utf-8">
-        <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-        <input type="hidden" name="rdf:type :" value="skos:Concept"/>
-        <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
-	<input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
-	<input type="hidden" name="dct:creator :" value="{$user}"/>
-        <input type="text" name="= skos:prefLabel"/>
-        <button class="fa fa-plus"/>
-      </form>
+      <xsl:if test="string-length($user)">
+        <form method="POST" action="" accept-charset="utf-8">
+          <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+          <input type="hidden" name="rdf:type :" value="skos:Concept"/>
+          <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
+	  <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	  <input type="hidden" name="dct:creator :" value="{$user}"/>
+          <input type="text" name="= skos:prefLabel"/>
+          <button class="fa fa-plus"/>
+        </form>
+      </xsl:if>
       <ul>
         <xsl:if test="string-length(normalize-space($top-concepts))">
           <xsl:call-template name="skos:concept-scheme-list-item">

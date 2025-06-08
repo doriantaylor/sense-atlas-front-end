@@ -378,7 +378,7 @@
     <xsl:message terminate="yes">`property` parameter required</xsl:message>
   </xsl:param>
   <xsl:param name="types">
-    <xsl:message terminate="yes">`property` parameter required</xsl:message>
+    <xsl:message terminate="yes">`types` parameter required</xsl:message>
   </xsl:param>
   <xsl:param name="label-prop" select="concat($RDFS, 'label')"/>
 

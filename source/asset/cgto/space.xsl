@@ -146,7 +146,7 @@
     </xsl:when>
     <xsl:otherwise>
       <!-- no user; show list -->
-      <xsl:apply-templates select="." mode="cgto:resource-list">
+      <xsl:apply-templates select="." mode="cgto:plain-list">
         <xsl:with-param name="subject" select="$subject"/>
         <xsl:with-param name="property" select="concat($SIOC, 'space_of')"/>
         <xsl:with-param name="types" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
@@ -158,11 +158,11 @@
 </xsl:template>
 
 <x:doc>
-  <h2><code>cgto:resource-list</code></h2>
+  <h2><code>cgto:plain-list</code></h2>
   <p>List</p>
 </x:doc>
 
-<xsl:template match="html:*" mode="cgto:resource-list">
+<xsl:template match="html:*" mode="cgto:plain-list">
   <xsl:param name="subject">
     <xsl:message terminate="yes">`subject` parameter required</xsl:message>
   </xsl:param>
@@ -170,7 +170,7 @@
     <xsl:message terminate="yes">`property` parameter required</xsl:message>
   </xsl:param>
   <xsl:param name="types">
-    <xsl:message terminate="yes">`property` parameter required</xsl:message>
+    <xsl:message terminate="yes">`types` parameter required</xsl:message>
   </xsl:param>
   <xsl:param name="label-prop" select="concat($RDFS, 'label')"/>
 
@@ -200,19 +200,19 @@
 
   <xsl:if test="string-length($resources)">
     <ul rel="{$property-curie}">
-      <xsl:apply-templates select="." mode="cgto:resource-list-items">
+      <xsl:call-template name="cgto:plain-list-items">
         <xsl:with-param name="resources" select="$resources"/>
         <xsl:with-param name="label-prop" select="$label-prop"/>
-      </xsl:apply-templates>
+      </xsl:call-template>
     </ul>
   </xsl:if>
 </xsl:template>
 
 <x:doc>
-  <h3>cgto:resource-list-items</h3>
+  <h3>cgto:plain-list-items</h3>
 </x:doc>
 
-<xsl:template match="html:*" mode="cgto:resource-list-items">
+<xsl:template name="cgto:plain-list-items">
   <xsl:param name="resources">
     <xsl:message terminate="yes">`resources` parameter required</xsl:message>
   </xsl:param>
@@ -287,13 +287,266 @@
     </li>
     <xsl:variable name="rest" select="substring-after(normalize-space($resources), ' ')"/>
     <xsl:if test="string-length($rest)">
-      <xsl:apply-templates select="." mode="cgto:resource-list-items">
+      <xsl:call-template name="cgto:plain-list-items">
         <xsl:with-param name="resources" select="$rest"/>
         <xsl:with-param name="label-prop" select="$label-prop"/>
-      </xsl:apply-templates>
+      </xsl:call-template>
     </xsl:if>
   </xsl:if>
 </xsl:template>
+
+<x:doc>
+  <h2>cgto:editable-resource-list</h2>
+  <p>This is tentatively going to be moved to the CGTO template. The goal is to create a <code>&lt;ul&gt;</code> of resources connected by a given predicate, and such that the last entry in the list is a form to add a new entry.</p>
+</x:doc>
+
+<!-- XXX make these part of CGTO -->
+
+<xsl:template name="cgto:editable-resource-list">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="predicate">
+    <xsl:message terminate="yes">`predicate` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="resources">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="predicate" select="$predicate"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="new-type">
+    <xsl:message terminate="yes">`new-type` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="label-prop" select="concat($RDF, 'value')"/>
+  <xsl:param name="datalist-id"/>
+  <xsl:param name="prefixes"/>
+
+  <xsl:variable name="actual-prefixes">
+    <xsl:variable name="_">
+      <xsl:apply-templates select="." mode="rdfa:prefix-stack"/>
+    </xsl:variable>
+
+    <xsl:choose>
+      <xsl:when test="string-length(normalize-space($prefixes))">
+        <xsl:apply-templates select="." mode="rdfa:merge-prefixes">
+          <xsl:with-param name="prefixes" select="$_"/>
+          <xsl:with-param name="with" select="$prefixes"/>
+        </xsl:apply-templates>
+      </xsl:when>
+      <xsl:otherwise><xsl:value-of select="$_"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="p-curie">
+    <xsl:call-template name="rdfa:make-curie">
+      <xsl:with-param name="uri" select="$predicate"/>
+      <xsl:with-param name="prefixes" select="$actual-prefixes"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="c-curie">
+    <xsl:call-template name="rdfa:make-curie">
+      <xsl:with-param name="uri" select="$new-type"/>
+      <xsl:with-param name="prefixes" select="$actual-prefixes"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="lprop-curie">
+    <xsl:call-template name="rdfa:make-curie">
+      <xsl:with-param name="uri" select="$label-prop"/>
+      <xsl:with-param name="prefixes" select="$actual-prefixes"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <ul>
+    <!-- already added -->
+    <xsl:call-template name="cgto:editable-resource-list-items">
+      <xsl:with-param name="resources" select="$resources"/>
+      <xsl:with-param name="predicate" select="$predicate"/>
+      <xsl:with-param name="label-prop" select="$label-prop"/>
+      <xsl:with-param name="prefixes" select="$actual-prefixes"/>
+    </xsl:call-template>
+
+    <!-- add new / link existing -->
+    <li>
+      <form method="POST" action="" accept-charset="utf-8">
+        <input class="new" type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+        <input class="new" type="hidden" name="= rdf:type : $" value="{$new-type}"/>
+        <input class="new label" type="hidden" about="{$c-curie}" disabled="disabled" name="= {$lprop-curie} $" value="$label"/>
+        <input class="existing" type="hidden" disabled="disabled" name="{$p-curie} :"/>
+        <input tabindex="0" type="text" name="$ label">
+          <xsl:if test="$datalist-id">
+            <xsl:attribute name="list"><xsl:value-of select="$datalist-id"/></xsl:attribute>
+            <xsl:attribute name="autocomplete">off</xsl:attribute>
+          </xsl:if>
+        </input>
+      </form>
+    </li>
+  </ul>
+</xsl:template>
+
+<x:doc>
+  <h3>cgto:editable-resource-list-items</h3>
+  <p>what's this doing here?</p>
+</x:doc>
+
+<xsl:template name="cgto:editable-resource-list-items">
+  <xsl:param name="resources"/>
+  <xsl:param name="predicate"/>
+  <xsl:param name="label-prop"/>
+  <xsl:param name="prefixes"/>
+
+  <xsl:variable name="rs" select="normalize-space($resources)"/>
+
+  <xsl:if test="string-length($rs)">
+
+    <xsl:variable name="first">
+      <xsl:call-template name="str:safe-first-token">
+        <xsl:with-param name="tokens" select="$rs"/>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:variable name="type">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+        <xsl:with-param name="subject" select="$first"/>
+        <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+
+    <li>
+      <a rel="{$predicate}" href="{$first}" typeof="{$type}">
+        <span>
+          <xsl:apply-templates select="." mode="cgto:literal-content">
+            <xsl:with-param name="prefixes"  select="$prefixes"/>
+            <xsl:with-param name="subject"   select="$first"/>
+            <xsl:with-param name="predicate" select="$label-p"/>
+            <xsl:with-param name="prefixes"  select="$prefixes"/>
+          </xsl:apply-templates>
+        </span>
+      </a>
+      <form method="POST" action="" accept-charset="utf-8">
+        <button name="- {$predicate} :" value="{$first}"/>
+      </form>
+    </li>
+
+    <xsl:variable name="rest" select="substring-after($rs, ' ')"/>
+    <xsl:if test="string-length($rest)">
+      <xsl:call-template name="cgto:editable-resource-list-items">
+        <xsl:with-param name="resources" select="$rest"/>
+        <xsl:with-param name="predicate" select="$predicate"/>
+        <xsl:with-param name="label-prop"   select="$label-prop"/>
+        <xsl:with-param name="prefixes"  select="$prefixes"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:if>
+
+</xsl:template>
+
+<x:doc>
+  <h3><code>cgto:literal-content</code></h3>
+  <p>This template spits out some attributes and a text node. You supply the enclosing element and other attributes (but don't put a <code>property</code>, <code>datatype</code>, or <code>xml:lang</code> in it, or the template will blow up).</p>
+  <dl>
+    <dt><code>base</code></dt>
+    <dd>You can pass in the <code>base href</code> to save it the effort of re-fetching it.</dd>
+    <dt><code>prefixes</code></dt>
+    <dd>Any additional prefixes that may not already be in the document, in the form of an RDFa <code>prefix</code> attribute, for CURIEs.</dd>
+    <dt><code>subject</code></dt>
+    <dd>Likewise the subject, or otherwise override if it's not the same as the base.</dd>
+    <dt><code>predicate</code></dt>
+    <dd>This is the only mandatory parameter, the predicate associated with the label.</dd>
+    <dt><code>object</code></dt>
+    <dd>This is the actual label, and will be derived from the subject and the predicate, but if overridden, the value passed in must be a raw literal with <code>$rdfa:UNIT-SEP</code> delimiting the language/datatype (whether it has one or not).</dd>
+    <dt><code>content</code></dt>
+    <dd>If non-empty, this will place the label content (if present) in the <code>content</code> attribute and create a text node with this content instead.</dd>
+    <dt><code>noop</code></dt>
+    <dd>This will place the URL of the subject if no label is found (unless the <code>content</code> parameter is set, then it's that).</dd>
+  </dl>
+</x:doc>
+
+<xsl:template match="html:*" mode="cgto:literal-content">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="prefixes"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="predicate">
+    <xsl:message terminate="yes">`predicate` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="object">
+    <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="predicate" select="$predicate"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="content"/>
+  <xsl:param name="noop" select="false()"/>
+
+  <xsl:choose>
+    <xsl:when test="string-length($object)">
+      <xsl:variable name="pfx">
+        <xsl:apply-templates select="." mode="rdfa:merge-prefixes">
+          <xsl:with-param name="with" select="prefixes"/>
+        </xsl:apply-templates>
+      </xsl:variable>
+
+      <xsl:variable name="p-curie">
+        <xsl:call-template name="rdfa:make-curie">
+          <xsl:with-param name="uri" select="$predicate"/>
+        </xsl:call-template>
+      </xsl:variable>
+
+      <xsl:variable name="label" select="substring-before($object, $rdfa:UNIT-SEP)"/>
+      <xsl:variable name="label-type">
+        <xsl:if test="not(starts-with(substring-after($object, $rdfa:UNIT-SEP), '@'))">
+          <xsl:value-of select="substring-after($object, $rdfa:UNIT-SEP)"/>
+        </xsl:if>
+      </xsl:variable>
+      <xsl:variable name="label-lang">
+        <xsl:if test="starts-with(substring-after($object, $rdfa:UNIT-SEP), '@')">
+          <xsl:value-of select="substring-after($object, concat($rdfa:UNIT-SEP, '@'))"/>
+        </xsl:if>
+      </xsl:variable>
+
+      <xsl:attribute name="property"><xsl:value-of select="$p-curie"/></xsl:attribute>
+
+      <xsl:if test="$label-type">
+        <xsl:variable name="d-curie">
+          <xsl:call-template name="rdfa:make-curie">
+            <xsl:with-param name="uri" select="$label-type"/>
+          </xsl:call-template>
+        </xsl:variable>
+        <xsl:attribute name="datatype"><xsl:value-of select="$label-type"/></xsl:attribute>
+      </xsl:if>
+
+      <xsl:if test="$label-lang">
+        <xsl:attribute name="xml:lang"><xsl:value-of select="$label-lang"/></xsl:attribute>
+      </xsl:if>
+
+      <xsl:choose>
+        <xsl:when test="string-length($content)">
+          <xsl:attribute name="content"><xsl:value-of select="$label"/></xsl:attribute>
+        </xsl:when>
+        <xsl:otherwise><xsl:value-of select="$label"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:when test="string-length($content)">
+      <xsl:value-of select="$content"/>
+    </xsl:when>
+    <xsl:when test="$noop"><xsl:value-of select="$subject"/></xsl:when>
+  </xsl:choose>
+</xsl:template>
+
+<x:doc>
+  <h3>cgto:select-focus</h3>
+</x:doc>
 
 
 <xsl:template match="html:*" mode="cgto:select-focus">

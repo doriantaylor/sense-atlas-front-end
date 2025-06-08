@@ -29,6 +29,30 @@
 <xsl:variable name="XSD"  select="$rdfa:XSD-NS"/>
 
 <x:doc>
+  <h2>Metadata</h2>
+</x:doc>
+
+<xsl:template match="html:head" mode="rdfa:head-extra">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+
+  <!-- XXX get rid of this lol -->
+  <link rel="stylesheet" type="text/css" href="/type/roboto"/>
+  <link rel="stylesheet" type="text/css" href="/type/font-awesome"/>
+  <link rel="stylesheet" type="text/css" href="/type/noto-sans-symbols2"/>
+  <link rel="stylesheet" type="text/css" href="/asset/cgto/style"/>
+  <script type="text/javascript" src="/asset/rdf"></script>
+  <script type="text/javascript" src="/asset/rdf-viz"></script>
+  <script type="text/javascript" src="/asset/complex"></script>
+  <script type="text/javascript" src="/asset/d3"></script>
+  <script type="text/javascript" src="/asset/hierarchical"></script>
+  <script type="text/javascript" src="/asset/force-directed"></script>
+  <script type="text/javascript" src="/asset/cgto/scripts"></script>
+
+</xsl:template>
+
+<x:doc>
   <h2>Main body</h2>
 </x:doc>
 
@@ -433,7 +457,8 @@
 </xsl:template>
 
 <x:doc>
-  
+  <h3>cgto:show-focus</h3>
+</x:doc>
 
 <xsl:template match="html:*" mode="cgto:show-focus">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
@@ -606,6 +631,141 @@
     </table>
     </form>
   </main>
+
+</xsl:template>
+
+<x:doc>
+  <h2>find-inventories-by-class</h2>
+</x:doc>
+
+<xsl:template match="html:*" mode="cgto:find-inventories-by-class">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="classes">
+    <xsl:message terminate="yes">`classes` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="summaries">
+    <xsl:apply-templates select="." mode="rdfa:find-relations">
+      <xsl:with-param name="resources" select="$subject"/>
+      <xsl:with-param name="predicate" select="concat($CGTO, 'by-class')"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="inferred" select="false()"/>
+
+  <!--<xsl:message>lol summaries <xsl:value-of select="$summaries"/></xsl:message>-->
+
+  <xsl:if test="string-length(normalize-space($summaries))">
+    <xsl:variable name="observations">
+      <xsl:variable name="_">
+        <xsl:apply-templates select="." mode="rdfa:find-relations">
+          <xsl:with-param name="resources" select="$summaries"/>
+          <xsl:with-param name="predicate" select="concat($QB, 'dataSet')"/>
+          <xsl:with-param name="reverse"   select="true()"/>
+        </xsl:apply-templates>
+      </xsl:variable>
+
+      <!--<xsl:message>did this net anything? <xsl:value-of select="$_"/></xsl:message>-->
+
+      <xsl:choose>
+        <xsl:when test="string-length(normalize-space($classes))">
+          <xsl:apply-templates select="." mode="rdfa:filter-by-predicate-object">
+            <xsl:with-param name="subjects" select="$_"/>
+            <xsl:with-param name="predicate" select="concat($CGTO, 'class')"/>
+            <xsl:with-param name="object" select="$classes"/>
+          </xsl:apply-templates>
+        </xsl:when>
+        <xsl:otherwise><xsl:value-of select="$_"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <!--<xsl:message>observations: <xsl:value-of select="$observations"/></xsl:message>-->
+
+    <xsl:variable name="p">
+      <xsl:choose>
+	<xsl:when test="$inferred">inferred</xsl:when>
+	<xsl:otherwise>asserted</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <xsl:apply-templates select="." mode="rdfa:find-relations">
+      <xsl:with-param name="resources" select="$observations"/>
+      <xsl:with-param name="predicate" select="concat($CGTO, $p, '-subjects')"/>
+    </xsl:apply-templates>
+
+  </xsl:if>
+
+</xsl:template>
+
+<x:doc>
+  <h2>cgto:find-inventories-by-class</h2>
+  <p>XXX this can probably be replaced by something more generic.</p>
+</x:doc>
+
+<xsl:template match="html:*" mode="cgto:find-inventories-by-class">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="classes">
+    <xsl:message terminate="yes">`classes` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="summaries">
+    <xsl:apply-templates select="." mode="rdfa:find-relations">
+      <xsl:with-param name="resources" select="$subject"/>
+      <xsl:with-param name="predicate" select="concat($CGTO, 'by-class')"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="inferred" select="false()"/>
+
+  <!--<xsl:message>lol summaries <xsl:value-of select="$summaries"/></xsl:message>-->
+
+  <xsl:if test="string-length(normalize-space($summaries))">
+    <xsl:variable name="observations">
+      <xsl:variable name="_">
+        <xsl:apply-templates select="." mode="rdfa:find-relations">
+          <xsl:with-param name="resources" select="$summaries"/>
+          <xsl:with-param name="predicate" select="concat($QB, 'dataSet')"/>
+          <xsl:with-param name="reverse"   select="true()"/>
+        </xsl:apply-templates>
+      </xsl:variable>
+
+      <!--<xsl:message>did this net anything? <xsl:value-of select="$_"/></xsl:message>-->
+
+      <xsl:choose>
+        <xsl:when test="string-length(normalize-space($classes))">
+          <xsl:apply-templates select="." mode="rdfa:filter-by-predicate-object">
+            <xsl:with-param name="subjects" select="$_"/>
+            <xsl:with-param name="predicate" select="concat($CGTO, 'class')"/>
+            <xsl:with-param name="object" select="$classes"/>
+          </xsl:apply-templates>
+        </xsl:when>
+        <xsl:otherwise><xsl:value-of select="$_"/></xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <!--<xsl:message>observations: <xsl:value-of select="$observations"/></xsl:message>-->
+
+    <xsl:variable name="p">
+      <xsl:choose>
+	<xsl:when test="$inferred">inferred</xsl:when>
+	<xsl:otherwise>asserted</xsl:otherwise>
+      </xsl:choose>
+    </xsl:variable>
+
+    <xsl:apply-templates select="." mode="rdfa:find-relations">
+      <xsl:with-param name="resources" select="$observations"/>
+      <xsl:with-param name="predicate" select="concat($CGTO, $p, '-subjects')"/>
+    </xsl:apply-templates>
+
+  </xsl:if>
 
 </xsl:template>
 

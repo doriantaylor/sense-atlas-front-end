@@ -23,6 +23,27 @@
     indent="yes" omit-xml-declaration="no"
     encoding="utf-8" doctype-public=""/>
 
+<xsl:variable name="RDF" select="$rdfa:RDF-NS"/>
+<xsl:variable name="RDFS" select="$rdfa:RDFS-NS"/>
+<xsl:variable name="DCT"  select="'http://purl.org/dc/terms/'"/>
+<xsl:variable name="FOAF" select="'http://xmlns.com/foaf/0.1/'"/>
+<xsl:variable name="ORG"  select="'http://www.w3.org/ns/org#'"/>
+<xsl:variable name="PROV" select="'http://www.w3.org/ns/prov#'"/>
+<xsl:variable name="QB"   select="'http://purl.org/linked-data/cube#'"/>
+<xsl:variable name="SIOC" select="'http://rdfs.org/sioc/ns#'"/>
+<xsl:variable name="SKOS" select="'http://www.w3.org/2004/02/skos/core#'"/>
+<xsl:variable name="XHV"  select="'http://www.w3.org/1999/xhtml/vocab#'"/>
+<xsl:variable name="XSD"  select="$rdfa:XSD-NS"/>
+
+<x:lprops>
+  <x:prop uri="http://www.w3.org/1999/02/22-rdf-syntax-ns#value"/>
+  <x:prop uri="http://www.w3.org/2004/02/skos/core#prefLabel"/>
+  <x:prop uri="http://www.w3.org/2000/01/rdf-schema#label"/>
+  <x:prop uri="http://purl.org/dc/terms/title"/>
+  <x:prop uri="http://purl.org/dc/terms/identifier"/>
+  <x:prop uri="http://xmlns.com/foaf/0.1/name"/>
+</x:lprops>
+
 <x:doc>
   <h2>Utilities</h2>
 </x:doc>
@@ -372,8 +393,6 @@
       <xsl:with-param name="base"          select="$base"/>
       <xsl:with-param name="resource-path" select="$resource-path"/>
       <xsl:with-param name="rewrite"       select="$rewrite"/>
-      <xsl:with-param name="main"          select="$main"/>
-      <xsl:with-param name="heading"       select="$heading"/>
       <xsl:with-param name="targets"       select="$metas"/>
     </xsl:apply-templates>
   </xsl:if>
@@ -382,12 +401,18 @@
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>
     <xsl:with-param name="rewrite"       select="$rewrite"/>
-    <xsl:with-param name="main"          select="$main"/>
-    <xsl:with-param name="heading"       select="$heading"/>
+  </xsl:apply-templates>
+
+  <xsl:apply-templates select="." mode="rdfa:head-extra">
+    <xsl:with-param name="base"          select="$base"/>
+    <xsl:with-param name="resource-path" select="$resource-path"/>
+    <xsl:with-param name="rewrite"       select="$rewrite"/>
   </xsl:apply-templates>
 
   </head>
 </xsl:template>
+
+<xsl:template name="rdfa:head-extra"/>
 
 <x:doc>
   <h3>rdfa:get-meta</h3>
@@ -738,6 +763,50 @@
       </xsl:call-template>
     </xsl:variable>
   </xsl:if>
+</xsl:template>
+
+<x:doc>
+  <h2>Generic Body</h2>
+</x:doc>
+
+<xsl:template match="html:body">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base"  select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:param name="type">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject"   select="$subject"/>
+      <xsl:with-param name="base"      select="$base"/>
+      <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <body>
+    <xsl:apply-templates select="@*" mode="xc:attribute">
+      <xsl:with-param name="base"          select="$base"/>
+      <xsl:with-param name="resource-path" select="$resource-path"/>
+      <xsl:with-param name="rewrite"       select="$rewrite"/>
+    </xsl:apply-templates>
+
+    <xsl:apply-templates select="." mode="rdfa:body-content">
+      <xsl:with-param name="base"          select="$base"/>
+      <xsl:with-param name="resource-path" select="$resource-path"/>
+      <xsl:with-param name="rewrite"       select="$rewrite"/>
+      <xsl:with-param name="main"          select="$main"/>
+      <xsl:with-param name="heading"       select="$heading"/>
+      <xsl:with-param name="subject"       select="$subject"/>
+      <xsl:with-param name="type"          select="$type"/>
+    </xsl:apply-templates>
+  </body>
 </xsl:template>
 
 </xsl:stylesheet>

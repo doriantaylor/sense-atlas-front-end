@@ -18,7 +18,7 @@ TARGET = target
 
 XSLT_ASSETS = transclude.xsl rdfa.xsl ibis.xsl
 # SCSS_ASSETS = ibis.scss
-JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js skos-ibis/scripts.js
+JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js cgto/scripts.js
 
 GITHUB = https://raw.githubusercontent.com/doriantaylor
 LOCAL  = $(HOME)/clients/me
@@ -69,10 +69,10 @@ $(TARGET)/asset/rdfa-util.xsl : $(TARGET)/asset/transclude.xsl $(TARGET)/asset/r
 	$(CP) $(SOURCE)/asset/rdfa-util.xsl $(TARGET)/asset
 
 $(TARGET)/asset/cgto/space.xsl : $(TARGET)/asset/cgto $(TARGET)/asset/rdfa-util.xsl
-	$(CP) $(SOURCE)/asset/cgto/space.xsl $(TARGET)/asset
+	$(CP) $(SOURCE)/asset/cgto/space.xsl $(TARGET)/asset/cgto
 
 $(TARGET)/asset/cgto/error.xsl : $(TARGET)/asset/cgto $(TARGET)/asset/rdfa-util.xsl
-	$(CP) $(SOURCE)/asset/cgto/error.xsl $(TARGET)/asset
+	$(CP) $(SOURCE)/asset/cgto/error.xsl $(TARGET)/asset/cgto
 
 $(TARGET)/asset/skos/concept.xsl : $(TARGET)/asset/skos $(TARGET)/asset/cgto/space.xsl
 	$(CP) $(SOURCE)/asset/skos/concept.xsl $(TARGET)/asset/skos

@@ -86,6 +86,9 @@ $(TARGET)/asset/skos/concept-scheme.xsl : $(TARGET)/asset/skos $(TARGET)/asset/c
 $(TARGET)/asset/ibis/entity.xsl : $(TARGET)/asset/ibis $(TARGET)/asset/skos/concept.xsl
 	$(CP) $(SOURCE)/asset/ibis/entity.xsl $(TARGET)/asset/ibis
 
+$(TARGET)/asset/ibis/position.xsl : $(TARGET)/asset/ibis $(TARGET)/asset/ibis/entity.xsl
+	$(CP) $(SOURCE)/asset/ibis/position.xsl $(TARGET)/asset/ibis
+
 $(TARGET)/asset/ibis/network.xsl : $(TARGET)/asset/ibis $(TARGET)/asset/skos/concept-scheme.xsl
 	$(CP) $(SOURCE)/asset/ibis/network.xsl $(TARGET)/asset/ibis
 
@@ -108,9 +111,9 @@ $(TARGET)/asset/pm/target.xsl : $(TARGET)/asset/pm $(TARGET)/asset/ibis/entity.x
 xslt: clean-xslt \
 	$(TARGET)/asset/cgto/space.xsl $(TARGET)/asset/cgto/error.xsl \
 	$(TARGET)/asset/skos/concept.xsl $(TARGET)/asset/skos/concept-scheme.xsl \
-	$(TARGET)/asset/ibis/entity.xsl $(TARGET)/asset/ibis/network.xsl \
-	$(TARGET)/asset/pm/goal.xsl $(TARGET)/asset/pm/task.xsl \
-	$(TARGET)/asset/pm/target.xsl
+	$(TARGET)/asset/ibis/entity.xsl $(TARGET)/asset/ibis/position.xsl \
+	$(TARGET)/asset/ibis/network.xsl $(TARGET)/asset/pm/goal.xsl \
+	$(TARGET)/asset/pm/task.xsl $(TARGET)/asset/pm/target.xsl
 
 clean-xslt:
 	$(FIND) $(TARGET)/ -type f -name \*.xsl -print0 | xargs -0 rm -f

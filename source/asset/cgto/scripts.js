@@ -317,23 +317,24 @@ window.addEventListener('load', function () {
     const forms    = this.document.querySelectorAll(selector);
 
     Array.from(forms).forEach(form => {
+        const label = form['$ label'];
+        if (label && label.list) {
+            // console.log(form);
+            form.addEventListener('focusin',  focus,  false);
+            form.addEventListener('focusout', blur,   false);
+            form.addEventListener('keydown',  escape, true);
 
-        // console.log(form);
-        form.addEventListener('focusin',  focus,  false);
-        form.addEventListener('focusout', blur,   false);
-        form.addEventListener('keydown',  escape, true);
+            // this will do nothing if there aren't any
+            const radios = Array.from(form.querySelectorAll('input[type="radio"]'));
 
-        const radios = Array.from(form.querySelectorAll('input[type="radio"]'));
+            radios.forEach(r => {
+                r.addEventListener('mousedown', clickRadio);
+                // r.addEventListener('input', typeSelect);
+                r.addEventListener('change', typeSelect);
+            });
 
-        radios.forEach(r => {
-            r.addEventListener('mousedown', clickRadio);
-            // r.addEventListener('input', typeSelect);
-            r.addEventListener('change', typeSelect);
-        });
-
-        // form['= rdf:value'].addEventListener('change', change, false);
-        // form['= rdf:value'].addEventListener('select', change, false);
-        form['$ label'].addEventListener('input', handleAutoFill, false);
+            label.addEventListener('input', handleAutoFill, false);
+        }
 
     });
 

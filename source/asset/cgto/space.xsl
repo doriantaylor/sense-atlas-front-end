@@ -1022,4 +1022,18 @@
 
 </xsl:template>
 
+<x:doc>
+  <h3>attribute sets cgto:form-post and cgto:form-post-self</h3>
+  <p>we use a lot of forms and this is the boilerplate, lol</p>
+</x:doc>
+
+<xsl:attribute-set name="cgto:form-post">
+  <xsl:attribute name="method">POST</xsl:attribute>
+  <xsl:attribute name="accept-charset">utf-8</xsl:attribute>
+</xsl:attribute-set>
+
+<xsl:attribute-set name="cgto:form-post-self" use-attribute-sets="cgto:form-post">
+  <xsl:attribute name="action"/>
+</xsl:attribute-set>
+
 </xsl:stylesheet>

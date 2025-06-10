@@ -33,6 +33,13 @@
       <xsl:with-param name="debug" select="false()"/>
     </xsl:apply-templates>
   </xsl:param>
+  <xsl:param name="type">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
+    </xsl:apply-templates>
+  </xsl:param>
 
   <xsl:param name="user">
     <xsl:message terminate="yes">`user` parameter required</xsl:message>
@@ -48,10 +55,23 @@
   </xsl:variable>
 
   <h1 class="heading">
-    <form accept-charset="utf-8" action="" class="description" method="POST">
-      <textarea class="heading" name="= rdf:value"><xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/></textarea>
-      <button class="fa fa-sync" title="Save Text"></button>
-    </form>
+    <xsl:choose>
+      <xsl:when test="$can-write">
+        <xsl:call-template name="ibis:upgrade-downgrade">
+          <xsl:with-param name="subject" select="$subject"/>
+          <xsl:with-param name="type" select="$type"/>
+          <xsl:with-param name="can-write" select="$can-write"/>
+        </xsl:call-template>
+        <form accept-charset="utf-8" action="" class="description" method="POST">
+          <textarea class="heading" name="= rdf:value"><xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/></textarea>
+          <button class="fa fa-sync" title="Save Text"></button>
+        </form>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:attribute name="property">rdf:value</xsl:attribute>
+        <xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </h1>
 
   <xsl:call-template name="skos:created-by">

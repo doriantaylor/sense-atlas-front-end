@@ -2027,9 +2027,17 @@
       <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
       <x:label>Achieved By</x:label>
     </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#anchors">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:label>Anchors</x:label>
+    </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/process-model#anchored-by">
       <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
       <x:label>Anchored By</x:label>
+    </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/process-model#initiates">
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Initiates</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/process-model#contextualizes">
       <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>

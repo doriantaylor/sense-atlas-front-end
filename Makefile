@@ -126,7 +126,7 @@ clean-css:
 $(TARGET)/asset/cgto/style.css : $(TARGET)/asset/cgto
 	$(PSASS) -t expanded -o $(TARGET)/asset/cgto/style.css $(SOURCE)/asset/cgto/style.scss
 
-css: $(TARGET)/asset/cgto/style.css
+css: clean-css $(TARGET)/asset/cgto/style.css
 
 # JAVASCRIPT
 

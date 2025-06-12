@@ -95,25 +95,12 @@
     </xsl:if>
   </xsl:variable>
 
-  <h1 class="heading">
-    <xsl:choose>
-      <xsl:when test="$can-write">
-        <xsl:call-template name="ibis:upgrade-downgrade">
-          <xsl:with-param name="subject" select="$subject"/>
-          <xsl:with-param name="type" select="$type"/>
-          <xsl:with-param name="can-write" select="$can-write"/>
-        </xsl:call-template>
-        <form accept-charset="utf-8" action="" class="description" method="POST">
-          <textarea class="heading" name="= rdf:value"><xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/></textarea>
-          <button class="fa fa-sync" title="Save Text"></button>
-        </form>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:attribute name="property">rdf:value</xsl:attribute>
-        <xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </h1>
+  <xsl:call-template name="ibis:entity-heading">
+    <xsl:with-param name="subject" select="$subject"/>
+    <xsl:with-param name="type" select="$type"/>
+    <xsl:with-param name="value" select="$value"/>
+    <xsl:with-param name="can-write" select="$can-write"/>
+  </xsl:call-template>
 
   <xsl:call-template name="skos:created-by">
     <xsl:with-param name="base" select="$base"/>
@@ -137,6 +124,87 @@
     <xsl:with-param name="subject" select="$subject"/>
     <xsl:with-param name="user" select="$user"/>
   </xsl:call-template>
+</xsl:template>
+
+<x:doc>
+  <h3>ibis:entity-heading</h3>
+</x:doc>
+
+<xsl:template name="ibis:entity-heading">
+  <xsl:param name="subject">
+    <xsl:message terminate="yes">`subject` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="type">
+    <xsl:message terminate="yes">`type` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="value">
+    <xsl:message terminate="yes">`value` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="can-write">
+    <xsl:message terminate="yes">`can-write` parameter required</xsl:message>
+  </xsl:param>
+
+  <h1 class="heading">
+    <xsl:choose>
+      <xsl:when test="$can-write">
+        <xsl:call-template name="ibis:banner">
+          <xsl:with-param name="type" select="$type"/>
+          <xsl:with-param name="show-icon" select="false()"/>
+        </xsl:call-template>
+        <xsl:call-template name="ibis:upgrade-downgrade">
+          <xsl:with-param name="subject" select="$subject"/>
+          <xsl:with-param name="type" select="$type"/>
+          <xsl:with-param name="can-write" select="$can-write"/>
+        </xsl:call-template>
+        <form accept-charset="utf-8" action="" class="description" method="POST">
+          <textarea class="heading" name="= rdf:value"><xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/></textarea>
+          <button class="fa fa-sync" aria-label="Save Text" title="Save Text"></button>
+        </form>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="ibis:banner">
+          <xsl:with-param name="type" select="$type"/>
+        </xsl:call-template>
+        <p>
+          <xsl:attribute name="property">rdf:value</xsl:attribute>
+          <xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/>
+        </p>
+      </xsl:otherwise>
+    </xsl:choose>
+  </h1>
+</xsl:template>
+
+<x:doc>
+  <h3>ibis:banner</h3>
+</x:doc>
+
+<xsl:template name="ibis:banner">
+  <xsl:param name="type">
+    <xsl:message terminate="yes">`type` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="show-icon" select="true()"/>
+
+
+  <xsl:variable name="label">
+    <xsl:call-template name="skos:get-class-label">
+      <xsl:with-param name="class" select="$type"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="icon">
+    <xsl:call-template name="skos:get-class-label">
+      <xsl:with-param name="class" select="$type"/>
+      <xsl:with-param name="icon" select="true()"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <p role="banner">
+    <xsl:value-of select="$label"/>
+    <xsl:text> </xsl:text>
+    <xsl:if test="$show-icon">
+      <span role="presentation" class="fa"><xsl:value-of select="$icon"/></span>
+    </xsl:if>
+  </p>
 </xsl:template>
 
 <x:doc>

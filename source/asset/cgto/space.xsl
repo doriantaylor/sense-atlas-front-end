@@ -325,6 +325,7 @@
   <xsl:param name="label-prop" select="concat($RDF, 'value')"/>
   <xsl:param name="datalist-id"/>
   <xsl:param name="prefixes"/>
+  <xsl:param name="can-write" select="false()"/>
 
   <xsl:variable name="actual-prefixes">
     <xsl:variable name="_">
@@ -370,9 +371,11 @@
       <xsl:with-param name="predicate" select="$predicate"/>
       <xsl:with-param name="label-prop" select="$label-prop"/>
       <xsl:with-param name="prefixes" select="$actual-prefixes"/>
+      <xsl:with-param name="can-write" select="$can-write"/>
     </xsl:call-template>
 
     <!-- add new / link existing -->
+    <xsl:if test="$can-write">
     <li>
       <form method="POST" action="" accept-charset="utf-8">
         <input class="new" type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
@@ -387,6 +390,7 @@
         </input>
       </form>
     </li>
+    </xsl:if>
   </ul>
 </xsl:template>
 
@@ -400,6 +404,7 @@
   <xsl:param name="predicate"/>
   <xsl:param name="label-prop"/>
   <xsl:param name="prefixes"/>
+  <xsl:param name="can-write" select="false()"/>
 
   <xsl:variable name="rs" select="normalize-space($resources)"/>
 
@@ -411,27 +416,40 @@
       </xsl:call-template>
     </xsl:variable>
 
+    <xsl:variable name="p-curie">
+      <xsl:call-template name="rdfa:make-curie">
+        <xsl:with-param name="uri" select="$predicate"/>
+        <xsl:with-param name="prefixes" select="$prefixes"/>
+      </xsl:call-template>
+    </xsl:variable>
+
     <xsl:variable name="type">
-      <xsl:apply-templates select="." mode="rdfa:object-resources">
-        <xsl:with-param name="subject" select="$first"/>
-        <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
-      </xsl:apply-templates>
+      <xsl:call-template name="rdfa:make-curie-list">
+        <xsl:with-param name="list">
+          <xsl:apply-templates select="." mode="rdfa:object-resources">
+            <xsl:with-param name="subject" select="$first"/>
+            <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
+          </xsl:apply-templates>
+        </xsl:with-param>
+        <xsl:with-param name="prefixes" select="$prefixes"/>
+      </xsl:call-template>
     </xsl:variable>
 
     <li>
-      <a rel="{$predicate}" href="{$first}" typeof="{$type}">
+      <a rel="{$p-curie}" href="{$first}" typeof="{$type}">
         <span>
           <xsl:apply-templates select="." mode="cgto:literal-content">
-            <xsl:with-param name="prefixes"  select="$prefixes"/>
             <xsl:with-param name="subject"   select="$first"/>
-            <xsl:with-param name="predicate" select="$label-p"/>
+            <xsl:with-param name="predicate" select="$label-prop"/>
             <xsl:with-param name="prefixes"  select="$prefixes"/>
           </xsl:apply-templates>
         </span>
       </a>
-      <form method="POST" action="" accept-charset="utf-8">
-        <button name="- {$predicate} :" value="{$first}"/>
-      </form>
+      <xsl:if test="$can-write">
+        <form method="POST" action="" accept-charset="utf-8">
+          <button class="fa fa-times" name="- {$p-curie} :" value="{$first}"/>
+        </form>
+      </xsl:if>
     </li>
 
     <xsl:variable name="rest" select="substring-after($rs, ' ')"/>

@@ -324,6 +324,11 @@
     <button class="update fa fa-sync"></button>
   </form>
 
+  <xsl:call-template name="skos:created-by">
+    <xsl:with-param name="base" select="$base"/>
+    <xsl:with-param name="subject" select="$subject"/>
+  </xsl:call-template>
+
   <xsl:call-template name="skos:literal-form">
     <xsl:with-param name="base" select="$base"/>
     <xsl:with-param name="subject" select="$subject"/>
@@ -346,11 +351,6 @@
     <xsl:with-param name="subject" select="$subject"/>
   </xsl:call-template>
 
-  <xsl:call-template name="skos:created-by">
-    <xsl:with-param name="base" select="$base"/>
-    <xsl:with-param name="subject" select="$subject"/>
-  </xsl:call-template>
-
 </xsl:template>
 
 <x:doc>
@@ -358,9 +358,10 @@
 </x:doc>
 
 <xsl:template name="skos:referenced-by-inset">
-  <aside>
-    <h5>Referenced By</h5>
-  </aside>
+  <details>
+    <summary>Referenced By</summary>
+    <p>need to implement some stuff first lol</p>
+  </details>
 </xsl:template>
 
 <x:doc>
@@ -1068,6 +1069,14 @@
     </xsl:if>
   </xsl:param>
 
+  <xsl:variable name="space-label-raw">
+    <xsl:apply-templates select="document($space)/*" mode="rdfa:object-literal-quick">
+      <xsl:with-param name="subject" select="$space"/>
+      <xsl:with-param name="predicate" select="concat($SKOS, 'prefLabel')"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+  <xsl:variable name="space-label" select="substring-before($space-label-raw, $rdfa:UNIT-SEP)"/>
+
   <xsl:variable name="is-scheme" select="contains(concat(' ', $schemes, ' '), concat(' ', $subject, ' '))"/>
 
   <!--
@@ -1093,6 +1102,7 @@
   </xsl:variable>
 
   <footer>
+    <div>
     <form>
       <button type="button" id="scheme-collapsed">
       <xsl:call-template name="skos:scheme-collapsed-item">
@@ -1145,6 +1155,22 @@
 	</li>
       </xsl:if>
     </ul>
+    </div>
+    <div><strong><a href="{$space}"><xsl:value-of select="$space-label"/></a></strong></div>
+    <xsl:choose>
+      <xsl:when test="string-length($user)">
+        <form method="POST" action="/logout">
+          <button>Log Out</button>
+        </form>
+      </xsl:when>
+      <xsl:otherwise>
+        <form method="POST" action="/email-link">
+          <input type="hidden" name="forward" value="{$subject}"/>
+          <input type="email" placeholder="you@your.domain" name="email"/>
+          <button>Log In</button>
+        </form>
+      </xsl:otherwise>
+    </xsl:choose>
   </footer>
 </xsl:template>
 
@@ -1622,6 +1648,44 @@
       </xsl:call-template>
     </xsl:if>
   </xsl:if>
+</xsl:template>
+
+<xsl:variable name="skos:SEQUENCE" select="document('')/xsl:stylesheet/x:sequence"/>
+
+<xsl:template name="skos:get-class-label">
+  <xsl:param name="class">
+    <xsl:message terminate="yes">`class` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="icon" select="false()"/>
+
+  <xsl:variable name="first">
+    <xsl:call-template name="str:safe-first-token">
+      <xsl:with-param name="tokens" select="$class"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:variable name="rest" select="substring-after(normalize-space($class), ' ')"/>
+
+  <xsl:variable name="entry" select="$skos:SEQUENCE/x:class[@uri = $first]"/>
+
+  <xsl:choose>
+    <xsl:when test="$entry">
+      <xsl:choose>
+        <xsl:when test="$icon">
+          <xsl:value-of select="$entry/@icon"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$entry/x:label"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:when test="string-length($rest)">
+      <xsl:call-template name="skos:get-class-label">
+        <xsl:with-param name="class" select="$rest"/>
+        <xsl:with-param name="icon" select="$icon"/>
+      </xsl:call-template>
+    </xsl:when>
+  </xsl:choose>
 </xsl:template>
 
 <x:doc>

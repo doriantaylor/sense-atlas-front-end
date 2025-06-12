@@ -313,7 +313,7 @@ window.addEventListener('load', function () {
 
     // attach the event listeners
 
-    const selector = 'section.relations > section > form';
+    const selector = 'main > article form';
     const forms    = this.document.querySelectorAll(selector);
 
     Array.from(forms).forEach(form => {

@@ -14,6 +14,7 @@
 		xmlns="http://www.w3.org/1999/xhtml"
 		exclude-result-prefixes="html str uri rdfa xc x">
 
+<xsl:import href="goal"/>
 <xsl:import href="/asset/ibis/position"/>
 
 <xsl:output
@@ -54,92 +55,40 @@
     </xsl:apply-templates>
   </xsl:variable>
 
-  <h1 class="heading">
-    <xsl:choose>
-      <xsl:when test="$can-write">
-        <xsl:call-template name="ibis:upgrade-downgrade">
-          <xsl:with-param name="subject" select="$subject"/>
-          <xsl:with-param name="type" select="$type"/>
-          <xsl:with-param name="can-write" select="$can-write"/>
-        </xsl:call-template>
-        <form accept-charset="utf-8" action="" class="description" method="POST">
-          <textarea class="heading" name="= rdf:value"><xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/></textarea>
-          <button class="fa fa-sync" title="Save Text"></button>
-        </form>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:attribute name="property">rdf:value</xsl:attribute>
-        <xsl:value-of select="substring-before($value, $rdfa:UNIT-SEP)"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </h1>
+  <xsl:call-template name="ibis:entity-heading">
+    <xsl:with-param name="subject" select="$subject"/>
+    <xsl:with-param name="type" select="$type"/>
+    <xsl:with-param name="value" select="$value"/>
+    <xsl:with-param name="can-write" select="$can-write"/>
+  </xsl:call-template>
 
   <xsl:call-template name="skos:created-by">
     <xsl:with-param name="base" select="$base"/>
     <xsl:with-param name="subject" select="$subject"/>
   </xsl:call-template>
 
-  <p>
-    <!-- when did it start -->
-    <xsl:variable name="started">
-      <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
-        <xsl:with-param name="base" select="$base"/>
-        <xsl:with-param name="subject" select="$subject"/>
+  <section>
+    <div>
+      <h5>Started:</h5>
+      <xsl:call-template name="pm:date-control">
+        <xsl:with-param name="base"      select="$base"/>
+        <xsl:with-param name="subject"   select="$subject"/>
         <xsl:with-param name="predicate" select="concat($PROV, 'startedAtTime')"/>
-        <xsl:with-param name="datatype" select="concat($XSD, 'dateTime')"/>
-      </xsl:apply-templates>
-    </xsl:variable>
-    <xsl:comment><xsl:value-of select="$started"/></xsl:comment>
-    <form accept-charset="utf-8" action="" method="POST">
-      <label>Started: <input type="datetime-local" name="= prov:startedAtTime ^xsd:dateTime" value="{$started}"/></label>
-    </form>
-    <!-- when did it end -->
-    <xsl:variable name="ended">
-      <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
-        <xsl:with-param name="base" select="$base"/>
-        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="can-write" select="$can-write"/>
+      </xsl:call-template>
+    </div>
+    <div>
+      <h5>Ended:</h5>
+      <xsl:call-template name="pm:date-control">
+        <xsl:with-param name="base"      select="$base"/>
+        <xsl:with-param name="subject"   select="$subject"/>
         <xsl:with-param name="predicate" select="concat($PROV, 'endedAtTime')"/>
-        <xsl:with-param name="datatype" select="concat($XSD, 'dateTime')"/>
-      </xsl:apply-templates>
-    </xsl:variable>
-    <form accept-charset="utf-8" action="" method="POST">
-      <label>Ended: <input type="datetime-local" name="= prov:endedAtTime ^xsd:dateTime" value="{$ended}"/></label>
-    </form>
-    <!-- (other PROV stuff??) -->
-  </p>
-
-  <!-- who endorses this task? -->
+        <xsl:with-param name="can-write" select="$can-write"/>
+      </xsl:call-template>
+    </div>
+  </section>
 
   <section>
-    <xsl:variable name="performers">
-      <xsl:apply-templates select="." mode="rdfa:object-resources">
-        <xsl:with-param name="base"      select="$base"/>
-        <xsl:with-param name="subject"   select="$subject"/>
-        <xsl:with-param name="predicate" select="concat($PM, 'performer')"/>
-      </xsl:apply-templates>
-    </xsl:variable>
-    <xsl:variable name="responsible">
-      <xsl:apply-templates select="." mode="rdfa:object-resources">
-        <xsl:with-param name="base"      select="$base"/>
-        <xsl:with-param name="subject"   select="$subject"/>
-        <xsl:with-param name="predicate" select="concat($PM, 'responsible')"/>
-      </xsl:apply-templates>
-    </xsl:variable>
-    <xsl:variable name="recipients">
-      <xsl:apply-templates select="." mode="rdfa:object-resources">
-        <xsl:with-param name="base"      select="$base"/>
-        <xsl:with-param name="subject"   select="$subject"/>
-        <xsl:with-param name="predicate" select="concat($PM, 'recipient')"/>
-      </xsl:apply-templates>
-    </xsl:variable>
-    <xsl:variable name="involved">
-      <xsl:apply-templates select="." mode="rdfa:object-resources">
-        <xsl:with-param name="base"      select="$base"/>
-        <xsl:with-param name="subject"   select="$subject"/>
-        <xsl:with-param name="predicate" select="concat($PM, 'involved')"/>
-      </xsl:apply-templates>
-    </xsl:variable>
-
     <!-- who is performing this task -->
     <div>
       <h5>Performed By:</h5>
@@ -147,10 +96,17 @@
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>
         <xsl:with-param name="predicate"   select="concat($PM, 'performer')"/>
-        <xsl:with-param name="resources"   select="$performers"/>
+        <xsl:with-param name="resources">
+          <xsl:apply-templates select="." mode="rdfa:object-resources">
+            <xsl:with-param name="base"      select="$base"/>
+            <xsl:with-param name="subject"   select="$subject"/>
+            <xsl:with-param name="predicate" select="concat($PM, 'performer')"/>
+          </xsl:apply-templates>
+        </xsl:with-param>
         <xsl:with-param name="new-type"    select="concat($FOAF, 'Person')"/>
         <xsl:with-param name="label-prop"  select="concat($FOAF, 'name')"/>
         <xsl:with-param name="datalist-id" select="'agents'"/>
+        <xsl:with-param name="can-write"   select="$can-write"/>
       </xsl:call-template>
     </div>
     <!-- who is responsible -->
@@ -160,10 +116,17 @@
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>
         <xsl:with-param name="predicate"   select="concat($PM, 'responsible')"/>
-        <xsl:with-param name="resources"   select="$performers"/>
+        <xsl:with-param name="resources">
+          <xsl:apply-templates select="." mode="rdfa:object-resources">
+            <xsl:with-param name="base"      select="$base"/>
+            <xsl:with-param name="subject"   select="$subject"/>
+            <xsl:with-param name="predicate" select="concat($PM, 'responsible')"/>
+          </xsl:apply-templates>
+        </xsl:with-param>
         <xsl:with-param name="new-type"    select="concat($FOAF, 'Person')"/>
         <xsl:with-param name="label-prop"  select="concat($FOAF, 'name')"/>
         <xsl:with-param name="datalist-id" select="'agents'"/>
+        <xsl:with-param name="can-write"   select="$can-write"/>
       </xsl:call-template>
     </div>
     <!-- who is the recipient of the result -->
@@ -173,10 +136,17 @@
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>
         <xsl:with-param name="predicate"   select="concat($PM, 'recipient')"/>
-        <xsl:with-param name="resources"   select="$performers"/>
+        <xsl:with-param name="resources">
+          <xsl:apply-templates select="." mode="rdfa:object-resources">
+            <xsl:with-param name="base"      select="$base"/>
+            <xsl:with-param name="subject"   select="$subject"/>
+            <xsl:with-param name="predicate" select="concat($PM, 'recipient')"/>
+          </xsl:apply-templates>
+        </xsl:with-param>
         <xsl:with-param name="new-type"    select="concat($FOAF, 'Person')"/>
         <xsl:with-param name="label-prop"  select="concat($FOAF, 'name')"/>
         <xsl:with-param name="datalist-id" select="'agents'"/>
+        <xsl:with-param name="can-write"   select="$can-write"/>
       </xsl:call-template>
     </div>
     <!-- who else is involved -->
@@ -185,11 +155,18 @@
       <xsl:call-template name="cgto:editable-resource-list">
         <xsl:with-param name="base"        select="$base"/>
         <xsl:with-param name="subject"     select="$subject"/>
-        <xsl:with-param name="predicate"   select="concat($PM, 'involved')"/>
-        <xsl:with-param name="resources"   select="$performers"/>
+        <xsl:with-param name="predicate"   select="concat($PM, 'involves')"/>
+        <xsl:with-param name="resources">
+          <xsl:apply-templates select="." mode="rdfa:object-resources">
+            <xsl:with-param name="base"      select="$base"/>
+            <xsl:with-param name="subject"   select="$subject"/>
+            <xsl:with-param name="predicate" select="concat($PM, 'involves')"/>
+          </xsl:apply-templates>
+        </xsl:with-param>
         <xsl:with-param name="new-type"    select="concat($FOAF, 'Person')"/>
         <xsl:with-param name="label-prop"  select="concat($FOAF, 'name')"/>
         <xsl:with-param name="datalist-id" select="'agents'"/>
+        <xsl:with-param name="can-write"   select="$can-write"/>
       </xsl:call-template>
     </div>
   </section>
@@ -222,5 +199,6 @@
     <xsl:with-param name="user" select="$user"/>
   </xsl:call-template>
 </xsl:template>
+
 
 </xsl:stylesheet>

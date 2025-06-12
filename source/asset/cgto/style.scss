@@ -28,8 +28,7 @@ html {
         margin: 0;
     }
 
-    input[type="text"], input[type="submit"], input[type="reset"],
-    input[type="datetime-local"], select, option, button, textarea {
+    input[type="text"], input[type="number"], input[type="submit"], input[type="reset"], input[type="email"], input[type="datetime-local"], select, option, button, textarea {
         background-color: inherit;
         color: inherit;
         border-width: 0.125rem;
@@ -102,33 +101,49 @@ html {
             }
         }
         > footer {
+            width: 100%;
             grid-row: 2;
             background-color: inherit;
-	    > ul.schemes {
-		display: none;
-		position: absolute;
-		bottom: 0;
-		opacity: 0;
-		transition: opacity 0.5s, display 0s allow-discrete;
-		background-color: inherit;
-		border-width: 1px;
-		border-radius: 0.25em;
-		padding: 0.25em;
-		margin: 0.25em;
-		> li {
-		    display: flex;
-		    *:first-child {
-			flex: 2 1 auto;
+            display: flex;
+            justify-content: stretch;
+            > * {
+                flex: 2 1 33%;
+                padding: 0 1rem;
+            }
+            > *:first-child {
+                background-color:inherit;
+	        > form {
+		    padding: 0 0.25em;
+	        }
+	        > ul.schemes {
+		    display: none;
+		    position: absolute;
+		    bottom: 0;
+		    opacity: 0;
+		    transition: opacity 0.5s, display 0s allow-discrete;
+		    background-color: inherit;
+		    border-width: 1px;
+		    border-radius: 0.25em;
+		    padding: 0.25em;
+		    margin: 0.25em;
+		    > li {
+		        display: flex;
+		        *:first-child {
+			    flex: 2 1 auto;
+		        }
 		    }
-		}
-		&.open {
-		    display: block;
-		    opacity: 1;
-		}
-	    }
-	    > form {
-		padding: 0 0.25em;
-	    }
+		    &.open {
+		        display: block;
+		        opacity: 1;
+		    }
+	        }
+            }
+            > *:nth-child(2) {
+                text-align: center;
+            }
+            > *:nth-child(3) {
+                text-align: end;
+            }
         }
     }
 
@@ -205,10 +220,39 @@ html {
                         button {
                             border-width: 0.125rem;
                         }
+                        > p {
+                            margin: 0;
+                            &:nth-child(2) {
+                                padding: 0.5em 0.25em 0.25em 0;
+                            }
+                            &[role="banner"] {
+                                font-weight: lighter;
+                                opacity: 0.5;
+                                writing-mode: sideways-lr;
+                                text-align: end;
+                                margin: 0.5em 0.5em 0 0.125em;
+                                > span[role="presentation"] {
+                                    writing-mode: initial;
+                                    border: 0.0625em solid currentColor;
+                                    border-radius: 0.5rem;
+                                    margin: 0 0 0.25em 0.25em;
+                                    padding: 0.5em;
+                                    display: inline-block;
+                                    vertical-align: middle;
+                                    cursor: default;
+                                }
+                            }
+                        }
                     }
                     > span.date {
                         display: block;
                         text-align: right;
+                    }
+                    details {
+                        summary {
+                            font-weight: bolder;
+                            font-size: 120%;
+                        }
                     }
 		    ul {
                         max-height: 5rem;
@@ -220,7 +264,14 @@ html {
                             line-height: 1.4em;
                             height: 2em;
                             margin: 0.125rem 0;
+                            > a:only-of-type {
+                                display: inline-block;
+                                flex-basis: 100%;
+                            }
                             > form {
+                                display: inline-block;
+                            }
+                            > form:only-child {
                                 display: flex;
                                 float: initial;
                                 flex-basis: 100%;
@@ -375,7 +426,7 @@ html {
                             display: flex;
                             flex-wrap: wrap;
                             gap: 0.25rem;
-                            font-size: 75%;
+                            font-size: 66.6%;
                             > li {
                                 display: inline-block;
                                 max-width: 50%;
@@ -453,6 +504,24 @@ html {
             }
         }
 
+        // goal only
+        &[typeof~="pm:Goal"] {
+            > main > article {
+                > hgroup {
+                    > section:first-of-type {
+                        display: flex;
+                        max-width: 100%;
+                        flex-wrap: wrap;
+                        gap: 0.25rem;
+                        margin: 0.5rem 0;
+                        > div {
+                            flex: 2 1 auto;
+                        }
+                    }
+                }
+            }
+        }
+
         // task-only
         &[typeof~="pm:Task"] {
             > main > article {
@@ -460,18 +529,23 @@ html {
                     > p:first-of-type {
                         display: flex;
                         justify-content: space-around;
+                        gap: 0.25em;
                     }
-                    > section:first-of-type {
+                    > section {
                         display: flex;
                         max-width: 100%;
                         flex-wrap: wrap;
+                        margin: 0.5rem 0;
                         // display: grid;
                         // grid-template-columns: 1fr 1fr;
                         // grid-template-rows: 1fr 1fr;
                         gap: 0.25em;
                         > div {
                             max-width: 50%;
-                            flex: 2 1 auto;
+                            flex: 2 0 45%;
+                            > ul {
+                                margin: 0 0 0.5em 0;
+                            }
                         }
                     }
                 }
@@ -575,15 +649,15 @@ html {
                     }
                 }
 		> footer {
-		    > ul.schemes {
+                    > div:first-child > ul.schemes {
                         color: nth($pal, 1);
                         border-color: nth($pal, 1);
                         background-color: nth($pal, 4);
 			a[href] {
 			    color: inherit;
-			}
+		        }
 		    }
-		}
+                }
             }
         }
 

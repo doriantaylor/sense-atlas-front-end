@@ -75,6 +75,7 @@
         <xsl:with-param name="subject"   select="$subject"/>
         <xsl:with-param name="predicate" select="concat($PROV, 'startedAtTime')"/>
         <xsl:with-param name="can-write" select="$can-write"/>
+        <xsl:with-param name="prefixes" select="concat('prov: ', $PROV)"/>
       </xsl:call-template>
     </div>
     <div>
@@ -84,6 +85,7 @@
         <xsl:with-param name="subject"   select="$subject"/>
         <xsl:with-param name="predicate" select="concat($PROV, 'endedAtTime')"/>
         <xsl:with-param name="can-write" select="$can-write"/>
+        <xsl:with-param name="prefixes" select="concat('prov: ', $PROV)"/>
       </xsl:call-template>
     </div>
   </section>

@@ -186,6 +186,7 @@
           <xsl:with-param name="uri" select="$predicate"/>
         </xsl:call-template>
       </xsl:when>
+      <xsl:otherwise><xsl:value-of select="$predicate"/></xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
 
@@ -234,6 +235,10 @@
   </xsl:choose>
 </xsl:template>
 
+<x:doc>
+  <h3>pm:date-control</h3>
+</x:doc>
+
 <xsl:template name="pm:date-control">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="subject">
@@ -255,13 +260,33 @@
     <xsl:apply-templates select="." mode="rdfa:prefix-stack"/>
   </xsl:param>
 
+  <xsl:variable name="actual-prefixes">
+    <xsl:variable name="_">
+      <xsl:apply-templates select="." mode="rdfa:prefix-stack"/>
+    </xsl:variable>
+
+    <xsl:choose>
+      <xsl:when test="string-length(normalize-space($prefixes))">
+        <xsl:apply-templates select="." mode="rdfa:merge-prefixes">
+          <xsl:with-param name="prefixes" select="$_"/>
+          <xsl:with-param name="with" select="$prefixes"/>
+        </xsl:apply-templates>
+      </xsl:when>
+      <xsl:otherwise><xsl:value-of select="$_"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:comment><xsl:value-of select="$actual-prefixes"/></xsl:comment>
+
   <xsl:variable name="p-curie">
     <xsl:choose>
       <xsl:when test="starts-with($predicate, 'http:') or starts-with($predicate, 'https:')">
         <xsl:call-template name="rdfa:make-curie">
           <xsl:with-param name="uri" select="$predicate"/>
+          <xsl:with-param name="prefixes" select="$actual-prefixes"/>
         </xsl:call-template>
       </xsl:when>
+      <xsl:otherwise><xsl:value-of select="$predicate"/></xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
 
@@ -274,13 +299,15 @@
   -->
   <xsl:variable name="value" select="$value-raw"/>
 
+  <xsl:comment><xsl:value-of select="$predicate"/> &#x2192; <xsl:value-of select="$p-curie"/>: <xsl:value-of select="$value"/></xsl:comment>
+
   <xsl:choose>
     <xsl:when test="$can-write">
       <form xsl:use-attribute-sets="cgto:form-post-self">
         <input type="datetime-local" name="= {$p-curie} ^xsd:dateTime">
-          <xsl:if test="string-length($value-raw)">
+          <xsl:if test="string-length($value)">
             <xsl:attribute name="value">
-              <xsl:value-of select="$value-raw"/>
+              <xsl:value-of select="$value"/>
             </xsl:attribute>
           </xsl:if>
         </input>

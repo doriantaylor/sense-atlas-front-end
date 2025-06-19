@@ -898,14 +898,6 @@
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "Universally Unique Identifier"@en .
 
-<urn:uuid:295da6bb-7246-431c-b508-196207ab168b> a skos:Concept;
-  dct:created "2022-12-07T05:40:04Z"^^xsd:dateTime;
-  dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:definition "We haven't forgotten about Chorus."@en;
-  skos:hiddenLabel "Chorus"@en;
-  skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
-  skos:prefLabel "Chorus (CMS)"@en .
-
 <urn:uuid:29883b00-2202-4684-887d-8077fa0eecc2> a skos:Concept;
   dct:created "2019-03-01T19:50:22Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
@@ -2620,7 +2612,6 @@ REST has a considerable amount in common with Linked Data."""@en;
   skos:hiddenLabel "cms"@en,
     "CMSes"@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
-  skos:narrower <urn:uuid:295da6bb-7246-431c-b508-196207ab168b>;
   skos:prefLabel "content management system"@en;
   skos:related <urn:uuid:f9decec4-c869-4d17-aaa0-3a44ea18e6df>,
     <urn:uuid:42a48e75-a413-4b91-8787-a8c2dc1a65ed> .

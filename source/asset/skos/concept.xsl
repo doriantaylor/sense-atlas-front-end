@@ -194,7 +194,7 @@
           <xsl:with-param name="base"    select="$base"/>
           <xsl:with-param name="subject" select="$subject"/>
           <xsl:with-param name="type"    select="$type"/>
-          <xsl:with-param name="user"          select="$user"/>
+          <xsl:with-param name="user"    select="$user"/>
         </xsl:call-template>
       </hgroup>
 
@@ -216,21 +216,11 @@
     <figure id="force" class="aside"/>
 
     <xsl:call-template name="skos:make-datalist">
-      <xsl:with-param name="base"          select="$base"/>
-      <xsl:with-param name="resource-path" select="$resource-path"/>
-      <xsl:with-param name="rewrite"       select="$rewrite"/>
-      <xsl:with-param name="main"          select="true()"/>
-      <xsl:with-param name="heading"       select="$heading"/>
       <xsl:with-param name="subject"       select="$subject"/>
       <xsl:with-param name="index"         select="$index"/>
     </xsl:call-template>
 
     <xsl:call-template name="skos:make-datalist">
-      <xsl:with-param name="base"          select="$base"/>
-      <xsl:with-param name="resource-path" select="$resource-path"/>
-      <xsl:with-param name="rewrite"       select="$rewrite"/>
-      <xsl:with-param name="main"          select="true()"/>
-      <xsl:with-param name="heading"       select="$heading"/>
       <xsl:with-param name="subject"       select="$subject"/>
       <xsl:with-param name="index"         select="$index"/>
       <xsl:with-param name="search-types"  select="concat($FOAF, 'Person')"/>
@@ -374,6 +364,7 @@
 
 </xsl:template>
 
+
 <x:doc>
   <h3>skos:referenced-by-inset</h3>
 </x:doc>
@@ -489,10 +480,10 @@
 
     <xsl:variable name="rest" select="substring-after($literals, $rdfa:RECORD-SEP)"/>
     <xsl:if test="string-length($rest)">
-      <xsl:apply-templates select="." mode="skos:literal-form-entry">
+      <xsl:call-template name="skos:literal-form-entry">
         <xsl:with-param name="predicate" select="$predicate"/>
         <xsl:with-param name="literals" select="$rest"/>
-      </xsl:apply-templates>
+      </xsl:call-template>
     </xsl:if>
   </xsl:if>
 </xsl:template>
@@ -533,12 +524,12 @@
         <xsl:with-param name="can-write" select="$can-write"/>
       </xsl:call-template>
       <xsl:if test="$can-write">
-      <li>
-        <form method="POST" action="" accept-charset="utf-8">
-          <input type="text" name="{$predicate} :"/>
-          <button class="fa fa-plus"/>
-        </form>
-      </li>
+        <li>
+          <form method="POST" action="" accept-charset="utf-8">
+            <input type="text" name="{$predicate} :"/>
+            <button class="fa fa-plus"/>
+          </form>
+        </li>
       </xsl:if>
     </ul>
   </aside>
@@ -605,6 +596,7 @@
       <xsl:call-template name="skos:object-form-entry">
         <xsl:with-param name="predicate" select="$predicate"/>
         <xsl:with-param name="objects" select="$rest"/>
+        <xsl:with-param name="can-write" select="$can-write"/>
       </xsl:call-template>
     </xsl:if>
   </xsl:if>
@@ -746,6 +738,7 @@
   <xsl:variable name="current" select="."/>
   <xsl:variable name="sequence" select="document('')/xsl:stylesheet/x:sequence[1]"/>
 
+  <xsl:message> well we made it here lol </xsl:message>
 
   <xsl:for-each select="$sequence/x:class[@uri = $type]/x:prop">
     <xsl:variable name="targets">
@@ -1473,6 +1466,37 @@
 </xsl:template>
 
 <x:doc>
+  <h3>skos:datalists</h3>
+  <p>group datalists in case they need to be overridden</p>
+</x:doc>
+
+<xsl:template name="skos:datalists">
+  <xsl:param name="subject">
+    <xsl:message terminate="yes">`subject` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="index">
+    <xsl:message terminate="yes">`index` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="infer-concepts" select="true()"/>
+  <xsl:param name="infer-people" select="true()"/>
+
+  <xsl:call-template name="skos:make-datalist">
+    <xsl:with-param name="subject"       select="$subject"/>
+    <xsl:with-param name="index"         select="$index"/>
+    <xsl:with-param name="inferred"      select="$infer-concepts"/>
+  </xsl:call-template>
+
+  <xsl:call-template name="skos:make-datalist">
+    <xsl:with-param name="subject"       select="$subject"/>
+    <xsl:with-param name="index"         select="$index"/>
+    <xsl:with-param name="search-types"  select="concat($FOAF, 'Person')"/>
+    <xsl:with-param name="id"            select="'agents'"/>
+    <xsl:with-param name="inferred"      select="$infer-people"/>
+  </xsl:call-template>
+
+</xsl:template>
+
+<x:doc>
   <h2>skos:make-datalist</h2>
   <p>This is the outer envelope of the datalist function that goes and fetches the inventories (which may or may not be windows)</p>
 </x:doc>
@@ -1509,21 +1533,22 @@
   <xsl:param name="inferred" select="true()"/>
   <xsl:param name="id" select="'big-friggin-list'"/>
 
-
-  <xsl:variable name="inventories">
-    <xsl:apply-templates select="document($index)/*" mode="cgto:find-inventories-by-class">
-      <xsl:with-param name="classes" select="$search-types"/>
-      <xsl:with-param name="inferred" select="$inferred"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <datalist id="{$id}">
-    <xsl:if test="string-length(normalize-space($inventories))">
-      <xsl:apply-templates select="." mode="skos:datalist-start">
-        <xsl:with-param name="inventories" select="$inventories"/>
+  <xsl:if test="string-length($index)">
+    <xsl:variable name="inventories">
+      <xsl:apply-templates select="document($index)/*" mode="cgto:find-inventories-by-class">
+        <xsl:with-param name="classes" select="$search-types"/>
+        <xsl:with-param name="inferred" select="$inferred"/>
       </xsl:apply-templates>
-    </xsl:if>
-  </datalist>
+    </xsl:variable>
+
+    <datalist id="{$id}">
+      <xsl:if test="string-length(normalize-space($inventories))">
+        <xsl:apply-templates select="." mode="skos:datalist-start">
+          <xsl:with-param name="inventories" select="$inventories"/>
+        </xsl:apply-templates>
+      </xsl:if>
+    </datalist>
+  </xsl:if>
 </xsl:template>
 
 <x:doc>
@@ -1729,6 +1754,103 @@
       </xsl:call-template>
     </xsl:when>
   </xsl:choose>
+</xsl:template>
+
+<x:doc>
+  <h2>Utility functions</h2>
+</x:doc>
+
+<xsl:template match="html:*" mode="skos:get-schemes">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="type">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:variable name="scheme-type">
+    <xsl:call-template name="str:token-intersection">
+      <xsl:with-param name="left" select="$type"/>
+      <xsl:with-param name="right" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
+    </xsl:call-template>
+  </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="normalize-space($scheme-type) != ''">
+      <xsl:value-of select="$subject"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="_">
+	<xsl:apply-templates select="." mode="rdfa:object-resources">
+	  <xsl:with-param name="subject" select="$subject"/>
+	  <xsl:with-param name="base" select="$base"/>
+	  <xsl:with-param name="predicate" select="concat($SKOS, 'inScheme')"/>
+	</xsl:apply-templates>
+	<xsl:text> </xsl:text>
+	<xsl:apply-templates select="." mode="rdfa:object-resources">
+	  <xsl:with-param name="subject" select="$subject"/>
+	  <xsl:with-param name="base" select="$base"/>
+	  <xsl:with-param name="predicate" select="concat($SKOS, 'topConceptOf')"/>
+	</xsl:apply-templates>
+	<xsl:text> </xsl:text>
+	<xsl:apply-templates select="." mode="rdfa:subject-resources">
+	  <xsl:with-param name="object" select="$subject"/>
+	  <xsl:with-param name="base" select="$base"/>
+	  <xsl:with-param name="predicate" select="concat($SKOS, 'hasTopConcept')"/>
+	</xsl:apply-templates>
+      </xsl:variable>
+      <xsl:call-template name="str:unique-tokens">
+	<xsl:with-param name="string" select="normalize-space($_)"/>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<x:doc>
+  <h2>skos:get-spaces</h2>
+  <p>This is different from <code>cgto:get-spaces</code> insofar as it assumes it's coming from the point of view of a <code>skos:Concept</code> or <code>skos:ConceptScheme</code> (and their IBIS derivatives)</p>
+</x:doc>
+
+<xsl:template match="html:*" mode="skos:get-spaces">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="type">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="scheme">
+    <xsl:call-template name="str:safe-first-token">
+      <xsl:with-param name="tokens">
+	<xsl:apply-templates select="." mode="skos:get-schemes">
+	  <xsl:with-param name="subject" select="$subject"/>
+	  <xsl:with-param name="type" select="$type"/>
+	</xsl:apply-templates>
+      </xsl:with-param>
+    </xsl:call-template>
+  </xsl:param>
+
+  <xsl:if test="$scheme != ''">
+    <xsl:variable name="root" select="document($scheme)/*"/>
+    <xsl:apply-templates select="$root" mode="cgto:get-spaces">
+      <xsl:with-param name="subject" select="$scheme"/>
+    </xsl:apply-templates>
+  </xsl:if>
 </xsl:template>
 
 <x:doc>

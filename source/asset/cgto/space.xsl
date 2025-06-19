@@ -42,6 +42,7 @@
   <link rel="stylesheet" type="text/css" href="/type/font-awesome"/>
   <link rel="stylesheet" type="text/css" href="/type/noto-sans-symbols2"/>
   <link rel="stylesheet" type="text/css" href="/asset/cgto/style"/>
+  <script type="text/javascript" src="/asset/utilities"></script>
   <script type="text/javascript" src="/asset/rdf"></script>
   <script type="text/javascript" src="/asset/rdf-viz"></script>
   <script type="text/javascript" src="/asset/complex"></script>
@@ -57,6 +58,90 @@
 </x:doc>
 
 <xsl:template match="html:body" mode="rdfa:body-content">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+
+  <xsl:if test="not(@xml:lang)">
+    <xsl:attribute name="xml:lang">en</xsl:attribute>
+  </xsl:if>
+
+  <xsl:choose>
+    <xsl:when test="html:main">
+      <xsl:apply-templates select="html:header|html:main|html:footer">
+        <xsl:with-param name="base" select="$base"/>
+        <xsl:with-param name="resource-path" select="$resource-path"/>
+        <xsl:with-param name="rewrite" select="$rewrite"/>
+        <xsl:with-param name="main" select="$main"/>
+        <xsl:with-param name="heading" select="$heading"/>
+      </xsl:apply-templates>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates>
+        <xsl:with-param name="base" select="$base"/>
+        <xsl:with-param name="resource-path" select="$resource-path"/>
+        <xsl:with-param name="rewrite" select="$rewrite"/>
+        <xsl:with-param name="main" select="$main"/>
+        <xsl:with-param name="heading" select="$heading"/>
+      </xsl:apply-templates>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="html:main">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="true()"/>
+  <xsl:param name="heading" select="0"/>
+
+  <main>
+    <xsl:apply-templates select="@*" mode="xc:attributes">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="resource-path" select="$resource-path"/>
+      <xsl:with-param name="rewrite" select="$rewrite"/>
+    </xsl:apply-templates>
+
+    <xsl:call-template name="cgto:main-navigation">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="resource-path" select="$resource-path"/>
+      <xsl:with-param name="rewrite" select="$rewrite"/>
+      <xsl:with-param name="main" select="true()"/>
+      <xsl:with-param name="heading" select="$heading"/>
+    </xsl:call-template>
+
+    <xsl:apply-templates>
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="resource-path" select="$resource-path"/>
+      <xsl:with-param name="rewrite" select="$rewrite"/>
+      <xsl:with-param name="main" select="true()"/>
+      <xsl:with-param name="heading" select="$heading"/>
+    </xsl:apply-templates>
+  </main>
+</xsl:template>
+
+<xsl:template name="cgto:main-navigation">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="true()"/>
+  <xsl:param name="heading" select="0"/>
+
+  <nav>
+    <h1>Explore Sense Atlas:</h1>
+    <xsl:apply-templates select="/html:html/html:body" mode="cgto:enter-site">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="resource-path" select="$resource-path"/>
+      <xsl:with-param name="rewrite" select="$rewrite"/>
+      <xsl:with-param name="main" select="$main"/>
+      <xsl:with-param name="heading" select="$heading"/>
+    </xsl:apply-templates>
+  </nav>
+</xsl:template>
+
+<xsl:template match="html:body" mode="cgto:enter-site">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="resource-path" select="$base"/>
   <xsl:param name="rewrite" select="''"/>
@@ -87,16 +172,39 @@
     </xsl:if>
   </xsl:variable>
 
-  <!--<xsl:message>subject: <xsl:value-of select="$subject"/> index: <xsl:value-of select="$index"/> user: <xsl:value-of select="$user"/></xsl:message>-->
+  <xsl:variable name="contents">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="predicate" select="concat($SIOC, 'space_of')"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:message>subject: <xsl:value-of select="$subject"/> index: <xsl:value-of select="$index"/> user: <xsl:value-of select="$user"/></xsl:message>
 
   <xsl:choose>
     <xsl:when test="string-length(normalize-space($user))">
       <xsl:variable name="state">
-        <xsl:apply-templates select="." mode="rdfa:subject-resources">
-	  <xsl:with-param name="object" select="$user"/>
-	  <xsl:with-param name="predicate" select="concat($CGTO, 'owner')"/>
-	  <xsl:with-param name="traverse" select="true()"/>
-        </xsl:apply-templates>
+        <xsl:variable name="_">
+          <xsl:apply-templates select="." mode="rdfa:object-resources">
+	    <xsl:with-param name="subject" select="$user"/>
+	    <xsl:with-param name="predicate" select="concat($CGTO, 'state')"/>
+	    <xsl:with-param name="traverse" select="true()"/>
+          </xsl:apply-templates>
+          <xsl:text> </xsl:text>
+          <xsl:apply-templates select="." mode="rdfa:subject-resources">
+	    <xsl:with-param name="object" select="$user"/>
+	    <xsl:with-param name="predicate" select="concat($CGTO, 'owner')"/>
+	    <xsl:with-param name="traverse" select="true()"/>
+          </xsl:apply-templates>
+        </xsl:variable>
+        <xsl:call-template name="str:safe-first-token">
+          <xsl:with-param name="tokens">
+            <xsl:call-template name="str:token-intersection">
+              <xsl:with-param name="left" select="$contents"/>
+              <xsl:with-param name="right" select="$_"/>
+            </xsl:call-template>
+          </xsl:with-param>
+        </xsl:call-template>
       </xsl:variable>
 
       <!-- XXX modal to check for foaf:name? -->
@@ -764,20 +872,16 @@
     </xsl:call-template>
   </xsl:variable>
 
-  <main>
-    <nav>
-      <xsl:apply-templates select="." mode="cgto:space-cartouche">
-        <xsl:with-param name="resources" select="$focus"/>
+  <xsl:apply-templates select="." mode="cgto:space-cartouche">
+    <xsl:with-param name="resources" select="$focus"/>
         <xsl:with-param name="relation" select="'cgto:focus'"/>
-      </xsl:apply-templates>
-      <xsl:if test="string-length(normalize-space($others))">
-        <xsl:apply-templates select="." mode="cgto:space-cartouche">
-          <xsl:with-param name="resources" select="$others"/>
-          <xsl:with-param name="relation" select="'sioc:space_of'"/>
-        </xsl:apply-templates>
-      </xsl:if>
-    </nav>
-  </main>
+  </xsl:apply-templates>
+  <xsl:if test="string-length(normalize-space($others))">
+    <xsl:apply-templates select="." mode="cgto:space-cartouche">
+      <xsl:with-param name="resources" select="$others"/>
+      <xsl:with-param name="relation" select="'sioc:space_of'"/>
+    </xsl:apply-templates>
+  </xsl:if>
 
 </xsl:template>
 

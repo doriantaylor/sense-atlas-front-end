@@ -18,6 +18,7 @@ html {
         background-color: #252525;
         color: #ababab;
         border-color: #ababab;
+        // box-shadow: inset 0px 0px 40px black;
     }
 
     input, select, option, textarea, button {
@@ -172,7 +173,7 @@ html {
         border: 0;
         margin: 0;
         padding: 0;
-        background-color: inherit;
+        //background-color: inherit;
         // overflow: hidden;
 
         // *all* entities
@@ -557,7 +558,119 @@ html {
         }
 
         &[typeof~="cgto:Space"] {
-            @extend %generic-flex;
+            // overflow-y: auto;
+            min-height: 100vh;
+            box-shadow: inset 0px 0px 40px black;
+            font-weight: 300;
+            padding-top: 2em;
+            background-image: url(/asset/picture-of-graph-screen-smaller);
+            background-repeat: no-repeat;
+            background-size: contain;
+
+            h1, h2, h3, h4, h5, h6 {
+                text-align: left;
+                text-wrap: balance;
+            }
+
+            *[typeof~="gr:ProductOrService"] {
+                color: #e2e2e2;
+            }
+
+            dfn, abbr {
+                font-variant: small-caps;
+                font-style: normal;
+            }
+            details {
+                > summary {
+                    font-weight: bolder;
+                    cursor: pointer;
+                    &:hover {
+                        color: #e2e2e2;
+                    }
+                }
+            }
+            dt {
+                font-weight: bolder;
+                margin-top: 1em;
+                &:first-of-type {
+                    margin-top: 0;
+                }
+            }
+            dd {
+                margin-left: 1em;
+            }
+            hr {
+                border: 1px solid currentColor;
+                margin: 3em 0;
+            }
+            // @extend %generic-flex;
+            font-size: 20px;
+            text-align: justify;
+            hyphens: auto;
+            > header {
+                max-width: 80%;
+                font-size: 200%;
+                margin: auto;
+                text-align: left;
+                hyphens: none;
+                text-shadow: 2px 2px 10px black, -2px -2px 10px black, -2px 2px 10px black, 2px -2px 10px black;
+                a {
+                    font-weight: 900;
+                    font-style: italic;
+                }
+            }
+            > main {
+                // max-width: 80%;
+                margin: auto;
+                display: flex;
+                flex-direction: row-reverse;
+                // flex-wrap: wrap;
+                align-items: flex-start;
+                justify-content: space-around;
+                > nav {
+                    max-width: max-content;
+                    flex: 2 1 auto;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    background-image: url(/asset/noisy-square);
+                    border-radius: 0.5em;
+                    padding: 1em;
+                    text-shadow: 1px 1px 5px black, -1px -1px 5px black, 1px -1px 5px black, -1px 1px 5px black;
+                }
+                > article {
+                    font-size: 120%;
+                    max-width: 70ex;
+                    // margin: auto;
+                    flex: 2 1 auto;
+                    background-color: rgba(0, 0, 0, 0.5);
+                    background-image: url(/asset/noisy-square);
+                    padding: 1em;
+                    border-radius: 0.5em;
+                    text-shadow: 1px 1px 5px black, -1px -1px 5px black, 1px -1px 5px black, -1px 1px 5px black;
+                }
+            }
+            > footer {
+                margin: auto;
+                text-align: center;
+                padding: 1em;
+            }
+            figure {
+                text-align: center;
+                margin: 1em;
+                > big:only-child {
+                    display: inline-block;
+                    font-weight: 900;
+                    margin: auto;
+                    text-shadow: none;
+                    > a {
+                        display: block;
+                        padding: 1em;
+                        border-radius: 0.25em;
+                        background-color: #9eacbc;
+                        color: #233240;
+                        text-wrap: balance;
+                    }
+                }
+            }
         }
 
         &[typeof~="ibis:Network"] {

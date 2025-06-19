@@ -140,12 +140,33 @@
 
   <xsl:variable name="state">
     <xsl:if test="string-length(normalize-space($user))">
-      <xsl:apply-templates select="." mode="rdfa:subject-resources">
-	<xsl:with-param name="object" select="$user"/>
-	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#owner'"/>
-	<xsl:with-param name="traverse" select="true()"/>
-	<!--<xsl:with-param name="debug" select="true()"/>-->
-      </xsl:apply-templates>
+      <xsl:variable name="_">
+        <xsl:apply-templates select="." mode="rdfa:object-resources">
+	  <xsl:with-param name="subject" select="$user"/>
+	  <xsl:with-param name="predicate" select="concat($CGTO, 'state')"/>
+	  <xsl:with-param name="traverse" select="true()"/>
+        </xsl:apply-templates>
+        <xsl:text> </xsl:text>
+        <xsl:apply-templates select="." mode="rdfa:subject-resources">
+	  <xsl:with-param name="object" select="$user"/>
+	  <xsl:with-param name="predicate" select="concat($CGTO, 'owner')"/>
+	  <xsl:with-param name="traverse" select="true()"/>
+        </xsl:apply-templates>
+      </xsl:variable>
+      <xsl:call-template name="str:safe-first-token">
+        <xsl:with-param name="tokens">
+          <xsl:call-template name="str:token-intersection">
+            <xsl:with-param name="left">
+              <xsl:apply-templates select="." mode="rdfa:object-resources">
+                <xsl:with-param name="subject" select="$space"/>
+                <xsl:with-param name="predicate" select="concat($SIOC, 'space_of')"/>
+                <xsl:with-param name="traverse" select="true()"/>
+              </xsl:apply-templates>
+            </xsl:with-param>
+            <xsl:with-param name="right" select="$_"/>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
     </xsl:if>
   </xsl:variable>
 
@@ -1050,12 +1071,34 @@
   </xsl:param>
 
   <xsl:param name="state">
-    <xsl:if test="string-length($user)">
-      <xsl:apply-templates select="." mode="rdfa:subject-resources">
-	<xsl:with-param name="object" select="$user"/>
-	<xsl:with-param name="predicate" select="concat($CGTO, 'owner')"/>
-	<xsl:with-param name="traverse" select="true()"/>
-      </xsl:apply-templates>
+    <xsl:if test="string-length(normalize-space($user))">
+      <xsl:variable name="_">
+        <xsl:apply-templates select="." mode="rdfa:object-resources">
+	  <xsl:with-param name="subject" select="$user"/>
+	  <xsl:with-param name="predicate" select="concat($CGTO, 'state')"/>
+	  <xsl:with-param name="traverse" select="true()"/>
+        </xsl:apply-templates>
+        <xsl:text> </xsl:text>
+        <xsl:apply-templates select="." mode="rdfa:subject-resources">
+	  <xsl:with-param name="object" select="$user"/>
+	  <xsl:with-param name="predicate" select="concat($CGTO, 'owner')"/>
+	  <xsl:with-param name="traverse" select="true()"/>
+        </xsl:apply-templates>
+      </xsl:variable>
+      <xsl:call-template name="str:safe-first-token">
+        <xsl:with-param name="tokens">
+          <xsl:call-template name="str:token-intersection">
+            <xsl:with-param name="left">
+              <xsl:apply-templates select="." mode="rdfa:object-resources">
+                <xsl:with-param name="subject" select="$space"/>
+                <xsl:with-param name="predicate" select="concat($SIOC, 'space_of')"/>
+                <xsl:with-param name="traverse" select="true()"/>
+              </xsl:apply-templates>
+            </xsl:with-param>
+            <xsl:with-param name="right" select="$_"/>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
     </xsl:if>
   </xsl:param>
 

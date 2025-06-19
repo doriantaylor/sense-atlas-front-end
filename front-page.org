@@ -1,0 +1,26 @@
+#+STARTUP: showall hidesetars indent
+* referenced on home page
++ [X] AI <urn:uuid:f5a254ac-4a2b-405e-91be-7de9fbf7174d> (ok just one)
++ [X] business ecosystem <urn:uuid:f477beaf-1b44-42dd-88b6-69857070627d> (just one)
++ [X] dense hypermedia <urn:uuid:162516dc-6817-4d47-b4a7-6939c14c0fbb> (just one)
++ [X] HTML <urn:uuid:0bc0aabb-9d9e-4caa-b9c8-553dd8b3ee05> (has duplicate <urn:uuid:45373ede-a7b0-404f-b797-902298208993>)
++ [X] IBIS <urn:uuid:b95d0656-3b14-4e38-8fe2-75401ff7ee31> (has duplicate <urn:uuid:d360bc19-f1e8-4550-aef4-9f84cc236cc5>)
++ [X] knowledge graph <urn:uuid:a43e33d9-1788-4514-8fbd-1b4982535f73> (has duplicate <urn:uuid:09d38f69-8b53-4298-a35c-4fe2ff5f9101>)
++ [X] linked data <urn:uuid:7b7c4ecf-2544-4c03-ab5f-10de5e1a20d4> (has duplicates <urn:uuid:07a6927c-db53-47f8-9e8d-aea2048b3630>, <urn:uuid:f3f67e45-9cdf-4df1-9586-834ba185f63b>)
++ [X] linked data vocabulary <urn:uuid:86c65d14-2d23-4350-8004-233b2f3e873f> (using RDF vocabulary; has duplicate <urn:uuid:4eab5a63-adc6-4efd-b49e-402131b519fa>)
++ [X] (vendor) lock-in
++ [X] machine-actionable <urn:uuid:1709ffb5-bbee-40cf-86c3-030f47ff1be7>
++ [X] open data standard <urn:uuid:8d46494e-5316-43b7-a49e-a625ab716a38>
++ [X] open-source software <urn:uuid:2a05134c-20b1-4424-be75-7ee446ab7713> (has duplicate <urn:uuid:c553e9ec-11ab-4173-912c-205edea0d1d2>)
++ [X] organizational cartography <urn:uuid:55e10fb2-1bc2-478e-a38a-b3a7b50cff6a> (just made this)
++ [X] personal knowledge management (just made this)
++ [X] self-hosting (just made this)
++ [X] semantic relation (just made this)
++ [X] situation awareness <urn:uuid:775a0b24-a8b3-4e74-989a-ed6f438122d3>
++ [X] structured information <urn:uuid:c757c1ac-1ec6-4bdd-a35d-85f1d85728bb> (this is structured data)
++ [X] then-what problem <urn:uuid:812d376b-9767-4154-ac27-b2ef67f24370> (just made this too)
++ [X] work-in-public (this needs a new blurb, actually a new entry)
+  - [X] (include dog-fooding) <urn:uuid:7bc6cba9-9c8b-4479-95d0-7c475f95f532> (has duplicate <urn:uuid:64364537-ffea-4921-b113-c9930c25fca6>)
+* existing concepts
+- working in public: https://private.methodandstructure.com/56b909d7-36fb-4447-a0ed-300ed2a11a1f
+- dogfooding: https://private.methodandstructure.com/64364537-ffea-4921-b113-c9930c25fca6

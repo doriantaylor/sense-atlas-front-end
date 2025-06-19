@@ -18,7 +18,7 @@ TARGET = target
 
 XSLT_ASSETS = transclude.xsl rdfa.xsl ibis.xsl
 # SCSS_ASSETS = ibis.scss
-JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js cgto/scripts.js
+JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js utilities.js cgto/scripts.js
 
 GITHUB = https://raw.githubusercontent.com/doriantaylor
 LOCAL  = $(HOME)/clients/me
@@ -151,6 +151,9 @@ $(TARGET)/asset/force-directed.js : $(TARGET)/asset
 $(TARGET)/asset/hierarchical.js : $(TARGET)/asset
 	cd js; $(NPM) run build; cd -
 
+$(TARGET)/asset/utilities.js : $(TARGET)/asset
+	$(CP) $(SOURCE)/asset/utilities.js $(TARGET)/asset/
+
 $(TARGET)/asset/cgto/scripts.js : $(TARGET)/asset/cgto
 	$(CP) $(SOURCE)/asset/cgto/scripts.js $(TARGET)/asset/cgto/
 
@@ -167,5 +170,16 @@ $(TARGET)/type :
 
 
 # OTHER FILES
+
+$(TARGET)/asset/*.jpeg : $(TARGET)/asset
+	$(CP) $(SOURCE)/asset/*.jpeg $(TARGET)/asset/
+
+$(TARGET)/asset/*.png : $(TARGET)/asset
+	$(CP) $(SOURCE)/asset/*.png $(TARGET)/asset/
+
+$(TARGET)/*.xhtml :
+
+content: $(TARGET)/*.xhtml $(TARGET)/asset/*.jpeg $(TARGET)/asset/*.png
+	$(CP) $(SOURCE)/*.xhtml $(TARGET)/
 
 # OTHER TARGETS

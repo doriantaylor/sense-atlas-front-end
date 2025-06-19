@@ -39,7 +39,6 @@
 	<xsl:with-param name="subjects" select="$subject"/>
 	<!-- XXX there is a bug in the prefix resolution somewhere -->
 	<xsl:with-param name="predicates" select="'http://rdfs.org/sioc/ns#has_space ^http://rdfs.org/sioc/ns#space_of'"/>
-	<xsl:with-param name="traverse" select="true()"/>
       </xsl:apply-templates>
     </xsl:if>
   </xsl:variable>
@@ -84,6 +83,13 @@
       <xsl:with-param name="minus" select="$top-concepts"/>
     </xsl:call-template>
   </xsl:variable>
+
+  <xsl:comment>
+    subject: <xsl:value-of select="$subject"/>
+    space: <xsl:value-of select="$space"/>
+    index: <xsl:value-of select="$index"/>
+    user: <xsl:value-of select="$user"/>
+  </xsl:comment>
 
   <main>
     <article>

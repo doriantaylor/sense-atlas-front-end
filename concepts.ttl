@@ -9,8 +9,7 @@
 <urn:uuid:020f0ba1-d754-4b6b-a536-999616e76db6> a skos:Concept;
   dct:created "2021-12-14T20:56:50Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:1ae8c127-f674-44cf-af3d-9382f7c7c1ee>,
-    <urn:uuid:081b467a-a40d-4028-9b8c-f2adc43eaefb>,
+  skos:broader <urn:uuid:081b467a-a40d-4028-9b8c-f2adc43eaefb>,
     <urn:uuid:e162d03b-bfec-4f01-ab7e-56da309550f6>;
   skos:definition "In URLs, path segments are the individual slugs that appear between the slash (/) characters. They are intended to (and sometimes do) represent directory paths, though on the Web their relationship is certainly more tenuous."@en;
   skos:hiddenLabel "path segments"@en;
@@ -22,8 +21,7 @@
   dct:created "2021-12-14T18:02:28Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   skos:altLabel "DOAP"@en;
-  skos:broader <urn:uuid:91472a37-bea8-4c9c-8f38-836d63510bff>,
-    <urn:uuid:86c65d14-2d23-4350-8004-233b2f3e873f>;
+  skos:broader <urn:uuid:86c65d14-2d23-4350-8004-233b2f3e873f>;
   skos:definition "DOAP is an RDF vocabulary for expressing mainly open-source software projects."@en;
   skos:hiddenLabel "description of a project"@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
@@ -32,13 +30,11 @@
 <urn:uuid:046690c9-6341-4109-a9d3-b07b64dc7ba5> a skos:Concept;
   dct:created "2017-02-21T20:10:36Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:afd1338d-86da-4c2e-a1cc-9b07679bed1b>,
-    <urn:uuid:c0e969c3-4528-4968-8418-d5fe609c2a62>;
+  skos:broader <urn:uuid:c0e969c3-4528-4968-8418-d5fe609c2a62>;
   skos:definition "A privilege, in the context of access control, is the ability to access or manipulate a particular information resource. Privileges are granted to accounts, or to security groups."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "privilege"@en;
-  skos:related <urn:uuid:e261b25d-32c5-4736-bc32-c613f81f887d>,
-    <urn:uuid:4039a99d-c14b-40f2-84d5-4ec72e2217e1>,
+  skos:related <urn:uuid:4039a99d-c14b-40f2-84d5-4ec72e2217e1>,
     <urn:uuid:d85e3c52-cc94-48a4-8dc5-591de86be52f> .
 
 <urn:uuid:046bcd35-73f1-442e-a48c-53d14dfa99b7> a skos:Concept;
@@ -52,8 +48,7 @@
 <urn:uuid:04f550ab-8eb3-4aa1-b823-b8a3a3e6cd9a> a skos:Concept;
   dct:created "2021-12-14T21:11:45Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:aa5f9563-e527-4df2-8518-ce325819f1e6>,
-    <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
+  skos:broader <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
   skos:definition "Code profiling is the technique of attaching sensors to running code to determine which parts are running at suboptimal efficiency. Profiling, among other things, consumes AST and produces a call graph."@en;
   skos:hiddenLabel "profile"@en,
     "profiling"@en;
@@ -132,8 +127,7 @@
 <urn:uuid:1ecbaef2-f501-4133-bbaa-a436416a182a> a skos:Concept;
   dct:created "2019-03-02T05:45:45Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:4eab5a63-adc6-4efd-b49e-402131b519fa>,
-    <urn:uuid:86c65d14-2d23-4350-8004-233b2f3e873f>;
+  skos:broader <urn:uuid:86c65d14-2d23-4350-8004-233b2f3e873f>;
   skos:definition "The Dublin Core Metadata Initiative is an early and established vocabulary for modeling various aspects of document metadata."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "Dublin Core"@en .
@@ -148,8 +142,7 @@
 <urn:uuid:232b5bf9-308b-4a44-bb34-3da310ec586d> a skos:Concept;
   dct:created "2021-12-14T22:45:07Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:aa5f9563-e527-4df2-8518-ce325819f1e6>,
-    <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
+  skos:broader <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
   skos:definition "A single source of truth is an idiom in information system design, whereby a single logical system is deemed authoritative over a set of information, and measures are taken to ensure this remains the case."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "single source of truth"@en .
@@ -169,15 +162,13 @@
   skos:definition "Responsive design is a Web design technique that focuses on visual elements which can be stretched, squashed and resized."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "Responsive Design"@en;
-  skos:related <urn:uuid:ad6b1b9b-fec4-4378-b8dd-7bbc07a3d706>,
-    <urn:uuid:3a2c72e0-4fa5-4477-a51b-d7f073cc1155>,
+  skos:related <urn:uuid:3a2c72e0-4fa5-4477-a51b-d7f073cc1155>,
     <urn:uuid:be93cce1-f21f-4e85-bd34-e005dea3532f> .
 
 <urn:uuid:2a636e04-5882-41ef-a0ad-019c2cbaa3a4> a skos:Concept;
   dct:created "2019-03-03T01:15:10Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:86c65d14-2d23-4350-8004-233b2f3e873f>,
-    <urn:uuid:4eab5a63-adc6-4efd-b49e-402131b519fa>;
+  skos:broader <urn:uuid:86c65d14-2d23-4350-8004-233b2f3e873f>;
   skos:definition "R2RML is an RDF vocabulary that maps between RDF and relational (SQL) databases."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "R2RML"@en;
@@ -201,9 +192,7 @@
 <urn:uuid:323613c1-005b-44f1-8f9b-ce7313637299> a skos:Concept;
   dct:created "2021-12-14T23:48:28Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:c2f6ce23-c916-448d-8e18-c122d347cf17>,
-    <urn:uuid:5f47abfe-ba22-4003-a681-24dff12400ac>,
-    <urn:uuid:5bdd2fb7-d84d-4583-998b-7d3f2803307e>,
+  skos:broader <urn:uuid:5bdd2fb7-d84d-4583-998b-7d3f2803307e>,
     <urn:uuid:68e38d88-1afd-4443-a1a4-f28abd9dc77d>;
   skos:definition "A variant, in the context of content negotiation, is a particular representation of a resource that occupies a region in the space of all its available dimensions."@en;
   skos:hiddenLabel "variants"@en;
@@ -214,8 +203,7 @@
   dct:created "2021-12-14T16:50:25Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   skos:altLabel "CI"@en;
-  skos:broader <urn:uuid:aa5f9563-e527-4df2-8518-ce325819f1e6>,
-    <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
+  skos:broader <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
   skos:definition "In software development, continuous integration refers to both a process and its concomitant infrastructure for deploying software that itself typically runs a networked information service. A continuous integration system can be configured to automatically package and deploy software directly from version control to its target, upon confirmation of a passing test suite."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "continuous integration"@en .
@@ -263,8 +251,7 @@
   skos:definition "The document root of a Web server is the directory (folder) associated with the root address of a given website's URL."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "document root"@en;
-  skos:related <urn:uuid:1ae8c127-f674-44cf-af3d-9382f7c7c1ee>,
-    <urn:uuid:e162d03b-bfec-4f01-ab7e-56da309550f6> .
+  skos:related <urn:uuid:e162d03b-bfec-4f01-ab7e-56da309550f6> .
 
 <urn:uuid:51f44aca-bac0-4dbb-92e5-5b5fc3026b32> a skos:Concept;
   dct:created "2017-06-23T01:50:02Z"^^xsd:dateTime;
@@ -286,9 +273,7 @@
   dct:created "2021-12-14T22:20:38Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   skos:broader <urn:uuid:02b3d282-d134-487b-8226-80141b5a4338>,
-    <urn:uuid:e162d03b-bfec-4f01-ab7e-56da309550f6>,
-    <urn:uuid:1ae8c127-f674-44cf-af3d-9382f7c7c1ee>,
-    <urn:uuid:23448a6d-3dcc-470f-ae99-e146e2e3f00b>;
+    <urn:uuid:e162d03b-bfec-4f01-ab7e-56da309550f6>;
   skos:definition "A request-URI, in HTTP parlance, is specifically the part of an HTTP URL after the authority and before the fragment, constituting only the path and the query components. The request-URI is sent to the server as part of the resource request."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "request-URI"@en .
@@ -321,8 +306,7 @@
   skos:prefLabel "information technology"@en;
   skos:related <urn:uuid:7284c136-288b-49aa-b129-a56e2be938d2>,
     <urn:uuid:a718d483-af90-4eaf-a59f-31d8897d6e8e>,
-    <urn:uuid:b39c1f53-b8ed-49fb-ba57-24dfe7dc2d9f>,
-    <urn:uuid:447cbc26-1fb8-4ffe-95f4-1f83b3bc3d21> .
+    <urn:uuid:b39c1f53-b8ed-49fb-ba57-24dfe7dc2d9f> .
 
 <urn:uuid:5f96d659-2e85-44bd-bdd5-64f96c4fa97b> a skos:Concept;
   dct:created "2021-12-14T23:04:17Z"^^xsd:dateTime;
@@ -330,8 +314,7 @@
   skos:definition "Term reconciliation is a process conceived in RDF circles, but not limited to them. It is the act of identifying terms (think keys in map-like data structures) from one information system to another."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "term reconciliation"@en;
-  skos:related <urn:uuid:97edd9ad-7cfd-45fa-91cb-9e2e552e78a1>,
-    <urn:uuid:fe500c7a-b458-4d2c-8b3a-efd1bb47d106> .
+  skos:related <urn:uuid:fe500c7a-b458-4d2c-8b3a-efd1bb47d106> .
 
 <urn:uuid:6153aa34-a4eb-4ad1-b197-e6156b453307> a skos:Concept;
   dct:created "2021-12-14T21:15:51Z"^^xsd:dateTime;
@@ -349,8 +332,7 @@
   skos:hiddenLabel "crawling"@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "Web crawling"@en;
-  skos:related <urn:uuid:01dc6e60-8e23-4c4c-a63d-f149cb104f84>,
-    <urn:uuid:25e0f651-e8c8-4cce-9126-fbe1f5280cb5> .
+  skos:related <urn:uuid:01dc6e60-8e23-4c4c-a63d-f149cb104f84> .
 
 <urn:uuid:64020bd3-d3d7-4e5f-980b-95116b19eb0e> a skos:Concept;
   dct:created "2021-12-14T23:50:47Z"^^xsd:dateTime;
@@ -372,16 +354,14 @@
   skos:hiddenLabel "ugc"@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "user-generated content"@en;
-  skos:related <urn:uuid:c8544100-23fa-466e-8bd0-f8eb001a9e83>,
-    <urn:uuid:42747b64-a41c-4321-96cf-c49e711733e6> .
+  skos:related <urn:uuid:42747b64-a41c-4321-96cf-c49e711733e6> .
 
 <urn:uuid:6948b692-bc60-4625-9861-9934379f36b5> a skos:Concept;
   dct:created "2021-12-14T20:12:49Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   skos:altLabel "KLOC"@en,
     "thousand lines of code"@en;
-  skos:broader <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>,
-    <urn:uuid:aa5f9563-e527-4df2-8518-ce325819f1e6>;
+  skos:broader <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
   skos:definition "A thousand lines of code very roughly correlates to (at least no less than) a certain quantity of software development effort, which will nevertheless depend on many other factors to yield an intelligible number."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "kilo-lines of code"@en .
@@ -389,8 +369,7 @@
 <urn:uuid:6dddf461-39ab-4037-9f49-2c217f09d289> a skos:Concept;
   dct:created "2021-12-14T21:20:49Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:9e506ca3-8be1-431d-9075-548141d9f8c1>,
-    <urn:uuid:349633ba-03b8-4126-8e55-1ed9a7c7e4ec>;
+  skos:broader <urn:uuid:9e506ca3-8be1-431d-9075-548141d9f8c1>;
   skos:definition "The query component of a URI (everything after the first question mark) is by convention ascribed additional semantics in some contexts, whereby it is taken to represent a set of key-value pairs. A query parameter (key=value) is one of those pairs."@en;
   skos:hiddenLabel "query parameters"@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
@@ -400,8 +379,7 @@
   dct:created "2021-12-14T02:59:05Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   skos:altLabel "canonical form"@en;
-  skos:broader <urn:uuid:5bdd2fb7-d84d-4583-998b-7d3f2803307e>,
-    <urn:uuid:c2f6ce23-c916-448d-8e18-c122d347cf17>;
+  skos:broader <urn:uuid:5bdd2fb7-d84d-4583-998b-7d3f2803307e>;
   skos:definition "To call a representation of any information resource \"canonical\" implies that said representation at least encapsulates all available information about the resource, and moreover is in some form that is most desirable for, if not storage, then at least exchange."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "canonical representation"@en;
@@ -524,8 +502,7 @@
   dct:created "2017-07-12T03:03:57Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   dct:references <https://www.w3.org/TR/skos-primer/>;
-  skos:broader <urn:uuid:86c65d14-2d23-4350-8004-233b2f3e873f>,
-    <urn:uuid:4eab5a63-adc6-4efd-b49e-402131b519fa>;
+  skos:broader <urn:uuid:86c65d14-2d23-4350-8004-233b2f3e873f>;
   skos:definition "SKOS (Simple Knowledge Organization System) is an OWL ontology for representing concept schemes and/or thesauri, which are particular kinds of taxonomies."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "SKOS"@en;
@@ -555,8 +532,7 @@
 <urn:uuid:94e05d9c-177d-4e41-9097-7aaf1f39db78> a skos:Concept;
   dct:created "2019-03-07T00:50:33Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:f0e4c33f-8930-454a-9a7e-dd2b6cc79dce>,
-    <urn:uuid:4694ebe0-589f-40a7-9ef9-67872edb6214>;
+  skos:broader <urn:uuid:4694ebe0-589f-40a7-9ef9-67872edb6214>;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "SQLite"@en;
   skos:related <urn:uuid:2717d0b5-cb79-4d1a-82c0-69cdc1e590a1> .
@@ -693,8 +669,7 @@
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   skos:definition "Structured argumentation is a form of (potentially collaborative) reasoning and persuasion that takes place in a formal system with a constrained repertoire of operations."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
-  skos:narrower <urn:uuid:d360bc19-f1e8-4550-aef4-9f84cc236cc5>,
-    <urn:uuid:b95d0656-3b14-4e38-8fe2-75401ff7ee31>;
+  skos:narrower <urn:uuid:b95d0656-3b14-4e38-8fe2-75401ff7ee31>;
   skos:prefLabel "structured argumentation"@en .
 
 <urn:uuid:e5f494f7-d0ae-486a-aa3c-f718a4041aa6> a skos:Concept;
@@ -745,8 +720,7 @@
   skos:definition "Enterprise taxonomy software is purpose-made for designing and managing categories of (e.g.) products within an organization."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "taxonomy software"@en;
-  skos:related <urn:uuid:a382bb78-d3d3-4b6a-b37b-0215c580e55a>,
-    <urn:uuid:45b6c768-da32-4e5f-9c87-a18d5ec94635>,
+  skos:related <urn:uuid:45b6c768-da32-4e5f-9c87-a18d5ec94635>,
     <urn:uuid:61c0c9c3-4d91-4509-902a-db09c4188ae5> .
 
 <urn:uuid:06f69b4c-ce8b-42ea-b0cb-7f52f233b592> a skos:Concept;
@@ -798,7 +772,6 @@
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "content delivery network"@en;
   skos:related <urn:uuid:be93cce1-f21f-4e85-bd34-e005dea3532f>,
-    <urn:uuid:2fd3adcc-1e66-48a5-a375-06992d6fc02b>,
     <urn:uuid:53819af5-c2d0-4edc-9add-ab79829ace96> .
 
 <urn:uuid:117ac161-9f62-4075-8ac5-9a4e7f09fd1d> a skos:Concept;
@@ -852,8 +825,7 @@
 <urn:uuid:1b496cb8-fb39-4b54-ab88-a9663f419bc4> a skos:Concept;
   dct:created "2019-03-04T05:13:41Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:33c3211f-322b-4f7a-83f6-63aa617461c3>,
-    <urn:uuid:e827d9af-be73-4918-89aa-a296872be199>;
+  skos:broader <urn:uuid:33c3211f-322b-4f7a-83f6-63aa617461c3>;
   skos:definition "C++ is an object-oriented extension of C (indeed its own distinct language) by Bjarne Stroustrup. It is said to be like creating an octopus by nailing extra legs on a dog. Popular in game development and with Windows."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "C++"@en .
@@ -902,8 +874,7 @@
 <urn:uuid:23ae24d6-80b8-4f31-8510-562c45871694> a skos:Concept;
   dct:created "2021-12-14T19:12:16Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:aa5f9563-e527-4df2-8518-ce325819f1e6>,
-    <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
+  skos:broader <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
   skos:definition "A software framework is a library and set of tools for creating software, generally encodes the opinions of its authors, and tends to be incompatible with other frameworks."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "framework"@en .
@@ -944,8 +915,7 @@
   skos:prefLabel "microdata"@en;
   skos:related <urn:uuid:7a81818d-e347-4b40-814d-d1e98a0bc102>,
     <urn:uuid:7b7c4ecf-2544-4c03-ab5f-10de5e1a20d4>,
-    <urn:uuid:a91fff32-d160-4cc0-86eb-e78d778a1526>,
-    <urn:uuid:f3f67e45-9cdf-4df1-9586-834ba185f63b> .
+    <urn:uuid:a91fff32-d160-4cc0-86eb-e78d778a1526> .
 
 <urn:uuid:2bd3be3c-a234-4cf5-be07-2f770e08b48b> a skos:Concept;
   dct:created "2022-06-02T02:24:33Z"^^xsd:dateTime;
@@ -1021,8 +991,7 @@
 <urn:uuid:4333e98e-4565-4d4e-b600-d7cc9e95a972> a skos:Concept;
   dct:created "2021-12-14T21:18:40Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:aa5f9563-e527-4df2-8518-ce325819f1e6>,
-    <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
+  skos:broader <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
   skos:definition "The other PR is a process pioneered by GitHub (and quickly copied by its competitors) to formalize the process of collaborative software development. The applicant opens a pull request against the maintainer's code repository with their proposed changes, and the latter can review and accept it (or not)."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "pull request"@en .
@@ -1059,7 +1028,6 @@
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "Semantic Web"@en;
   skos:related <urn:uuid:fe500c7a-b458-4d2c-8b3a-efd1bb47d106>,
-    <urn:uuid:f3f67e45-9cdf-4df1-9586-834ba185f63b>,
     <urn:uuid:7b7c4ecf-2544-4c03-ab5f-10de5e1a20d4> .
 
 <urn:uuid:4c034864-ee75-4ca7-b93f-119152b11796> a skos:Concept;
@@ -1117,8 +1085,7 @@
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:narrower <urn:uuid:3a978497-8980-4695-a316-cb9c66740c49>;
   skos:prefLabel "transform (noun)"@en;
-  skos:related <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>,
-    <urn:uuid:aa5f9563-e527-4df2-8518-ce325819f1e6> .
+  skos:related <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a> .
 
 <urn:uuid:561fb472-4c33-400e-bfc4-895b7284fd84> a skos:Concept;
   dct:created "2022-06-02T02:26:52Z"^^xsd:dateTime;
@@ -1180,8 +1147,7 @@
 <urn:uuid:61a28be0-4688-4591-b633-b00ea2053b38> a skos:Concept;
   dct:created "2021-12-14T19:04:56Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>,
-    <urn:uuid:aa5f9563-e527-4df2-8518-ce325819f1e6>;
+  skos:broader <urn:uuid:fdb43f70-cb11-49dd-aba6-7011b05ad61a>;
   skos:definition "A format string is a convention in numerous programming languages where static text is interspersed with one or more predefined placeholder symbols, which are then substituted with data from the program."@en;
   skos:hiddenLabel "format strings"@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
@@ -1247,8 +1213,7 @@
     "2019-09-23T23:47:53Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   skos:altLabel "relational database"@en;
-  skos:broader <urn:uuid:4694ebe0-589f-40a7-9ef9-67872edb6214>,
-    <urn:uuid:197982df-60a5-4c93-be50-2f8ede43b842>;
+  skos:broader <urn:uuid:4694ebe0-589f-40a7-9ef9-67872edb6214>;
   skos:definition "A relational database is just another term for a database built on top of SQL."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "relational database"@en;
@@ -1278,8 +1243,7 @@
   dct:created "2019-03-01T19:52:43Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   skos:altLabel "Microformat";
-  skos:broader <urn:uuid:0bc0aabb-9d9e-4caa-b9c8-553dd8b3ee05>,
-    <urn:uuid:45373ede-a7b0-404f-b797-902298208993>;
+  skos:broader <urn:uuid:0bc0aabb-9d9e-4caa-b9c8-553dd8b3ee05>;
   skos:definition "Microformats are an early ad-hoc strategy for embedding structured metadata into HTML, by punning standard elements and attributes. Microformats 2 has expanded and generalized this technique somewhat."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "Microformats"@en;
@@ -1302,8 +1266,7 @@
   skos:prefLabel "server"@en;
   skos:related <urn:uuid:76c47ecd-5507-495d-a14b-14e2f15c0955>,
     <urn:uuid:abadd9b5-844e-4982-8fbe-b6b83d43736d>,
-    <urn:uuid:be93cce1-f21f-4e85-bd34-e005dea3532f>,
-    <urn:uuid:ad6b1b9b-fec4-4378-b8dd-7bbc07a3d706> .
+    <urn:uuid:be93cce1-f21f-4e85-bd34-e005dea3532f> .
 
 <urn:uuid:83c1c427-8523-4b51-bcb5-c4fdeb11e859> a skos:Concept;
   dct:created "2021-12-14T18:15:05Z"^^xsd:dateTime;
@@ -1347,8 +1310,7 @@
 Unlike a log, which is cumulative, a snapshot replaces the contents of any snapshot that comes before it."""@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "snapshot"@en;
-  skos:related <urn:uuid:2575586a-6ce1-4527-bb67-7ed7c11f52f7>,
-    <urn:uuid:5964a9f9-5a6b-4491-8236-2d27e16218ec> .
+  skos:related <urn:uuid:2575586a-6ce1-4527-bb67-7ed7c11f52f7> .
 
 <urn:uuid:92b60601-4c7e-4a44-b42f-9648fefc11d4> a skos:Concept;
   dct:created "2019-03-04T05:59:24Z"^^xsd:dateTime;
@@ -1376,8 +1338,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
   skos:definition "Rust is a new programming language which aims to be a modern replacement for C. The goal is the speed of C with a level of program safety (i.e., from undefined behaviour and concomitant attacks) completely unattainable by C. Many of the developers of Rust also work on WebAssembly, a target to which Rust can compile."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "Rust"@en;
-  skos:related <urn:uuid:447cbc26-1fb8-4ffe-95f4-1f83b3bc3d21>,
-    <urn:uuid:a718d483-af90-4eaf-a59f-31d8897d6e8e>,
+  skos:related <urn:uuid:a718d483-af90-4eaf-a59f-31d8897d6e8e>,
     <urn:uuid:c7066ab9-ad6b-4a19-b682-d919827eec71> .
 
 <urn:uuid:97fb551f-c68a-43bb-8153-9c88f916e70b> a skos:Concept;
@@ -1433,8 +1394,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
   skos:definition "Authorization is the process of judging whether a person (or automated agent), or rather their account, is allowed to access a particular resource, after they have been authenticated."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "authorization"@en;
-  skos:related <urn:uuid:8a0718ec-7bfc-48ee-bfa6-5e0edc285565>,
-    <urn:uuid:abadd9b5-844e-4982-8fbe-b6b83d43736d>,
+  skos:related <urn:uuid:abadd9b5-844e-4982-8fbe-b6b83d43736d>,
     <urn:uuid:d0d7da4b-4d4d-4262-96a3-a70afbc1a829>,
     <urn:uuid:d85e3c52-cc94-48a4-8dc5-591de86be52f> .
 
@@ -1508,8 +1468,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
   skos:narrower <urn:uuid:4f4aa0ac-c1b4-4a15-a6f3-518419d5b771>;
   skos:prefLabel "blob"@en;
   skos:related <urn:uuid:332a68b3-06d6-4ac2-8897-4212ba0f3a94>,
-    <urn:uuid:9adc8b42-bbd1-4065-bb57-9a789253c4e4>,
-    <urn:uuid:c9038f6c-67a7-4a26-9e68-19a6c54bf1bb> .
+    <urn:uuid:9adc8b42-bbd1-4065-bb57-9a789253c4e4> .
 
 <urn:uuid:b7bb05a0-86af-4d5d-9d59-0d1691cc766d> a skos:Concept;
   dct:created "2019-02-28T21:44:45Z"^^xsd:dateTime;
@@ -1532,12 +1491,10 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
 <urn:uuid:c8f8c1d9-7fe5-484e-86ee-8388c2e3b83b> a skos:Concept;
   dct:created "2022-06-15T20:10:02Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:826fb218-7346-4a9b-8597-4c30807e21ff>,
-    <urn:uuid:51a7c4b2-ef0c-4dc1-a538-553622131f09>;
+  skos:broader <urn:uuid:51a7c4b2-ef0c-4dc1-a538-553622131f09>;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "typology"@en;
-  skos:related <urn:uuid:5a29cf77-ddb2-4ad8-ae08-9d43da245166>,
-    <urn:uuid:0f872daf-97f4-445e-b5d9-0de0087dd129>,
+  skos:related <urn:uuid:0f872daf-97f4-445e-b5d9-0de0087dd129>,
     <urn:uuid:45b6c768-da32-4e5f-9c87-a18d5ec94635> .
 
 <urn:uuid:cd9605ea-abe2-425e-904a-5dd35acdec8f> a skos:Concept;
@@ -1555,8 +1512,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
   skos:definition "DTD is the legacy XML schema definition format inherited from HTML via SGML. It has been supplanted by XML Schema and Relax NG."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "Document Type Definition"@en;
-  skos:related <urn:uuid:45373ede-a7b0-404f-b797-902298208993>,
-    <urn:uuid:0bc0aabb-9d9e-4caa-b9c8-553dd8b3ee05>,
+  skos:related <urn:uuid:0bc0aabb-9d9e-4caa-b9c8-553dd8b3ee05>,
     <urn:uuid:654c0fac-1eb1-4fd2-9139-b4a5f3e6d903>,
     <urn:uuid:f352a521-b78e-478e-b01d-3a68638025a4> .
 
@@ -1582,8 +1538,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
 <urn:uuid:d5cb742c-9f75-42a4-967f-70b1fda5f0be> a skos:Concept;
   dct:created "2019-03-02T06:38:59Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:f0e4c33f-8930-454a-9a7e-dd2b6cc79dce>,
-    <urn:uuid:4694ebe0-589f-40a7-9ef9-67872edb6214>;
+  skos:broader <urn:uuid:4694ebe0-589f-40a7-9ef9-67872edb6214>;
   skos:definition "MySQL is a popular open-source database product. Its main competitors are PostgreSQL or SQLite (depending on the application)."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "MySQL"@en .
@@ -1591,8 +1546,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
 <urn:uuid:da6f9f27-38f3-47e9-8b16-03728bea9f5e> a skos:Concept;
   dct:created "2017-02-21T19:59:04Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:197982df-60a5-4c93-be50-2f8ede43b842>,
-    <urn:uuid:4694ebe0-589f-40a7-9ef9-67872edb6214>;
+  skos:broader <urn:uuid:4694ebe0-589f-40a7-9ef9-67872edb6214>;
   skos:definition "A record is typically represented as a single row in a database or spreadsheet. It corresponds to one entity."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "record"@en .
@@ -1646,8 +1600,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
 <urn:uuid:e081bcbf-c245-4345-b797-13f9934c6bda> a skos:Concept;
   dct:created "2019-03-04T05:50:14Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:33c3211f-322b-4f7a-83f6-63aa617461c3>,
-    <urn:uuid:e827d9af-be73-4918-89aa-a296872be199>;
+  skos:broader <urn:uuid:33c3211f-322b-4f7a-83f6-63aa617461c3>;
   skos:definition "Python is an object-oriented programming language by Guido van Rossum, initially designed for teaching programming. It is very similar in performance and capabilities to (albeit with some notable improvements), and slightly younger than Perl. Python is currently (2019) gaining attention in data science and machine learning applications."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "Python"@en;
@@ -1682,8 +1635,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   dct:modified "2021-12-14T19:01:37Z"^^xsd:dateTime;
   skos:altLabel "XHTML"@en;
-  skos:broader <urn:uuid:45373ede-a7b0-404f-b797-902298208993>,
-    <urn:uuid:0bc0aabb-9d9e-4caa-b9c8-553dd8b3ee05>,
+  skos:broader <urn:uuid:0bc0aabb-9d9e-4caa-b9c8-553dd8b3ee05>,
     <urn:uuid:8d46494e-5316-43b7-a49e-a625ab716a38>,
     <urn:uuid:f352a521-b78e-478e-b01d-3a68638025a4>;
   skos:definition "XHTML is a dialect of HTML implemented in XML. With the exception of a namespace URI and some very minor differences in the syntax, it is otherwise identical to HTML."@en;
@@ -1890,8 +1842,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
     "2022-11-03T14:13:13Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   skos:altLabel "opaque resource"@en;
-  skos:broader <urn:uuid:79d6fcde-90b7-4f59-b4a9-937b09973432>,
-    <urn:uuid:4039a99d-c14b-40f2-84d5-4ec72e2217e1>;
+  skos:broader <urn:uuid:4039a99d-c14b-40f2-84d5-4ec72e2217e1>;
   skos:definition "We can say an information resource is opaque when the information system that surrounds it either cannot or does not inspect its contents. Opaque resources are typically stored, retrieved, and conveyed by the system as-is, and have a canonical literal representation from which all other representations are derived."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "opaque"@en;
@@ -1952,8 +1903,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   dct:modified "2021-12-14T23:12:28Z"^^xsd:dateTime;
   skos:altLabel "transparent resource"@en;
-  skos:broader <urn:uuid:4039a99d-c14b-40f2-84d5-4ec72e2217e1>,
-    <urn:uuid:79d6fcde-90b7-4f59-b4a9-937b09973432>;
+  skos:broader <urn:uuid:4039a99d-c14b-40f2-84d5-4ec72e2217e1>;
   skos:definition "An information resource can be said to be transparent if the information system surrounding it can, or indeed must, inspect its contents in order to address them. Transparent resources typically do not have canonical representations as all (lossless) representations are equivalent. Contrast with opaque resources."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "transparent"@en .
@@ -2091,8 +2041,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
 <urn:uuid:b20221c0-4949-471a-adb1-45dfccfbdf1c> a skos:Concept;
   dct:created "2017-02-16T23:23:12Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:ad6b1b9b-fec4-4378-b8dd-7bbc07a3d706>,
-    <urn:uuid:10bafb58-6eb8-4d99-9b7d-9840842d3947>,
+  skos:broader <urn:uuid:10bafb58-6eb8-4d99-9b7d-9840842d3947>,
     <urn:uuid:759d2f68-3d16-4122-9758-c84f7760d691>,
     <urn:uuid:935ab72b-b74c-4204-9c00-f1f8f83f105e>,
     <urn:uuid:be93cce1-f21f-4e85-bd34-e005dea3532f>;
@@ -2186,7 +2135,8 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   dct:description "In many programming languages, a function is synonymous with a subroutine. In some, however, it carries the additional constraint that it does not produce side effects, thus making it conceptually closer to the word's meaning in mathematics."@en;
   dct:modified "2022-11-23T23:13:05Z"^^xsd:dateTime;
-  skos:altLabel "function"@en, "pure function"@en ;
+  skos:altLabel "function"@en,
+    "pure function"@en;
   skos:broader <urn:uuid:db2fb779-83e8-407b-a538-5fe9a86271de>;
   skos:definition "A pure function—a necessary distinction in computing, as in mathematics, a function is just a relation, and inherently “pure”—is a procedure that takes an input and returns a value without causing any side effects. This makes them very predictable and well-behaved development targets. Pure functions, like their mathematical counterparts, are therefore composable."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
@@ -2285,7 +2235,6 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
   skos:narrower <urn:uuid:4694ebe0-589f-40a7-9ef9-67872edb6214>,
     <urn:uuid:06f86a10-1b5f-4711-b2fc-3bb5ce14a26e>,
     <urn:uuid:abadd9b5-844e-4982-8fbe-b6b83d43736d>,
-    <urn:uuid:197982df-60a5-4c93-be50-2f8ede43b842>,
     <urn:uuid:b20221c0-4949-471a-adb1-45dfccfbdf1c>;
   skos:prefLabel "information infrastructure"@en;
   skos:related <urn:uuid:16d17f33-394d-4d0b-a882-81e8fc3a52fe> .
@@ -2303,14 +2252,12 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
 <urn:uuid:2717d0b5-cb79-4d1a-82c0-69cdc1e590a1> a skos:Concept;
   dct:created "2019-02-28T21:46:13Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:e827d9af-be73-4918-89aa-a296872be199>,
-    <urn:uuid:33c3211f-322b-4f7a-83f6-63aa617461c3>;
+  skos:broader <urn:uuid:33c3211f-322b-4f7a-83f6-63aa617461c3>;
   skos:definition "Structured Query Language is a standardized fourth-generation programming language for accessing and manipulating relational databases."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:narrower <urn:uuid:d5cb742c-9f75-42a4-967f-70b1fda5f0be>;
   skos:prefLabel "SQL"@en;
-  skos:related <urn:uuid:0aabcb14-9aee-4b16-835e-02530dcb0c23>,
-    <urn:uuid:262057b5-cdb6-4148-823e-a63fd5d10268>,
+  skos:related <urn:uuid:262057b5-cdb6-4148-823e-a63fd5d10268>,
     <urn:uuid:9767147a-1b6a-440c-949f-7f6056e28411>,
     <urn:uuid:b7bb05a0-86af-4d5d-9d59-0d1691cc766d> .
 
@@ -2330,16 +2277,14 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
     <urn:uuid:637cfc93-b88b-4bfb-8f7c-2f9e72e27b86>;
   skos:definition "A Web property is another, smaller umbrella term for networked information services that operate exclusively over the Web, such as ordinary websites, and Web APIs."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
-  skos:narrower <urn:uuid:be93cce1-f21f-4e85-bd34-e005dea3532f>,
-    <urn:uuid:2fd3adcc-1e66-48a5-a375-06992d6fc02b>;
+  skos:narrower <urn:uuid:be93cce1-f21f-4e85-bd34-e005dea3532f>;
   skos:prefLabel "Web property"@en;
   skos:related <urn:uuid:61c0c9c3-4d91-4509-902a-db09c4188ae5> .
 
 <urn:uuid:440e5d73-d654-4051-b482-2a960835306b> a skos:Concept;
   dct:created "2017-07-09T22:09:15Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:0aabcb14-9aee-4b16-835e-02530dcb0c23>,
-    <urn:uuid:9767147a-1b6a-440c-949f-7f6056e28411>;
+  skos:broader <urn:uuid:9767147a-1b6a-440c-949f-7f6056e28411>;
   skos:definition "Website navigation, as a noun, refers to the data structure that encodes the hierarchical groupings of pages on a website."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "website navigation"@en;
@@ -2391,8 +2336,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
   skos:definition "A safe language is a data format or programming language whose entire range of possible behaviour can be deduced through static analysis. Safe languages are therefore not Turing-complete. Sandboxing is a popular, though not completely reliable strategy for dealing with unsafe languages."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "safe language"@en;
-  skos:related <urn:uuid:45373ede-a7b0-404f-b797-902298208993>,
-    <urn:uuid:06f69b4c-ce8b-42ea-b0cb-7f52f233b592>,
+  skos:related <urn:uuid:06f69b4c-ce8b-42ea-b0cb-7f52f233b592>,
     <urn:uuid:0bc0aabb-9d9e-4caa-b9c8-553dd8b3ee05>,
     <urn:uuid:755dd3a1-cffc-4d65-9446-435552bac541> .
 
@@ -2418,8 +2362,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
 <urn:uuid:855fce21-5560-4ff3-87bf-ef26a28958c4> a skos:Concept;
   dct:created "2019-03-02T01:28:54Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:33c3211f-322b-4f7a-83f6-63aa617461c3>,
-    <urn:uuid:e827d9af-be73-4918-89aa-a296872be199>;
+  skos:broader <urn:uuid:33c3211f-322b-4f7a-83f6-63aa617461c3>;
   skos:definition "Java is a programming language and virtual machine designed for \"write once, run anywhere\" cross-platform targeting, initially developed by Sun Microsystems in the 1990s, which was subsequently acquired by Oracle. Java appears to be the language of choice for academics and large corporations, which may account for its strong representation in RDF tools."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "Java"@en .
@@ -2462,8 +2405,7 @@ Unlike a log, which is cumulative, a snapshot replaces the contents of any snaps
 <urn:uuid:cda3a7a9-41bc-4de7-ad92-1b9093389c64> a skos:Concept;
   dct:created "2017-07-13T18:47:10Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
-  skos:broader <urn:uuid:f3f67e45-9cdf-4df1-9586-834ba185f63b>,
-    <urn:uuid:7b7c4ecf-2544-4c03-ab5f-10de5e1a20d4>,
+  skos:broader <urn:uuid:7b7c4ecf-2544-4c03-ab5f-10de5e1a20d4>,
     <urn:uuid:ca632e87-50d2-4f1d-af83-f3d11e53eca8>,
     <urn:uuid:fe500c7a-b458-4d2c-8b3a-efd1bb47d106>;
   skos:definition "JSON-LD is a particular configuration of JSON (i.e., it is a serialization syntax) that enables the encoding of Linked Data (RDF)."@en;
@@ -2540,9 +2482,7 @@ REST has a considerable amount in common with Linked Data."""@en;
   skos:hiddenLabel "IDs"@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:narrower <urn:uuid:27a05aeb-017c-484d-b490-c6949e6eacbc>,
-    <urn:uuid:9e506ca3-8be1-431d-9075-548141d9f8c1>,
-    <urn:uuid:349633ba-03b8-4126-8e55-1ed9a7c7e4ec>,
-    <urn:uuid:32453ea5-50cb-4ee1-a1f9-c03c0693fdda>;
+    <urn:uuid:9e506ca3-8be1-431d-9075-548141d9f8c1>;
   skos:prefLabel "identifier"@en .
 
 <urn:uuid:755dd3a1-cffc-4d65-9446-435552bac541> a skos:Concept;
@@ -2562,8 +2502,7 @@ REST has a considerable amount in common with Linked Data."""@en;
     "css"@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:prefLabel "Cascading Style Sheets"@en;
-  skos:related <urn:uuid:45373ede-a7b0-404f-b797-902298208993>,
-    <urn:uuid:5abd5284-7197-4eed-895d-6daefa019de8>,
+  skos:related <urn:uuid:5abd5284-7197-4eed-895d-6daefa019de8>,
     <urn:uuid:f352a521-b78e-478e-b01d-3a68638025a4>,
     <urn:uuid:0bc0aabb-9d9e-4caa-b9c8-553dd8b3ee05> .
 
@@ -2576,8 +2515,6 @@ REST has a considerable amount in common with Linked Data."""@en;
     <urn:uuid:fe500c7a-b458-4d2c-8b3a-efd1bb47d106>;
   skos:prefLabel "data interchange"@en;
   skos:related <urn:uuid:7b7c4ecf-2544-4c03-ab5f-10de5e1a20d4>,
-    <urn:uuid:f3f67e45-9cdf-4df1-9586-834ba185f63b>,
-    <urn:uuid:0aabcb14-9aee-4b16-835e-02530dcb0c23>,
     <urn:uuid:9767147a-1b6a-440c-949f-7f6056e28411> .
 
 <urn:uuid:9fc41de2-b16c-4170-8818-893302baa77d> a skos:Concept;
@@ -2651,8 +2588,7 @@ REST has a considerable amount in common with Linked Data."""@en;
   dct:modified "2019-02-02T19:07:37Z"^^xsd:dateTime;
   skos:definition "Hypermedia is a generalization of the concept of hypertext, to include audiovisual content."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
-  skos:narrower <urn:uuid:03e66b30-1bba-4663-bdcb-facd7b8dc7a7>,
-    <urn:uuid:9fc41de2-b16c-4170-8818-893302baa77d>,
+  skos:narrower <urn:uuid:9fc41de2-b16c-4170-8818-893302baa77d>,
     <urn:uuid:162516dc-6817-4d47-b4a7-6939c14c0fbb>;
   skos:prefLabel "hypermedia"@en .
 
@@ -2719,8 +2655,7 @@ REST has a considerable amount in common with Linked Data."""@en;
     <urn:uuid:65a4359d-9ef6-44a3-9317-875495517b3c>,
     <urn:uuid:75b4da00-36b5-467e-bc90-966a7e5256a1>,
     <urn:uuid:ca632e87-50d2-4f1d-af83-f3d11e53eca8>,
-    <urn:uuid:fe500c7a-b458-4d2c-8b3a-efd1bb47d106>,
-    <urn:uuid:e903395d-2497-4394-8067-d77daf60f198> .
+    <urn:uuid:fe500c7a-b458-4d2c-8b3a-efd1bb47d106> .
 
 <urn:uuid:85a069f9-1a66-4462-b0e2-d042db345919> a skos:Concept;
   dct:created "2017-07-26T20:47:31Z"^^xsd:dateTime;
@@ -2735,7 +2670,6 @@ REST has a considerable amount in common with Linked Data."""@en;
     <urn:uuid:755dd3a1-cffc-4d65-9446-435552bac541>,
     <urn:uuid:440e5d73-d654-4051-b482-2a960835306b>,
     <urn:uuid:c9f9e746-371c-4d67-a962-e3906c86a5c3>,
-    <urn:uuid:2c534735-69b5-4d54-bd9f-dd47b4a5e678>,
     <urn:uuid:e840ba8a-4c6d-4be3-a673-dd6620463a39> .
 
 <urn:uuid:c757c1ac-1ec6-4bdd-a35d-85f1d85728bb> a skos:Concept;
@@ -2785,8 +2719,7 @@ REST has a considerable amount in common with Linked Data."""@en;
     "2017-02-05T04:09:02Z"^^xsd:dateTime;
   dct:creator <urn:uuid:ca637d4b-c11b-4152-be98-bde602e7abd4>;
   dct:modified "2019-03-02T05:24:24Z"^^xsd:dateTime;
-  skos:broader <urn:uuid:11227a90-60be-4845-a675-b88b599ac79b>,
-    <urn:uuid:10bafb58-6eb8-4d99-9b7d-9840842d3947>;
+  skos:broader <urn:uuid:10bafb58-6eb8-4d99-9b7d-9840842d3947>;
   skos:definition "A database is any persistent storage facility for digital information. Databases can be embedded in applications, or be stand-alone online resources accessed over a network. File systems are a form of database, as are relational (SQL) databases and (RDF or otherwise) graph stores."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:narrower <urn:uuid:2717d0b5-cb79-4d1a-82c0-69cdc1e590a1>,
@@ -2885,8 +2818,7 @@ REST has a considerable amount in common with Linked Data."""@en;
   skos:altLabel "JSON"@en;
   skos:broader <urn:uuid:75b4da00-36b5-467e-bc90-966a7e5256a1>,
     <urn:uuid:8d46494e-5316-43b7-a49e-a625ab716a38>,
-    <urn:uuid:9767147a-1b6a-440c-949f-7f6056e28411>,
-    <urn:uuid:0aabcb14-9aee-4b16-835e-02530dcb0c23>;
+    <urn:uuid:9767147a-1b6a-440c-949f-7f6056e28411>;
   skos:definition "JSON (JavaScript Object Notation) is a popular data interchange (serialization) format (syntax) for structured data."@en;
   skos:hiddenLabel "javascript object notation"@en,
     "json"@en;
@@ -2901,8 +2833,7 @@ REST has a considerable amount in common with Linked Data."""@en;
   dct:modified "2021-12-13T23:24:25Z"^^xsd:dateTime;
   skos:altLabel "application programming interface"@en,
     "API"@en;
-  skos:broader <urn:uuid:73cc630b-2000-46d7-8777-b0fe17e5e901>,
-    <urn:uuid:055e91e4-5edf-46fd-9bad-9847dbf57a72>,
+  skos:broader <urn:uuid:055e91e4-5edf-46fd-9bad-9847dbf57a72>,
     <urn:uuid:51a7c4b2-ef0c-4dc1-a538-553622131f09>;
   skos:definition "An API is, in the most generic sense, a published commitment on the part of a person or business entity to expose certain functionality, behavior, or semantics of an information system under their control. In the sense in which we are more accustomed, an API refers to a specific class of software that implements this functionality on the Web."@en;
   skos:hiddenLabel "API's"@en,
@@ -2912,8 +2843,7 @@ REST has a considerable amount in common with Linked Data."""@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:narrower <urn:uuid:91bffd8d-1f18-4604-844e-6a5557947a67>;
   skos:prefLabel "application programming interface"@en;
-  skos:related <urn:uuid:6edac7a8-c4ae-4304-a511-ac1d971f4552>,
-    <urn:uuid:615a2418-14be-4a69-b669-14e9f8219e9c>,
+  skos:related <urn:uuid:615a2418-14be-4a69-b669-14e9f8219e9c>,
     <urn:uuid:85a069f9-1a66-4462-b0e2-d042db345919> .
 
 <urn:uuid:027543f6-04df-4e92-96f4-5b0c8da4b799> a skos:Concept;
@@ -2924,13 +2854,11 @@ REST has a considerable amount in common with Linked Data."""@en;
   skos:definition "A data (or file format, or serialization format) is a set of rules for turning a data structure into a sequence of bytes which can be stored or transported. The term is also used when speaking about instances of such serializations."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:narrower <urn:uuid:21d69225-b92a-4440-83a0-62a386451283>,
-    <urn:uuid:45373ede-a7b0-404f-b797-902298208993>,
     <urn:uuid:f352a521-b78e-478e-b01d-3a68638025a4>,
     <urn:uuid:0bc0aabb-9d9e-4caa-b9c8-553dd8b3ee05>,
     <urn:uuid:ca632e87-50d2-4f1d-af83-f3d11e53eca8>;
   skos:prefLabel "data format"@en;
-  skos:related <urn:uuid:0aabcb14-9aee-4b16-835e-02530dcb0c23>,
-    <urn:uuid:85a069f9-1a66-4462-b0e2-d042db345919>,
+  skos:related <urn:uuid:85a069f9-1a66-4462-b0e2-d042db345919>,
     <urn:uuid:9767147a-1b6a-440c-949f-7f6056e28411> .
 
 <urn:uuid:02b3d282-d134-487b-8226-80141b5a4338> a skos:Concept;
@@ -3011,8 +2939,7 @@ REST has a considerable amount in common with Linked Data."""@en;
     <urn:uuid:45b6c768-da32-4e5f-9c87-a18d5ec94635>,
     <urn:uuid:51a7c4b2-ef0c-4dc1-a538-553622131f09>,
     <urn:uuid:440e5d73-d654-4051-b482-2a960835306b>,
-    <urn:uuid:c9f9e746-371c-4d67-a962-e3906c86a5c3>,
-    <urn:uuid:2c534735-69b5-4d54-bd9f-dd47b4a5e678> .
+    <urn:uuid:c9f9e746-371c-4d67-a962-e3906c86a5c3> .
 
 <urn:uuid:c0e969c3-4528-4968-8418-d5fe609c2a62> a skos:Concept;
   dct:created "2019-03-07T01:04:30Z"^^xsd:dateTime,
@@ -3023,7 +2950,6 @@ REST has a considerable amount in common with Linked Data."""@en;
   skos:definition "Access is the part of a security policy that concerns the assignment of privileges: who is allowed to see or change an information resource. It is usually discussed in terms of authentication and authorization."@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:narrower <urn:uuid:4a6202a6-b159-4a2b-860a-08efc38e93f1>,
-    <urn:uuid:fae79c9e-2e3b-43de-8233-0dbdb4463791>,
     <urn:uuid:9d01c1e5-77f4-481f-bcf9-d9a3ad4b57c8>,
     <urn:uuid:d0d7da4b-4d4d-4262-96a3-a70afbc1a829>;
   skos:prefLabel "access control"@en .
@@ -3125,9 +3051,7 @@ REST has a considerable amount in common with Linked Data."""@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:narrower <urn:uuid:1f5fb4c8-4d43-46d6-a205-0339c1b0289e>;
   skos:prefLabel "data structure"@en;
-  skos:related <urn:uuid:197982df-60a5-4c93-be50-2f8ede43b842>,
-    <urn:uuid:4694ebe0-589f-40a7-9ef9-67872edb6214>,
-    <urn:uuid:527ab630-b325-4a7a-8cb7-ec448a90db62> .
+  skos:related <urn:uuid:4694ebe0-589f-40a7-9ef9-67872edb6214> .
 
 <urn:uuid:4039a99d-c14b-40f2-84d5-4ec72e2217e1> a skos:Concept;
   dct:alternative "An information resource is any identifiable artifact that contains information. This can range from a book, to a film, to a library, to a database, to a Post-It note."@en,
@@ -3160,8 +3084,7 @@ REST has a considerable amount in common with Linked Data."""@en;
   skos:hiddenLabel "resources"@en,
     "information resources"@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
-  skos:narrower <urn:uuid:1f7f1c54-a1d2-453c-87a7-4439a7b6037d>,
-    <urn:uuid:e3f7b71e-1366-4f1e-aaf8-fd15a37e7f61>;
+  skos:narrower <urn:uuid:1f7f1c54-a1d2-453c-87a7-4439a7b6037d>;
   skos:prefLabel "information resource"@en;
   skos:related <urn:uuid:5bdd2fb7-d84d-4583-998b-7d3f2803307e>,
     <urn:uuid:9e506ca3-8be1-431d-9075-548141d9f8c1>,
@@ -3204,8 +3127,7 @@ REST has a considerable amount in common with Linked Data."""@en;
     "rdf"@en;
   skos:inScheme <urn:uuid:4bbcdde6-ed53-4f8d-b3f8-43f800fd05d5>;
   skos:narrower <urn:uuid:86c65d14-2d23-4350-8004-233b2f3e873f>,
-    <urn:uuid:6d154e36-799a-4b7b-8e07-a6d3459d2fd7>,
-    <urn:uuid:4eab5a63-adc6-4efd-b49e-402131b519fa>;
+    <urn:uuid:6d154e36-799a-4b7b-8e07-a6d3459d2fd7>;
   skos:prefLabel "Resource Description Framework"@en;
   skos:related <urn:uuid:4af8a4cc-c12b-47aa-8ab2-d15a74907aa3>,
     <urn:uuid:7b7c4ecf-2544-4c03-ab5f-10de5e1a20d4>,

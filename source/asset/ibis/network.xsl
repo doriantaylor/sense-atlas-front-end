@@ -67,6 +67,50 @@
     </xsl:if>
   </xsl:variable>
 
+  <xsl:variable name="state">
+    <xsl:if test="string-length(normalize-space($user))">
+      <xsl:variable name="_">
+        <xsl:apply-templates select="." mode="rdfa:object-resources">
+	  <xsl:with-param name="subject" select="$user"/>
+	  <xsl:with-param name="predicate" select="concat($CGTO, 'state')"/>
+	  <xsl:with-param name="traverse" select="true()"/>
+        </xsl:apply-templates>
+        <xsl:text> </xsl:text>
+        <xsl:apply-templates select="." mode="rdfa:subject-resources">
+	  <xsl:with-param name="object" select="$user"/>
+	  <xsl:with-param name="predicate" select="concat($CGTO, 'owner')"/>
+	  <xsl:with-param name="traverse" select="true()"/>
+        </xsl:apply-templates>
+      </xsl:variable>
+      <xsl:call-template name="str:safe-first-token">
+        <xsl:with-param name="tokens">
+          <xsl:call-template name="str:token-intersection">
+            <xsl:with-param name="left">
+              <xsl:apply-templates select="." mode="rdfa:object-resources">
+                <xsl:with-param name="subject" select="$space"/>
+                <xsl:with-param name="predicate" select="concat($SIOC, 'space_of')"/>
+                <xsl:with-param name="traverse" select="true()"/>
+              </xsl:apply-templates>
+            </xsl:with-param>
+            <xsl:with-param name="right" select="$_"/>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="focus">
+    <xsl:if test="string-length($state)">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$state"/>
+	<xsl:with-param name="predicate" select="concat($CGTO, 'focus')"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="can-write" select="string-length($user) != 0 and $subject = $focus"/>
+
   <xsl:variable name="adjacents">
     <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
       <xsl:with-param name="subjects" select="$subject"/>
@@ -138,9 +182,45 @@
     </xsl:apply-templates>
   </xsl:variable>
 
+  <xsl:variable name="label-raw">
+    <xsl:apply-templates select="." mode="skos:object-form-label">
+      <xsl:with-param name="subject" select="$subject"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+  <xsl:variable name="label-prop" select="substring-before($label-raw, ' ')"/>
+  <xsl:variable name="label-val" select="substring-after($label-raw, ' ')"/>
+  <xsl:variable name="label" select="substring-before($label-val, $rdfa:UNIT-SEP)"/>
+  <xsl:variable name="label-type">
+    <xsl:if test="not(starts-with(substring-after($label-val, $rdfa:UNIT-SEP), '@'))">
+      <xsl:value-of select="substring-after($label-val, $rdfa:UNIT-SEP)"/>
+    </xsl:if>
+  </xsl:variable>
+  <xsl:variable name="label-lang">
+    <xsl:if test="starts-with(substring-after($label-val, $rdfa:UNIT-SEP), '@')">
+      <xsl:value-of select="substring-after($label-val, concat($rdfa:UNIT-SEP, ' '))"/>
+    </xsl:if>
+  </xsl:variable>
+
   <main>
     <article>
-      <xsl:if test="string-length($user)">
+      <hgroup>
+        <h1>
+          <xsl:if test="$label-prop">
+            <xsl:attribute name="property">
+	      <xsl:value-of select="$label-prop"/>
+            </xsl:attribute>
+            <xsl:if test="$label-type">
+	      <xsl:attribute name="datatype"><xsl:value-of select="$label-type"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$label-lang">
+	      <xsl:attribute name="xml:lang"><xsl:value-of select="$label-lang"/></xsl:attribute>
+            </xsl:if>
+          </xsl:if>
+          <xsl:value-of select="$label"/>
+        </h1>
+      </hgroup>
+
+      <xsl:if test="false()">
         <form method="POST" action="" accept-charset="utf-8">
           <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
           <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
@@ -158,74 +238,174 @@
           <button class="fa fa-plus"/>
         </form>
       </xsl:if>
-      <xsl:if test="string-length(normalize-space($issues))">
-        <section>
-          <h3>Issues</h3>
+      <xsl:if test="$can-write or string-length(normalize-space($issues))">
+        <section about="ibis:Issue">
+          <hgroup>
+            <h3>Issues</h3>
+          </hgroup>
+          <xsl:if test="$can-write">
+            <form method="POST" action="" accept-charset="utf-8">
+              <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+              <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
+              <input type="hidden" name="rdf:type :" value="ibis:Issue"/>
+	      <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	      <input type="hidden" name="dct:creator :" value="{$user}"/>
+              <input type="text" name="= rdf:value @en"/>
+              <button class="fa fa-plus"/>
+            </form>
+          </xsl:if>
+
+          <xsl:if test="string-length(normalize-space($issues))">
           <ul>
             <xsl:call-template name="skos:concept-scheme-list-item">
               <xsl:with-param name="resources" select="$issues"/>
               <xsl:with-param name="lprop" select="concat($rdfa:RDF-NS, 'value')"/>
             </xsl:call-template>
           </ul>
+          </xsl:if>
         </section>
       </xsl:if>
-      <xsl:if test="string-length(normalize-space($positions))">
-        <section>
-          <h3>Positions</h3>
+      <xsl:if test="$can-write or string-length(normalize-space($positions))">
+        <section about="ibis:Position">
+          <hgroup>
+            <h3>Positions</h3>
+          </hgroup>
+          <xsl:if test="$can-write">
+            <form method="POST" action="" accept-charset="utf-8">
+              <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+              <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
+              <input type="hidden" name="rdf:type :" value="ibis:Position"/>
+	      <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	      <input type="hidden" name="dct:creator :" value="{$user}"/>
+              <input type="text" name="= rdf:value @en"/>
+              <button class="fa fa-plus"/>
+            </form>
+          </xsl:if>
+
+          <xsl:if test="string-length(normalize-space($positions))">
           <ul>
             <xsl:call-template name="skos:concept-scheme-list-item">
               <xsl:with-param name="resources" select="$positions"/>
               <xsl:with-param name="lprop" select="concat($rdfa:RDF-NS, 'value')"/>
             </xsl:call-template>
           </ul>
+          </xsl:if>
         </section>
       </xsl:if>
-      <xsl:if test="string-length(normalize-space($arguments))">
-        <section>
-          <h3>Arguments</h3>
+      <xsl:if test="$can-write or string-length(normalize-space($arguments))">
+        <section about="ibis:Argument">
+          <hgroup>
+            <h3>Arguments</h3>
+          </hgroup>
+          <xsl:if test="$can-write">
+            <form method="POST" action="" accept-charset="utf-8">
+              <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+              <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
+              <input type="hidden" name="rdf:type :" value="ibis:Argument"/>
+	      <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	      <input type="hidden" name="dct:creator :" value="{$user}"/>
+              <input type="text" name="= rdf:value @en"/>
+              <button class="fa fa-plus"/>
+            </form>
+          </xsl:if>
+
+          <xsl:if test="string-length(normalize-space($arguments))">
           <ul>
             <xsl:call-template name="skos:concept-scheme-list-item">
               <xsl:with-param name="resources" select="$arguments"/>
               <xsl:with-param name="lprop" select="concat($rdfa:RDF-NS, 'value')"/>
             </xsl:call-template>
           </ul>
+          </xsl:if>
         </section>
       </xsl:if>
-      <xsl:if test="string-length(normalize-space($goals))">
-        <section>
-          <h3>Goals</h3>
-          <ul>
+      <xsl:if test="$can-write or string-length(normalize-space($goals))">
+        <section about="pm:Goal">
+          <hgroup>
+            <h3>Goals</h3>
+          </hgroup>
+          <xsl:if test="$can-write">
+            <form method="POST" action="" accept-charset="utf-8">
+              <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+              <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
+              <input type="hidden" name="rdf:type :" value="pm:Goal"/>
+	      <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	      <input type="hidden" name="dct:creator :" value="{$user}"/>
+              <input type="text" name="= rdf:value @en"/>
+              <button class="fa fa-plus"/>
+            </form>
+          </xsl:if>
+
+          <xsl:if test="string-length(normalize-space($goals))">
+            <ul>
             <xsl:call-template name="skos:concept-scheme-list-item">
               <xsl:with-param name="resources" select="$goals"/>
               <xsl:with-param name="lprop" select="concat($rdfa:RDF-NS, 'value')"/>
             </xsl:call-template>
           </ul>
+          </xsl:if>
         </section>
       </xsl:if>
-      <xsl:if test="string-length(normalize-space($tasks))">
-        <section>
-          <h3>Tasks</h3>
+      <xsl:if test="$can-write or string-length(normalize-space($tasks))">
+        <section about="pm:Task">
+          <hgroup>
+            <h3>Tasks</h3>
+          </hgroup>
+          <xsl:if test="$can-write">
+            <form method="POST" action="" accept-charset="utf-8">
+              <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+              <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
+              <input type="hidden" name="rdf:type :" value="pm:Task"/>
+	      <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	      <input type="hidden" name="dct:creator :" value="{$user}"/>
+              <input type="text" name="= rdf:value @en"/>
+              <button class="fa fa-plus"/>
+            </form>
+          </xsl:if>
+
+          <xsl:if test="string-length(normalize-space($tasks))">
           <ul>
             <xsl:call-template name="skos:concept-scheme-list-item">
               <xsl:with-param name="resources" select="$tasks"/>
               <xsl:with-param name="lprop" select="concat($rdfa:RDF-NS, 'value')"/>
             </xsl:call-template>
           </ul>
+          </xsl:if>
         </section>
       </xsl:if>
-      <xsl:if test="string-length(normalize-space($targets))">
-        <section>
-          <h3>Targets</h3>
+      <xsl:if test="$can-write or string-length(normalize-space($targets))">
+        <section about="pm:Target">
+          <hgroup>
+            <h3>Targets</h3>
+          </hgroup>
+          <xsl:if test="$can-write">
+            <form method="POST" action="" accept-charset="utf-8">
+              <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+              <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
+              <input type="hidden" name="rdf:type :" value="pm:Target"/>
+	      <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	      <input type="hidden" name="dct:creator :" value="{$user}"/>
+              <input type="text" name="= rdf:value @en"/>
+              <button class="fa fa-plus"/>
+            </form>
+          </xsl:if>
+
+          <xsl:if test="string-length(normalize-space($targets))">
           <ul>
             <xsl:call-template name="skos:concept-scheme-list-item">
               <xsl:with-param name="resources" select="$targets"/>
               <xsl:with-param name="lprop" select="concat($rdfa:RDF-NS, 'value')"/>
             </xsl:call-template>
           </ul>
+          </xsl:if>
         </section>
       </xsl:if>
-      <section>
-        <h3>Concepts</h3>
+      <xsl:if test="$can-write or string-length(normalize-space($concepts))">
+        <section about="skos:Concept">
+          <hgroup>
+            <h3>Concepts</h3>
+          </hgroup>
+        <xsl:if test="$can-write">
         <form method="POST" action="" accept-charset="utf-8">
           <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
           <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
@@ -235,6 +415,7 @@
           <input type="text" name="= skos:prefLabel"/>
           <button class="fa fa-plus"/>
         </form>
+        </xsl:if>
         <xsl:if test="string-length(normalize-space($concepts))">
           <ul>
             <xsl:call-template name="skos:concept-scheme-list-item">
@@ -244,6 +425,7 @@
           </ul>
         </xsl:if>
       </section>
+      </xsl:if>
     </article>
     <figure id="force" class="aside"/>
   </main>

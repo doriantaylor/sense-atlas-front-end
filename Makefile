@@ -12,6 +12,7 @@ FIND  = find
 CURL  = curl
 NPM   = npm
 PSASS = psass
+RSYNC = rsync -avcq
 
 SOURCE = source
 TARGET = target
@@ -69,37 +70,37 @@ $(TARGET)/asset/rdfa.xsl : $(TARGET)/asset
 # OUR XSLT
 
 $(TARGET)/asset/rdfa-util.xsl : $(TARGET)/asset/transclude.xsl $(TARGET)/asset/rdfa.xsl
-	$(CP) $(SOURCE)/asset/rdfa-util.xsl $(TARGET)/asset
+	$(RSYNC) $(SOURCE)/asset/rdfa-util.xsl $(TARGET)/asset/
 
 $(TARGET)/asset/cgto/space.xsl : $(TARGET)/asset/cgto $(TARGET)/asset/rdfa-util.xsl
-	$(CP) $(SOURCE)/asset/cgto/space.xsl $(TARGET)/asset/cgto
+	$(RSYNC) $(SOURCE)/asset/cgto/space.xsl $(TARGET)/asset/cgto/
 
 $(TARGET)/asset/cgto/error.xsl : $(TARGET)/asset/cgto $(TARGET)/asset/rdfa-util.xsl
-	$(CP) $(SOURCE)/asset/cgto/error.xsl $(TARGET)/asset/cgto
+	$(RSYNC) $(SOURCE)/asset/cgto/error.xsl $(TARGET)/asset/cgto/
 
 $(TARGET)/asset/skos/concept.xsl : $(TARGET)/asset/skos $(TARGET)/asset/cgto/space.xsl
-	$(CP) $(SOURCE)/asset/skos/concept.xsl $(TARGET)/asset/skos
+	$(RSYNC) $(SOURCE)/asset/skos/concept.xsl $(TARGET)/asset/skos/
 
 $(TARGET)/asset/skos/concept-scheme.xsl : $(TARGET)/asset/skos $(TARGET)/asset/cgto/space.xsl
-	$(CP) $(SOURCE)/asset/skos/concept-scheme.xsl $(TARGET)/asset/skos
+	$(RSYNC) $(SOURCE)/asset/skos/concept-scheme.xsl $(TARGET)/asset/skos/
 
 $(TARGET)/asset/ibis/entity.xsl : $(TARGET)/asset/ibis $(TARGET)/asset/skos/concept.xsl
-	$(CP) $(SOURCE)/asset/ibis/entity.xsl $(TARGET)/asset/ibis
+	$(RSYNC) $(SOURCE)/asset/ibis/entity.xsl $(TARGET)/asset/ibis/
 
 $(TARGET)/asset/ibis/position.xsl : $(TARGET)/asset/ibis $(TARGET)/asset/ibis/entity.xsl
-	$(CP) $(SOURCE)/asset/ibis/position.xsl $(TARGET)/asset/ibis
+	$(RSYNC) $(SOURCE)/asset/ibis/position.xsl $(TARGET)/asset/ibis/
 
 $(TARGET)/asset/ibis/network.xsl : $(TARGET)/asset/ibis $(TARGET)/asset/skos/concept-scheme.xsl
-	$(CP) $(SOURCE)/asset/ibis/network.xsl $(TARGET)/asset/ibis
+	$(RSYNC) $(SOURCE)/asset/ibis/network.xsl $(TARGET)/asset/ibis/
 
 $(TARGET)/asset/pm/goal.xsl : $(TARGET)/asset/pm $(TARGET)/asset/ibis/entity.xsl
-	$(CP) $(SOURCE)/asset/pm/goal.xsl $(TARGET)/asset/pm
+	$(RSYNC) $(SOURCE)/asset/pm/goal.xsl $(TARGET)/asset/pm/
 
 $(TARGET)/asset/pm/task.xsl : $(TARGET)/asset/pm $(TARGET)/asset/ibis/entity.xsl
-	$(CP) $(SOURCE)/asset/pm/task.xsl $(TARGET)/asset/pm
+	$(RSYNC) $(SOURCE)/asset/pm/task.xsl $(TARGET)/asset/pm/
 
 $(TARGET)/asset/pm/target.xsl : $(TARGET)/asset/pm $(TARGET)/asset/ibis/entity.xsl
-	$(CP) $(SOURCE)/asset/pm/target.xsl $(TARGET)/asset/pm
+	$(RSYNC) $(SOURCE)/asset/pm/target.xsl $(TARGET)/asset/pm/
 
 # $(TARGET)/asset/skos-ibis.xsl : $(TARGET)/asset/cgto.xsl $(TARGET)/asset/rdfa-util.xsl
 # 	$(CP) $(SOURCE)/asset/skos-ibis.xsl $(TARGET)/asset
@@ -134,7 +135,7 @@ js/node_modules :
 	cd js; npm install; cd -
 
 $(TARGET)/asset/complex.js : $(TARGET)/asset js/node_modules
-	$(CP) js/node_modules/complex.js/complex.js $(TARGET)/asset/complex.js
+	$(RSYNC) js/node_modules/complex.js/complex.js $(TARGET)/asset/complex.js
 
 $(TARGET)/asset/d3.js : $(TARGET)/asset
 	cd js; $(NPM) run build; cd -
@@ -152,10 +153,10 @@ $(TARGET)/asset/hierarchical.js : $(TARGET)/asset
 	cd js; $(NPM) run build; cd -
 
 $(TARGET)/asset/utilities.js : $(TARGET)/asset
-	$(CP) $(SOURCE)/asset/utilities.js $(TARGET)/asset/
+	$(RSYNC) $(SOURCE)/asset/utilities.js $(TARGET)/asset/
 
 $(TARGET)/asset/cgto/scripts.js : $(TARGET)/asset/cgto
-	$(CP) $(SOURCE)/asset/cgto/scripts.js $(TARGET)/asset/cgto/
+	$(RSYNC) $(SOURCE)/asset/cgto/scripts.js $(TARGET)/asset/cgto/
 
 js: $(foreach x,$(JS_ASSETS),$(TARGET)/asset/$(x))
 
@@ -166,20 +167,20 @@ fonts : $(TARGET)/type
 # XXX do a makefile for downloading/renaming these fonts
 $(TARGET)/type :
 	$(MD) $(TARGET)/type
-	$(CP) $(LOCAL)/extranet-boilerplate/type/{roboto,font-awesome,noto-sans-symbols2}{,.css} $(TARGET)/type
+	$(RSYNC) $(LOCAL)/extranet-boilerplate/type/{roboto,font-awesome,noto-sans-symbols2}{,.css} $(TARGET)/type/
 
 
 # OTHER FILES
 
 $(TARGET)/asset/*.jpeg : $(TARGET)/asset
-	$(CP) $(SOURCE)/asset/*.jpeg $(TARGET)/asset/
+	$(RSYNC) $(SOURCE)/asset/*.jpeg $(TARGET)/asset/
 
 $(TARGET)/asset/*.png : $(TARGET)/asset
-	$(CP) $(SOURCE)/asset/*.png $(TARGET)/asset/
+	$(RSYNC) $(SOURCE)/asset/*.png $(TARGET)/asset/
 
 $(TARGET)/*.xhtml :
 
 content: $(TARGET)/*.xhtml $(TARGET)/asset/*.jpeg $(TARGET)/asset/*.png
-	$(CP) $(SOURCE)/*.xhtml $(TARGET)/
+	$(RSYNC) $(SOURCE)/*.xhtml $(TARGET)/
 
 # OTHER TARGETS

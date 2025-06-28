@@ -91,19 +91,55 @@
     user: <xsl:value-of select="$user"/>
   </xsl:comment>
 
+  <xsl:variable name="label-raw">
+    <xsl:apply-templates select="." mode="skos:object-form-label">
+      <xsl:with-param name="subject" select="$subject"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+  <xsl:variable name="label-prop" select="substring-before($label-raw, ' ')"/>
+  <xsl:variable name="label-val" select="substring-after($label-raw, ' ')"/>
+  <xsl:variable name="label" select="substring-before($label-val, $rdfa:UNIT-SEP)"/>
+  <xsl:variable name="label-type">
+    <xsl:if test="not(starts-with(substring-after($label-val, $rdfa:UNIT-SEP), '@'))">
+      <xsl:value-of select="substring-after($label-val, $rdfa:UNIT-SEP)"/>
+    </xsl:if>
+  </xsl:variable>
+  <xsl:variable name="label-lang">
+    <xsl:if test="starts-with(substring-after($label-val, $rdfa:UNIT-SEP), '@')">
+      <xsl:value-of select="substring-after($label-val, concat($rdfa:UNIT-SEP, ' '))"/>
+    </xsl:if>
+  </xsl:variable>
+
   <main>
     <article>
-      <xsl:if test="string-length($user)">
-        <form method="POST" action="" accept-charset="utf-8">
-          <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-          <input type="hidden" name="rdf:type :" value="skos:Concept"/>
-          <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
-	  <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
-	  <input type="hidden" name="dct:creator :" value="{$user}"/>
-          <input type="text" name="= skos:prefLabel"/>
-          <button class="fa fa-plus"/>
-        </form>
-      </xsl:if>
+      <hgroup>
+        <h1>
+          <xsl:if test="$label-prop">
+            <xsl:attribute name="property">
+	      <xsl:value-of select="$label-prop"/>
+            </xsl:attribute>
+            <xsl:if test="$label-type">
+	      <xsl:attribute name="datatype"><xsl:value-of select="$label-type"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$label-lang">
+	      <xsl:attribute name="xml:lang"><xsl:value-of select="$label-lang"/></xsl:attribute>
+            </xsl:if>
+          </xsl:if>
+          <xsl:value-of select="$label"/>
+        </h1>
+        <!--<h2>Concepts</h2>-->
+        <xsl:if test="string-length($user)">
+          <form method="POST" action="" accept-charset="utf-8">
+            <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+            <input type="hidden" name="rdf:type :" value="skos:Concept"/>
+            <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
+	    <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+	    <input type="hidden" name="dct:creator :" value="{$user}"/>
+            <input type="text" name="= skos:prefLabel" placeholder="Add a new concept&#x2026;"/>
+            <button class="fa fa-plus"/>
+          </form>
+        </xsl:if>
+      </hgroup>
       <ul>
         <xsl:if test="string-length(normalize-space($top-concepts))">
           <xsl:call-template name="skos:concept-scheme-list-item">

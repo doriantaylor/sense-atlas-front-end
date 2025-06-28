@@ -275,6 +275,7 @@
   <xsl:param name="user">
     <xsl:message terminate="yes">`user` parameter required</xsl:message>
   </xsl:param>
+  <xsl:param name="can-write" select="normalize-space($user) != ''"/>
 
   <xsl:variable name="label">
     <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
@@ -323,17 +324,44 @@
   </xsl:variable>
 
   <h1>
-    <form accept-charset="utf-8" action="" method="POST">
-      <input type="text" name="= skos:prefLabel" value="{substring-before($label, $rdfa:UNIT-SEP)}"/>
-      <button class="fa fa-sync"/>
-    </form>
+    <xsl:choose>
+      <xsl:when test="$can-write">
+        <form accept-charset="utf-8" action="" method="POST">
+          <input type="text" name="= skos:prefLabel" value="{substring-before($label, $rdfa:UNIT-SEP)}"/>
+          <button class="fa fa-sync"/>
+        </form>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:attribute name="property">skos:prefLabel</xsl:attribute>
+        <xsl:if test="starts-with(substring-after($label, $rdfa:UNIT-SEP), '@')">
+          <xsl:attribute name="xml:lang">
+            <xsl:value-of select="substring-after($label, $rdfa:UNIT-SEP)"/>
+          </xsl:attribute>
+        </xsl:if>
+        <xsl:value-of select="substring-before($label, $rdfa:UNIT-SEP)"/>
+      </xsl:otherwise>
+    </xsl:choose>
   </h1>
-  <form accept-charset="utf-8" action="" method="POST">
-    <textarea class="description" name="= skos:definition">
-      <xsl:value-of select="substring-before($definition, $rdfa:UNIT-SEP)"/>
-    </textarea>
-    <button class="update fa fa-sync"></button>
-  </form>
+  <xsl:choose>
+    <xsl:when test="$can-write">
+      <form accept-charset="utf-8" action="" method="POST">
+        <textarea class="description" name="= skos:definition">
+          <xsl:value-of select="substring-before($definition, $rdfa:UNIT-SEP)"/>
+        </textarea>
+        <button class="update fa fa-sync"></button>
+      </form>
+    </xsl:when>
+    <xsl:otherwise>
+      <p property="skos:definition">
+        <xsl:if test="starts-with(substring-after($label, $rdfa:UNIT-SEP), '@')">
+          <xsl:attribute name="xml:lang">
+            <xsl:value-of select="substring-after($label, $rdfa:UNIT-SEP)"/>
+          </xsl:attribute>
+        </xsl:if>
+        <xsl:value-of select="substring-before($definition, $rdfa:UNIT-SEP)"/>
+      </p>
+    </xsl:otherwise>
+  </xsl:choose>
 
   <xsl:call-template name="skos:created-by">
     <xsl:with-param name="base" select="$base"/>
@@ -343,6 +371,7 @@
   <xsl:call-template name="skos:literal-form">
     <xsl:with-param name="base" select="$base"/>
     <xsl:with-param name="subject" select="$subject"/>
+    <xsl:with-param name="can-write" select="$can-write"/>
   </xsl:call-template>
 
   <xsl:call-template name="skos:literal-form">
@@ -350,16 +379,19 @@
     <xsl:with-param name="subject" select="$subject"/>
     <xsl:with-param name="predicate" select="concat($SKOS, 'hiddenLabel')"/>
     <xsl:with-param name="heading" select="'Hidden Labels'"/>
+    <xsl:with-param name="can-write" select="$can-write"/>
   </xsl:call-template>
 
   <xsl:call-template name="skos:object-form">
     <xsl:with-param name="base" select="$base"/>
     <xsl:with-param name="subject" select="$subject"/>
+    <xsl:with-param name="can-write" select="$can-write"/>
   </xsl:call-template>
 
   <xsl:call-template name="skos:referenced-by-inset">
     <xsl:with-param name="base" select="$base"/>
     <xsl:with-param name="subject" select="$subject"/>
+    <xsl:with-param name="can-write" select="$can-write"/>
   </xsl:call-template>
 
 </xsl:template>
@@ -372,7 +404,7 @@
 <xsl:template name="skos:referenced-by-inset">
   <details>
     <summary>Referenced By</summary>
-    <p>need to implement some stuff first lol</p>
+    <p>need to implement more rdfa querying stuff first to do this lol</p>
   </details>
 </xsl:template>
 
@@ -390,6 +422,7 @@
   </xsl:param>
   <xsl:param name="predicate" select="concat($SKOS, 'altLabel')"/>
   <xsl:param name="heading" select="'Alternate Labels'"/>
+  <xsl:param name="can-write" select="false()"/>
 
   <xsl:variable name="literals">
     <xsl:apply-templates select="." mode="rdfa:object-literals">
@@ -407,13 +440,16 @@
       <xsl:call-template name="skos:literal-form-entry">
         <xsl:with-param name="predicate" select="$predicate"/>
         <xsl:with-param name="literals"    select="$literals"/>
+        <xsl:with-param name="can-write" select="$can-write"/>
       </xsl:call-template>
+      <xsl:if test="$can-write">
       <li>
         <form method="POST" action="" accept-charset="utf-8">
           <input type="text" name="{$predicate}"/>
           <button class="fa fa-plus"/>
         </form>
       </li>
+      </xsl:if>
     </ul>
   </aside>
 </xsl:template>
@@ -425,6 +461,7 @@
 <xsl:template name="skos:literal-form-entry">
   <xsl:param name="predicate"/>
   <xsl:param name="literals"/>
+  <xsl:param name="can-write"/>
 
   <xsl:variable name="first">
     <xsl:choose>
@@ -464,18 +501,32 @@
     </xsl:variable>
 
     <li>
-      <form method="POST" action="" accept-charset="utf-8">
-      <span property="{$predicate}">
-        <xsl:if test="string-length($language)">
-          <xsl:attribute name="xml:lang"><xsl:value-of select="$language"/></xsl:attribute>
-        </xsl:if>
-        <xsl:if test="string-length($datatype)">
-          <xsl:attribute name="datatype"><xsl:value-of select="$datatype"/></xsl:attribute>
-        </xsl:if>
-        <xsl:value-of select="$value"/>
-      </span>
-        <button class="disconnect fa fa-times" name="- {$predicate}{$designator}" value="{$value}"></button>
-      </form>
+      <xsl:choose>
+        <xsl:when test="$can-write">
+          <form method="POST" action="" accept-charset="utf-8">
+            <span property="{$predicate}">
+              <xsl:if test="string-length($language)">
+                <xsl:attribute name="xml:lang"><xsl:value-of select="$language"/></xsl:attribute>
+              </xsl:if>
+              <xsl:if test="string-length($datatype)">
+                <xsl:attribute name="datatype"><xsl:value-of select="$datatype"/></xsl:attribute>
+              </xsl:if>
+              <xsl:value-of select="$value"/>
+            </span>
+            <button class="disconnect fa fa-times" name="- {$predicate}{$designator}" value="{$value}"></button>
+          </form>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:attribute name="property"><xsl:value-of select="$predicate"/></xsl:attribute>
+          <xsl:if test="string-length($language)">
+            <xsl:attribute name="xml:lang"><xsl:value-of select="$language"/></xsl:attribute>
+          </xsl:if>
+          <xsl:if test="string-length($datatype)">
+            <xsl:attribute name="datatype"><xsl:value-of select="$datatype"/></xsl:attribute>
+          </xsl:if>
+          <xsl:value-of select="$value"/>
+        </xsl:otherwise>
+      </xsl:choose>
     </li>
 
     <xsl:variable name="rest" select="substring-after($literals, $rdfa:RECORD-SEP)"/>
@@ -483,6 +534,7 @@
       <xsl:call-template name="skos:literal-form-entry">
         <xsl:with-param name="predicate" select="$predicate"/>
         <xsl:with-param name="literals" select="$rest"/>
+        <xsl:with-param name="can-write" select="$can-write"/>
       </xsl:call-template>
     </xsl:if>
   </xsl:if>
@@ -606,12 +658,14 @@
   <h3>skos:object-form-label</h3>
 </x:doc>
 
+<xsl:variable name="skos:LABEL-PREDS" select="document('')/xsl:stylesheet/x:lprops/x:prop/@uri"/>
+
 <xsl:template match="html:*" mode="skos:object-form-label" name="skos:object-form-label">
   <xsl:param name="subject"/>
-  <xsl:param name="predicates" select="document('')/xsl:stylesheet/x:lprops/x:prop/@uri"/>
+  <xsl:param name="predicates" select="$skos:LABEL-PREDS"/>
 
   <xsl:if test="count($predicates)">
-    <!--<xsl:message>PREDICATE LOL <xsl:value-of select="concat($subject, ' ', $predicates[1])"/></xsl:message>-->
+    <xsl:comment>PREDICATE LOL <xsl:value-of select="concat($subject, ' ', $predicates[1])"/></xsl:comment>
     <xsl:variable name="out">
       <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
 	<xsl:with-param name="subject" select="$subject"/>
@@ -620,7 +674,7 @@
     </xsl:variable>
     <xsl:choose>
       <xsl:when test="string-length(normalize-space($out))">
-	<!--<xsl:message>FOUND <xsl:value-of select="$out"/></xsl:message>-->
+	<xsl:comment>FOUND <xsl:value-of select="$out"/></xsl:comment>
 	<xsl:value-of select="concat($predicates[1], ' ', $out)"/>
       </xsl:when>
       <xsl:when test="count($predicates[position() &gt; 1])">
@@ -1121,10 +1175,10 @@
   -->
   <xsl:variable name="all-schemes">
     <xsl:variable name="_">
-      <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
+      <xsl:apply-templates select="document($space)/*" mode="rdfa:multi-object-resources">
 	<xsl:with-param name="subjects" select="$space"/>
 	<xsl:with-param name="predicates" select="'http://rdfs.org/sioc/ns#space_of ^http://rdfs.org/sioc/ns#has_space'"/>
-	<xsl:with-param name="traverse" select="true()"/>
+	<xsl:with-param name="traverse" select="false()"/>
       </xsl:apply-templates>
     </xsl:variable>
     <xsl:message>wat <xsl:value-of select="$_"/></xsl:message>
@@ -1132,7 +1186,7 @@
       <xsl:apply-templates select="document($space)/*" mode="rdfa:filter-by-type">
 	<xsl:with-param name="subjects" select="$_"/>
 	<xsl:with-param name="classes" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
-	<xsl:with-param name="traverse" select="true()"/>
+	<xsl:with-param name="traverse" select="false()"/>
       </xsl:apply-templates>
     </xsl:if>
   </xsl:variable>

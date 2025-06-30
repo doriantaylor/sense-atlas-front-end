@@ -134,7 +134,7 @@ document.addEventListener('load-graph', function () {
         let label = [
             skos('prefLabel'), rdfv('value'), rdfs('label'),
             dct('title'), foaf('name')].reduce((out, p) => {
-                console.log(p);
+                // console.log(p);
                 let o = getLiteralSimple(subject, p).toSorted(
                     (a, b) => a.compareTerm(b))[0];
                 // this will pick the first predicate
@@ -279,7 +279,8 @@ document.addEventListener('load-graph', function () {
         return subject;
     };
 
-    const postamble = () => {
+    // XXX do we want to have this run in the context of the dataviz?
+    const postamble = (dv) => {
         // do the data lists here because we know that aspects of the
         // graph will already be loaded
         const loadDataList = async function (id, type, inferred) {
@@ -332,15 +333,22 @@ document.addEventListener('load-graph', function () {
                                         let [lp, lo] = getLabel(m, types);
 
                                         let out = {
-                                            '#option': lo.value, about: m.value,
-                                            typeof: types.map(t => t.value) };
-                                        if (lp) out.property = lp.value;
+                                            '#option': lo.value, about: m.value, value: m.value,
+                                            typeof: types.map(t => dv.abbreviate(t)) };
+                                        if (lp) out.property = dv.abbreviate(lp);
 
                                         return out;
                                     });
 
+                                    // generate the list
                                     MARKUP({ parent: document.body,
                                              spec: { '#datalist': options, id: id } });
+
+                                    // gotta reset it lol (XXX CARGO CULT??)
+                                    Array.from(
+                                        document.querySelectorAll(
+                                            `*[list="${id}"]`)).forEach(
+                                                e => e.setAttribute('list', id));
                                 });
                                 //console.log(s, window);
                             });
@@ -449,7 +457,8 @@ window.addEventListener('load', function () {
 
         if (!e.relatedTarget || e.relatedTarget.form !== form) {
             if (radios instanceof RadioNodeList) radios = Array.from(radios);
-            else radios = [radios];
+            else if (typeof radios !== 'undefined') radios = [radios];
+            else radios = [];
 
             radios.forEach(r => r.checked = false);
 
@@ -474,6 +483,8 @@ window.addEventListener('load', function () {
         const input = e.target;
         const form  = input.form;
         const list  = input.list;
+
+        // console.log(`list is ${list}`);
 
         // console.log('lol', e);
 
@@ -556,7 +567,7 @@ window.addEventListener('load', function () {
 
     Array.from(forms).forEach(form => {
         const label = form['$ label'];
-        if (label && label.list) {
+        if (label && label.getAttribute('list')) {
             // console.log(form);
             form.addEventListener('focusin',  focus,  false);
             form.addEventListener('focusout', blur,   false);

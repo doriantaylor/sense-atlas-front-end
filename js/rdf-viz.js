@@ -14,8 +14,11 @@ export default class RDFViz {
         org:  'http://www.w3.org/ns/org#',
         skos: 'http://www.w3.org/2004/02/skos/core#',
         ibis: 'https://vocab.methodandstructure.com/ibis#',
-        ci: 'https://vocab.methodandstructure.com/content-inventory#',
-        pm: 'https://vocab.methodandstructure.com/process-model#',
+        ci:   'https://vocab.methodandstructure.com/content-inventory#',
+        pm:   'https://vocab.methodandstructure.com/process-model#',
+        cgto: 'https://vocab.methodandstructure.com/graph-tool#',
+        qb:   'http://purl.org/linked-data/cube#',
+        sioc: 'http://rdfs.org/sioc/ns#',
     }).reduce(
         // this will return `out` always
         (out, [key, value]) => (out[key] = new RDF.Namespace(value), out), {});
@@ -187,7 +190,7 @@ export default class RDFViz {
 
     abbreviate (uris, scalar = true) {
         // first we coerce the input into an array
-        if (!(uris instanceof Array)) uris = [uris];
+        if (!Array.isArray(uris)) uris = [uris];
 
         uris = uris.map(uri => {
             uri = uri.value ? uri.value : uri.toString();
@@ -248,7 +251,7 @@ export default class RDFViz {
 			    me.attach(target);
 			    if (typeof postamble == 'function') {
 				console.log('calling postamble');
-				postamble();
+				postamble(me);
 			    }
 			}
 		    };

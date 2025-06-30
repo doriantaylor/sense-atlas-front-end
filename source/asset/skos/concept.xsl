@@ -1210,14 +1210,14 @@
       <li>state: <xsl:value-of select="$state"/></li>
       <li>focus: <xsl:value-of select="$focus"/></li>-->
 
-      <xsl:call-template name="skos:scheme-item">
+      <xsl:apply-templates select="document($space)/*" mode="skos:scheme-item">
 	<xsl:with-param name="subject"    select="$subject"/>
 	<xsl:with-param name="schemes"    select="$all-schemes"/>
 	<xsl:with-param name="attached"   select="$schemes"/>
 	<xsl:with-param name="focus"      select="$focus"/>
 	<xsl:with-param name="state"      select="$state"/>
 	<xsl:with-param name="is-concept" select="not($is-scheme)"/>
-      </xsl:call-template>
+      </xsl:apply-templates>
       <xsl:if test="string-length($state)">
         <!-- get the neighbours of $subject filtered by type -->
 	<li>
@@ -1272,10 +1272,9 @@
   <xsl:param name="subject" select="''"/>
   <xsl:param name="is-focused" select="false()"/>
 
-  <xsl:variable name="doc" select="document($subject)/*"/>
   <!-- get label shenanigans -->
   <xsl:variable name="label-raw">
-    <xsl:apply-templates select="$doc" mode="skos:object-form-label">
+    <xsl:apply-templates select="." mode="skos:object-form-label">
       <xsl:with-param name="subject" select="$subject"/>
     </xsl:apply-templates>
   </xsl:variable>
@@ -1377,7 +1376,7 @@
   <p>XXX THIS IS A DUPLICATE NAME, there is a mode="skos:scheme-item" above </p>
 </x:doc>
 
-<xsl:template name="skos:scheme-item">
+<xsl:template match="html:*" mode="skos:scheme-item">
   <xsl:param name="schemes"  select="''"/>
   <xsl:param name="attached" select="''"/>
   <xsl:param name="focus"    select="''"/>
@@ -1398,7 +1397,6 @@
   </xsl:variable>
 
   <xsl:if test="string-length($first)">
-    <xsl:variable name="scheme-doc" select="document($first)/*"/>
 
     <!-- test if attached -->
     <xsl:variable name="attach-intersection">
@@ -1442,14 +1440,14 @@
 
     <xsl:variable name="rest" select="normalize-space(substring-after($snorm, ' '))"/>
     <xsl:if test="string-length($rest)">
-      <xsl:call-template name="skos:scheme-item">
+      <xsl:apply-templates select="." mode="skos:scheme-item">
 	<xsl:with-param name="subject"    select="$subject"/>
 	<xsl:with-param name="schemes"    select="$rest"/>
 	<xsl:with-param name="attached"   select="$attached"/>
 	<xsl:with-param name="focus"      select="$focus"/>
 	<xsl:with-param name="state"      select="$state"/>
 	<xsl:with-param name="is-concept" select="$is-concept"/>
-      </xsl:call-template>
+      </xsl:apply-templates>
     </xsl:if>
   </xsl:if>
 

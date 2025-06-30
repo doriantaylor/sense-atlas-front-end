@@ -46,9 +46,11 @@ document.addEventListener('load-graph', function () {
     const getLiteralSimple = (subject, predicate) => {
         let out = [];
 
-        this.graph.match(subject, predicate).filter(stmt => {
+        this.graph.match(subject, predicate).forEach(stmt => {
             if (RDF.isLiteral(stmt.object)) out.push(stmt.object);
         });
+
+        // console.log(predicate, out);
 
         return out;
     };
@@ -132,11 +134,12 @@ document.addEventListener('load-graph', function () {
         let label = [
             skos('prefLabel'), rdfv('value'), rdfs('label'),
             dct('title'), foaf('name')].reduce((out, p) => {
+                console.log(p);
                 let o = getLiteralSimple(subject, p).toSorted(
                     (a, b) => a.compareTerm(b))[0];
                 // this will pick the first predicate
                 if (!out.length && o) return [p, o];
-                return [];
+                return out;
             });
         return label.length ? label : [null, subject];
     };
@@ -323,65 +326,27 @@ document.addEventListener('load-graph', function () {
                                 handlePagination(window).then((w) => {
                                     console.log(`pagination complete: ${w}`);
                                     let members = getResources({ subject: s, fwd: rdfs('member')});
+                                    console.log(`${members.length} members`);
                                     let options = members.map((m) => {
                                         let types = getTypes(m);
                                         let [lp, lo] = getLabel(m, types);
-                                        console.log(types, lp, lo);
-                                        //return { '#li':  };
+
+                                        let out = {
+                                            '#option': lo.value, about: m.value,
+                                            typeof: types.map(t => t.value) };
+                                        if (lp) out.property = lp.value;
+
+                                        return out;
                                     });
+
+                                    MARKUP({ parent: document.body,
+                                             spec: { '#datalist': options, id: id } });
                                 });
                                 //console.log(s, window);
                             });
                     }
                 });
             });
-            /*
-            const fetcher = new RDF.Fetcher(graph);
-            // subject should be in scope
-            console.log(`starting with ${me}`);
-            console.log(`now schemes ${schemes}`);
-            let spaces = schemes.reduce((a, sc) => a.concat(getSpaces(sc)), []);
-
-            console.log(`now spaces ${spaces}`);
-
-            if (spaces.length > 0) {
-                let indices = getIndices(spaces[0]);
-                if (indices.length == 0) {
-                    await fetcher.load(spaces[0], { noRDFa: false }).then(() => {
-                        indices = getIndices(spaces[0]);
-                        console.log(`now indices ${indices}`);
-
-                        if (indices.length > 0) {
-                            fetcher.load(indices[0], { noRDFa: false }).then(() => {
-                                let summaries = getResources({ subject: indices[0], fwd: cgto('by-class') });
-                                console.log(`now summaries ${summaries}`);
-
-                                if (summaries.length > 0) {
-                                    console.log(`graph size: ${graph.length}`);
-                                    fetcher.load(summaries[0]).then(() => {
-                                        console.log(`now graph size: ${graph.length}; checking ${type}`);
-
-                                        let obs = getResources({ object: type, fwd: cgto('class') });
-
-                                        console.log(`now observations ${obs}`);
-                                        if (obs.length > 0) {
-                                            let pred = cgto((inferred ? 'inferred' : 'asserted') + '-subjects');
-                                            let inv = getResources({ subject: obs[0], fwd: pred });
-                                            console.log(`now inventory ${inv[0]} (${pred})`);
-                                            if (inv.length > 0) {
-                                                fetcher.load(inv[0]).then(() => {
-                                                    // finally fucking made it 
-                                                });
-                                            }
-                                        }
-                                    });
-                                }
-                            }).catch(error => console.log(error));
-                        }
-                    });
-                }
-            }*/
-
 
             // locate the concept scheme (may be self)
             // locate the space (fetch if necessary)
@@ -423,9 +388,9 @@ document.addEventListener('load-graph', function () {
 	    return true;
 	};
 
-         [['big-friggin-list', skos('Concept'), true]].forEach(
-// //         ['agents', foaf('Agent'), true]].forEach(
-              ([id, type, inferred]) => loadDataList(id, type, inferred));
+        [['big-friggin-list', skos('Concept'), true],
+         ['agents', foaf('Agent'), true]
+        ].forEach(([id, type, inferred]) => loadDataList(id, type, inferred));
 
 	Array.from(document.querySelectorAll(
 	    'section.relations li[typeof], svg a[typeof]')).forEach(elem => {

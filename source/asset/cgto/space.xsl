@@ -45,6 +45,7 @@
   <script type="text/javascript" src="/asset/utilities"></script>
   <script type="text/javascript" src="/asset/rdf"></script>
   <script type="text/javascript" src="/asset/rdf-viz"></script>
+  <script type="text/javascript" src="/asset/markup-mixup"></script>
   <script type="text/javascript" src="/asset/complex"></script>
   <script type="text/javascript" src="/asset/d3"></script>
   <script type="text/javascript" src="/asset/hierarchical"></script>

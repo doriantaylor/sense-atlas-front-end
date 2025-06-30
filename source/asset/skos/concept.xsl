@@ -214,7 +214,7 @@
       </section>
     </article>
     <figure id="force" class="aside"/>
-
+    <!--
     <xsl:call-template name="skos:make-datalist">
       <xsl:with-param name="subject"       select="$subject"/>
       <xsl:with-param name="index"         select="$index"/>
@@ -225,8 +225,7 @@
       <xsl:with-param name="index"         select="$index"/>
       <xsl:with-param name="search-types"  select="concat($FOAF, 'Person')"/>
       <xsl:with-param name="id"            select="'agents'"/>
-    </xsl:call-template>
-
+    </xsl:call-template>-->
   </main>
 
   <xsl:call-template name="skos:footer">

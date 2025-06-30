@@ -10,6 +10,49 @@ document.addEventListener('load-graph', function () {
     // okay first we grab this page and shove it in the graph
     this.rdfa.process(this);
 
+    // XXX we should consider extending the rdf module with handy
+    // utility methods
+
+    // pass in an object, subject object fwd rev (the latter two can be)
+    const getResources = args => {
+        const collect = {};
+        if (args.fwd) {
+            let fwd = args.fwd instanceof Array ? args.fwd : [args.fwd];
+            fwd.forEach(p => {
+                this.graph.match(args.subject, p, args.object).forEach(st => {
+                    if (!args.subject && RDF.isNamedNode(st.subject))
+                        collect[st.subject.toString()] = st.subject;
+                    if (!args.object && RDF.isNamedNode(st.object))
+                        collect[st.object.toString()] = st.object;
+                });
+            });
+        }
+        if (args.rev) {
+            let rev = args.rev instanceof Array ? args.rev : [args.rev];
+            rev.forEach(p => {
+                this.graph.match(args.object, p, args.subject).forEach(st => {
+                    // the subject is the object
+                    if (!args.object && RDF.isNamedNode(st.subject))
+                        collect[st.subject.toString()] = st.subject;
+                    if (!args.subject && RDF.isNamedNode(st.object))
+                        collect[st.object.toString()] = st.subject;
+                });
+            });
+        }
+
+        return Object.values(collect);
+    };
+
+    const getLiteralSimple = (subject, predicate) => {
+        let out = [];
+
+        this.graph.match(subject, predicate).filter(stmt => {
+            if (RDF.isLiteral(stmt.object)) out.push(stmt.object);
+        });
+
+        return out;
+    };
+
     // we actually need the focus here and we've already computed it
     // in the template so the template should just expose that
 
@@ -21,13 +64,19 @@ document.addEventListener('load-graph', function () {
 
     // orrrrrrrrrr we just don't care about this and render all the schemes at once
 
+
     const rdfv = RDF.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+    const rdfs = RDF.Namespace('http://www.w3.org/2000/01/rdf-schema#');
     const foaf = RDF.Namespace('http://xmlns.com/foaf/0.1/');
     const org  = RDF.Namespace('http://www.w3.org/ns/org#');
     const ibis = RDF.Namespace('https://vocab.methodandstructure.com/ibis#');
     const pm   = RDF.Namespace('https://vocab.methodandstructure.com/process-model#');
     const skos = RDF.Namespace('http://www.w3.org/2004/02/skos/core#');
     const xhv  = RDF.Namespace('http://www.w3.org/1999/xhtml/vocab#');
+    const dct  = RDF.Namespace('http://purl.org/dc/terms/');
+    const cgto = RDF.Namespace('https://vocab.methodandstructure.com/graph-tool#');
+    const qb   = RDF.Namespace('http://purl.org/linked-data/cube#');
+    const sioc = RDF.Namespace('http://rdfs.org/sioc/ns#');
 
     const skosc       = skos('Concept');
     const ibisTypes   = ['Issue', 'Position', 'Argument'].map(t => ibis(t));
@@ -47,6 +96,52 @@ document.addEventListener('load-graph', function () {
     };
     const has = (a, b) => a.some(x => b.some(y => x.equals(y)));
 
+    const getTypes = subject => getResources({ subject: subject, fwd: a });
+
+    // XXX this does not work
+    const hasTypes = function (subject, types) {
+        if (!types) types = [];
+        if (!Array.isArray(types)) types = [types];
+
+        return has(getResources({ subject: subject, fwd: a}), types);
+    };
+
+    // skos:inScheme|skos:topConceptOf|^skos:hasTopConcept
+
+    const inScheme = (s, o) => getResources({
+        subject: s, object: o,
+        fwd: [skos('inScheme'), skos('topConceptOf')],
+        rev: skos('hasTopConcept') });
+
+    const getSchemes = s => inScheme(s);
+
+    const hasSpace = (s, o) => getResources({
+        subject: s, object: o, fwd: sioc('has_space'), rev: sioc('space_of') });
+
+    const getSpaces = s => hasSpace(s);
+
+    const hasIndex = (s, o) => getResources({
+        subject: s, object: o, fwd: cgto('index') });
+    const getIndices = s => hasIndex(s);
+
+    // XXX what about language?
+    const getLabel = function (subject, types) {
+        if (!types) types = getTypes(subject);
+        if (!Array.isArray(types)) types = [types];
+        // XXX MAKE THIS LESS STUPID
+        let label = [
+            skos('prefLabel'), rdfv('value'), rdfs('label'),
+            dct('title'), foaf('name')].reduce((out, p) => {
+                let o = getLiteralSimple(subject, p).toSorted(
+                    (a, b) => a.compareTerm(b))[0];
+                // this will pick the first predicate
+                if (!out.length && o) return [p, o];
+                return [];
+            });
+        return label.length ? label : [null, subject];
+    };
+
+
     const TYPES = {
         ibis: ibisTypes.concat(pmTypes),
         skos: [skosc],
@@ -65,24 +160,8 @@ document.addEventListener('load-graph', function () {
 
     let isEntity = has(myTypes, TYPES.ibis.concat(TYPES.skos));
 
-    // skos:inScheme|skos:topConceptOf|^skos:hasTopConcept
-    // XXX is this *really* how you do this??
-    const getSchemes = s => this.graph.match(s, skos('inScheme')).concat(
-	this.graph.match(s, skos('topConceptOf'))).concat(
-	    this.graph.match(null, skos('hasTopConcept'), s)).reduce(
-		(a, s) => (RDF.isNamedNode(s.object) ?
-			   a.some(x => x.equals(s.object)) ? a :
-			   a.concat([s.object]) : a), []);
     // anyway get the scheme
     const schemes = isEntity ? getSchemes(me) : [me];
-    // XXX that will fuck up on foaf/org
-
-    const inScheme = (s, o) => this.graph.match(s, skos('inScheme'), o).concat(
-	this.graph.match(s, skos('topConceptOf'), o)).concat(
-	    this.graph.match(o, skos('hasTopConcept'), s)).reduce(
-		(a, s) => (RDF.isNamedNode(s.object) ?
-			   a.some(x => x.equals(s.object)) ? a :
-			   a.concat([s.object]) : a), []);
 
     // console.log(types);
 
@@ -126,7 +205,197 @@ document.addEventListener('load-graph', function () {
 
     // install the window onload XXX also this conditional sucks
 
+    // rudimentary property path dereferencing
+    const derefPP = async function (start, path) {
+        // coerce path to array
+        if (!path) path = [];
+        else if (!Array.isArray(path)) path = [path];
+
+        if (path.length > 0) {
+            // obtain the first element in the property path
+            let test = path[0];
+
+            // normalize the element
+            if (test instanceof RDF.NamedNode) {
+                let tmp = test;
+                test = { subject: start, fwd: tmp };
+            }
+            else if (typeof test === 'object') {
+                let patch = {};
+                if (test.fwd) patch['subject'] = start;
+                else if (test.rev) patch['object'] = start;
+
+                test = Object.assign({}, test, patch);
+            }
+
+            // check the existing graph for the thing
+            nexts = getResources(test);
+
+            // if none, then fetch `start`
+            if (nexts.length == 0) {
+                console.debug(`dereferencing ${start}`);
+                // okay *now* check
+                await (new RDF.Fetcher(graph)).load(start);
+                nexts = getResources(test);
+                // if still none, bail out or raise or something i dunno,
+                // probably raise
+                if (nexts.length == 0) throw new Error(`could not find ${JSON.stringify(test)} after dereferencing ${start}`);
+            }
+
+            console.debug(`found ${nexts[0]}`);
+
+            // onto the next one
+            return derefPP(nexts[0], path.slice(1));
+
+            //path = path.slice(1);
+            //return path.length > 0 ? derefPP(nexts[0], path) : start;
+        }
+
+        return start;
+    };
+
+    const handlePagination = async function (subject, seen) {
+        // add to seen
+        seen = seen || [];
+        seen.push(subject);
+
+        // get a fetcher
+        const fetcher = new RDF.Fetcher(graph);
+
+        const next = getResources({
+            subject: subject, fwd: xhv('next')
+        }).filter(x => seen.some(y => y.equals(x)))[0];
+
+        // load the next one
+        if (next) {
+            await fetcher.load(next);
+            return handlePagination(next, seen);
+        }
+
+        // our termination condition
+        return subject;
+    };
+
     const postamble = () => {
+        // do the data lists here because we know that aspects of the
+        // graph will already be loaded
+        const loadDataList = async function (id, type, inferred) {
+            const fetcher = new RDF.Fetcher(graph);
+
+            derefPP(me, [
+                { fwd: [skos('inScheme'), skos('topConceptOf')],
+                  rev: skos('hasTopConcept') },
+                { fwd: sioc('has_space'), rev: sioc('space_of') },
+                cgto('index'),
+                cgto('by-class'),
+            ]).then(resource => {
+                console.log(`hooray ${resource}`);
+                fetcher.load(resource).then(() => {
+                    let obs = getResources({ object: type, fwd: cgto('class')});
+                    if (obs.length > 0) {
+                        let pred = cgto((inferred ? 'inferred' : 'asserted') + '-subjects');
+                        let invs = derefPP(obs[0], [
+                            pred, { fwd: cgto('window'), rev: cgto('window-of')}]).then((s) => {
+                                let types = getResources({ subject: s, fwd: a });
+                                // console.log(types);
+
+                                let window;
+                                if (has(types, [cgto('Window')])) {
+                                    let inv = getResources({
+                                        subject: s,
+                                        fwd: cgto('window-of'),
+                                        rev: cgto('window') });
+                                    window = s;
+                                    s = inv[0];
+                                }
+                                else {
+                                    console.log(`${s} should be the inventory`);
+
+                                    console.log(graph.match(null, cgto('window-of'), s));
+
+                                    let windows = getResources({
+                                        subject: s,
+                                        //fwd: cgto('first-window'),
+                                        rev: cgto('window-of') });
+                                    console.log(windows);
+                                    window = windows[0];
+                                }
+                                handlePagination(window).then((w) => {
+                                    console.log(`pagination complete: ${w}`);
+                                    let members = getResources({ subject: s, fwd: rdfs('member')});
+                                    let options = members.map((m) => {
+                                        let types = getTypes(m);
+                                        let [lp, lo] = getLabel(m, types);
+                                        console.log(types, lp, lo);
+                                        //return { '#li':  };
+                                    });
+                                });
+                                //console.log(s, window);
+                            });
+                    }
+                });
+            });
+            /*
+            const fetcher = new RDF.Fetcher(graph);
+            // subject should be in scope
+            console.log(`starting with ${me}`);
+            console.log(`now schemes ${schemes}`);
+            let spaces = schemes.reduce((a, sc) => a.concat(getSpaces(sc)), []);
+
+            console.log(`now spaces ${spaces}`);
+
+            if (spaces.length > 0) {
+                let indices = getIndices(spaces[0]);
+                if (indices.length == 0) {
+                    await fetcher.load(spaces[0], { noRDFa: false }).then(() => {
+                        indices = getIndices(spaces[0]);
+                        console.log(`now indices ${indices}`);
+
+                        if (indices.length > 0) {
+                            fetcher.load(indices[0], { noRDFa: false }).then(() => {
+                                let summaries = getResources({ subject: indices[0], fwd: cgto('by-class') });
+                                console.log(`now summaries ${summaries}`);
+
+                                if (summaries.length > 0) {
+                                    console.log(`graph size: ${graph.length}`);
+                                    fetcher.load(summaries[0]).then(() => {
+                                        console.log(`now graph size: ${graph.length}; checking ${type}`);
+
+                                        let obs = getResources({ object: type, fwd: cgto('class') });
+
+                                        console.log(`now observations ${obs}`);
+                                        if (obs.length > 0) {
+                                            let pred = cgto((inferred ? 'inferred' : 'asserted') + '-subjects');
+                                            let inv = getResources({ subject: obs[0], fwd: pred });
+                                            console.log(`now inventory ${inv[0]} (${pred})`);
+                                            if (inv.length > 0) {
+                                                fetcher.load(inv[0]).then(() => {
+                                                    // finally fucking made it 
+                                                });
+                                            }
+                                        }
+                                    });
+                                }
+                            }).catch(error => console.log(error));
+                        }
+                    });
+                }
+            }*/
+
+
+            // locate the concept scheme (may be self)
+            // locate the space (fetch if necessary)
+            // locate the index (fetch if necessary)
+            // locate by-classes (fetch if necessary)
+            // start pulling down paginated inventory windows
+
+            // okay now for all rdfs:member of the inventory,
+            // create <option> elements with `about`, `typeof`, `property`
+            // on top of `value` and the label text
+
+            // append <datalist> to end of <body>
+        };
+
 	const OMO = function (e) {
 	    const t = e.target;
 	    const href = t.href ? t.href.baseVal || t.href :
@@ -153,6 +422,10 @@ document.addEventListener('load-graph', function () {
 
 	    return true;
 	};
+
+         [['big-friggin-list', skos('Concept'), true]].forEach(
+// //         ['agents', foaf('Agent'), true]].forEach(
+              ([id, type, inferred]) => loadDataList(id, type, inferred));
 
 	Array.from(document.querySelectorAll(
 	    'section.relations li[typeof], svg a[typeof]')).forEach(elem => {

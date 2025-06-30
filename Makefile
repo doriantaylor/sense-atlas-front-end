@@ -19,7 +19,7 @@ TARGET = target
 
 XSLT_ASSETS = transclude.xsl rdfa.xsl ibis.xsl
 # SCSS_ASSETS = ibis.scss
-JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js utilities.js cgto/scripts.js
+JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js utilities.js markup-mixup.js  cgto/scripts.js
 
 GITHUB = https://raw.githubusercontent.com/doriantaylor
 LOCAL  = $(HOME)/clients/me
@@ -157,6 +157,11 @@ $(TARGET)/asset/utilities.js : $(TARGET)/asset
 
 $(TARGET)/asset/cgto/scripts.js : $(TARGET)/asset/cgto
 	$(RSYNC) $(SOURCE)/asset/cgto/scripts.js $(TARGET)/asset/cgto/
+
+$(TARGET)/asset/markup-mixup.js : $(TARGET)/asset
+	@ if [ -f $(LOCAL)/js-markup-mixup/markup-mixup.js ]; \
+	then $(CP) $(LOCAL)/js-markup-mixup/markup-mixup.js $@; \
+	else $(CURL) -o $@ $(GITHUB)/js-markup-mixup/main/markup-mixup.js ; fi
 
 js: $(foreach x,$(JS_ASSETS),$(TARGET)/asset/$(x))
 

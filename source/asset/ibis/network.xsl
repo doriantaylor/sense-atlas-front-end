@@ -109,7 +109,7 @@
     </xsl:if>
   </xsl:variable>
 
-  <xsl:variable name="can-write" select="string-length($user) != 0 and $subject = $focus"/>
+  <xsl:variable name="can-write" select="string-length($user)"/>
 
   <xsl:variable name="adjacents">
     <xsl:apply-templates select="." mode="rdfa:multi-object-resources">

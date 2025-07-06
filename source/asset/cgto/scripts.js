@@ -505,8 +505,8 @@ window.addEventListener('load', function () {
 
             if (option) {
                 input.value = option.label;
-                existing[0].disabled = false;
                 existing[0].value = value;
+                existing.forEach(e => e.disabled = false);
                 newInputs.forEach(i => i.disabled = true);
             }
         }
@@ -514,7 +514,7 @@ window.addEventListener('load', function () {
             console.log('putting back to "new"');
             // put it back
             existing[0].value = null;
-            existing[0].disabled = true;
+            existing.forEach(e => e.disabled = true);
             const type = form.getAttribute('about');
             newInputs.forEach(i => {
                 i.disabled = false;

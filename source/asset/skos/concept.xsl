@@ -786,7 +786,7 @@
   </xsl:param>
 
   <xsl:variable name="has-focus" select="string-length(normalize-space($focus)) and contains(concat(' ', normalize-space($schemes), ' '), concat(' ', $focus, ' '))"/>
-  <xsl:variable name="can-write" select="$user and $has-focus"/>
+  <xsl:variable name="can-write" select="string-length($user) != 0"/>
 
   <xsl:variable name="current" select="."/>
   <xsl:variable name="sequence" select="document('')/xsl:stylesheet/x:sequence[1]"/>
@@ -906,7 +906,12 @@
     <input class="new" type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
     <input class="new" type="hidden" name="dct:creator :" value="{$user}"/>
     <!-- not sure yet if i want this to attach to all schemes or just the focused one -->
-    <input class="new" type="hidden" name="skos:inScheme :" value="{$focus}"/>
+    <!--<input class="new" type="hidden" name="skos:inScheme :" value="{$focus}"/>-->
+    <xsl:call-template name="skos:hidden-fields">
+      <xsl:with-param name="name" select="'skos:inScheme :'"/>
+      <xsl:with-param name="values" select="$schemes"/>
+      <xsl:with-param name="css-class" select="'new'"/>
+    </xsl:call-template>
     <!--
     <xsl:apply-templates select="$current" mode="ibis:add-hidden-inscheme">
       <xsl:with-param name="schemes" select="$schemes"/>
@@ -936,12 +941,79 @@
       <input about="{$c-curie}" class="new label" disabled="disabled" type="hidden" name="= {$lprop-curie} $" value="$label"/>
     </xsl:for-each>
     <input class="new" type="hidden" name="= rdf:type : $" value="$type"/>
-    <input class="existing" disabled="disabled" type="hidden" name="{$p-curie} :"/>
+    <input class="existing" disabled="disabled" type="hidden" name="$ neighbour" value=""/>
+    <input class="existing" disabled="disabled" type="hidden" name="{$p-curie} : $" value="$neighbour"/>
     <!-- fucking safari and its tabindex -->
     <input tabindex="{count(x:range)}" type="text" name="$ label" list="big-friggin-list" autocomplete="off"/>
     <!-- this is down here now because the javascript i wrote is goofed -->
-    <input class="existing" disabled="disabled" type="hidden" name="! skos:inScheme {$focus} : $" value="$SUBJECT"/>
+    <!--<input class="existing" disabled="disabled" type="hidden" name="! skos:inScheme {$focus} : $" value="$SUBJECT"/>-->
+    <xsl:call-template name="skos:hidden-fields">
+      <xsl:with-param name="name" select="'$neighbour skos:inScheme :'"/>
+      <xsl:with-param name="values" select="$schemes"/>
+      <xsl:with-param name="disabled" select="true()"/>
+      <xsl:with-param name="css-class" select="'existing'"/>
+    </xsl:call-template>
   </form>
+</xsl:template>
+
+<x:doc>
+  <h3>skos:hidden-fields</h3>
+  <p>Generate a set of hidden form fields with all the same name and distinct values. If the values are literals, it chops the values by <abbr>$rdfa:RECORD-SEP</abbr>, otherwise it chops by space.</p>
+</x:doc>
+
+<xsl:template name="skos:hidden-fields">
+  <xsl:param name="name">
+    <xsl:message terminate="yes">`name` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="values">
+    <xsl:message terminate="yes">`values` parameter required</xsl:message>
+  </xsl:param>
+  <!--<xsl:param name="property"/>-->
+  <xsl:param name="literal" select="false()"/>
+  <xsl:param name="disabled" select="false()"/>
+  <xsl:param name="css-class"/>
+
+  <xsl:if test="string-length(normalize-space($values))">
+
+    <xsl:variable name="first">
+      <xsl:call-template name="str:safe-first-token">
+        <xsl:with-param name="tokens" select="$values"/>
+        <xsl:with-param name="delimiter">
+          <xsl:choose>
+            <xsl:when test="$literal">
+              <xsl:value-of select="$rdfa:RECORD-SEP"/>
+            </xsl:when>
+            <xsl:otherwise><xsl:value-of select="' '"/></xsl:otherwise>
+          </xsl:choose>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:variable>
+
+    <xsl:if test="string-length($first)">
+      <input type="hidden" name="{$name}" value="{$first}">
+        <xsl:if test="string-length(normalize-space($css-class))">
+          <xsl:attribute name="class">
+            <xsl:value-of select="normalize-space($css-class)"/>
+          </xsl:attribute>
+        </xsl:if>
+
+        <xsl:if test="$disabled">
+          <xsl:attribute name="disabled">disabled</xsl:attribute>
+        </xsl:if>
+      </input>
+    </xsl:if>
+
+    <xsl:variable name="rest" select="substring($values, string-length($first) + 2)"/>
+    <xsl:if test="string-length($rest)">
+      <xsl:call-template name="skos:hidden-fields">
+        <xsl:with-param name="name" select="$name"/>
+        <xsl:with-param name="values" select="$rest"/>
+        <xsl:with-param name="literal" select="$literal"/>
+        <xsl:with-param name="disabled" select="$disabled"/>
+        <xsl:with-param name="css-class" select="$css-class"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:if>
 </xsl:template>
 
 <x:doc>

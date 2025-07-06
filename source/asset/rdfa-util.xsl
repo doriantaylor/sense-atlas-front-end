@@ -57,12 +57,23 @@
   <xsl:param name="tokens">
     <xsl:message terminate="yes">`tokens` parameter required</xsl:message>
   </xsl:param>
+  <xsl:param name="delimiter" select="' '"/>
 
-  <xsl:variable name="_" select="normalize-space($tokens)"/>
+  <xsl:variable name="_">
+    <xsl:choose>
+      <xsl:when test="$delimiter != ' '">
+        <xsl:variable name="_1" select="translate($tokens, '&#x09;&#x0a;&#x0d;&#x20;', '&#xf109;&#xf10a;&#xf10d;&#xf120;')"/>
+        <xsl:variable name="_2" select="normalize-space(translate($_1, $delimiter, ' '))"/>
+        <xsl:variable name="_3" select="translate($_2, ' ', $delimiter)"/>
+        <xsl:value-of select="translate($_3, '&#xf109;&#xf10a;&#xf10d;&#xf120;', '&#x09;&#x0a;&#x0d;&#x20;')"/>
+      </xsl:when>
+      <xsl:otherwise><xsl:value-of select="normalize-space($tokens)"/></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
 
   <xsl:choose>
-    <xsl:when test="contains($_, ' ')">
-      <xsl:value-of select="substring-before($_, ' ')"/>
+    <xsl:when test="contains($_, $delimiter)">
+      <xsl:value-of select="substring-before($_, $delimiter)"/>
     </xsl:when>
     <xsl:otherwise><xsl:value-of select="$_"/></xsl:otherwise>
   </xsl:choose>

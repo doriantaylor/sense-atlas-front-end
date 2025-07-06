@@ -17,7 +17,7 @@ document.addEventListener('load-graph', function () {
     const getResources = args => {
         const collect = {};
         if (args.fwd) {
-            let fwd = args.fwd instanceof Array ? args.fwd : [args.fwd];
+            let fwd = Array.isArray(args.fwd) ? args.fwd : [args.fwd];
             fwd.forEach(p => {
                 this.graph.match(args.subject, p, args.object).forEach(st => {
                     if (!args.subject && RDF.isNamedNode(st.subject))
@@ -28,7 +28,7 @@ document.addEventListener('load-graph', function () {
             });
         }
         if (args.rev) {
-            let rev = args.rev instanceof Array ? args.rev : [args.rev];
+            let rev = Array.isArray(args.rev) ? args.rev : [args.rev];
             rev.forEach(p => {
                 this.graph.match(args.object, p, args.subject).forEach(st => {
                     // the subject is the object

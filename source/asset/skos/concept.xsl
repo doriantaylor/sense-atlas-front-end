@@ -1311,7 +1311,7 @@
 	      <label><input type="checkbox" name="! skos:inScheme :" value="{$subject}"/> Import this entity</label>
 	    </xsl:if>
 	    <button>Create</button>
-	    <button name="= {$state} cgto:focus :" value="$SUBJECT">+ Focus</button>
+	    <!--<button name="= {$state} cgto:focus :" value="$SUBJECT">+ Focus</button>-->
 	  </form>
 	</li>
       </xsl:if>
@@ -1486,7 +1486,7 @@
 	</xsl:if>
 	<xsl:call-template name="skos:scheme-item-label">
 	  <xsl:with-param name="subject" select="$first"/>
-	  <xsl:with-param name="is-focused" select="$first = $focus"/>
+	  <!--<xsl:with-param name="is-focused" select="$first = $focus"/>-->
 	</xsl:call-template>
       </a>
       <!-- 'set focus' button (if not focused, unconditional) -->
@@ -1503,9 +1503,10 @@
 	      </xsl:otherwise>
 	    </xsl:choose>
 	  </xsl:if>
+          <!--
 	  <xsl:if test="$first != $focus">
 	    <button name="= {$state} cgto:focus :" value="{$first}">Set Focus</button>
-	  </xsl:if>
+	  </xsl:if>-->
 	</form>
       </xsl:if>
     </li>

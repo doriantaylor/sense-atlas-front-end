@@ -1173,22 +1173,35 @@
   </xsl:param>
 
   <xsl:param name="index">
-    <xsl:apply-templates select="." mode="rdfa:object-resources">
-      <xsl:with-param name="subject" select="$space"/>
-      <xsl:with-param name="predicate" select="concat($CGTO, 'index')"/>
-      <xsl:with-param name="traverse" select="true()"/>
-    </xsl:apply-templates>
+    <xsl:if test="string-length(normalize-space($space))">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+        <xsl:with-param name="subject" select="$space"/>
+        <xsl:with-param name="predicate" select="concat($CGTO, 'index')"/>
+        <xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
   </xsl:param>
 
   <xsl:param name="user">
-    <xsl:apply-templates select="." mode="rdfa:object-resources">
-      <xsl:with-param name="subject" select="$index"/>
-      <xsl:with-param name="predicate" select="concat($CGTO, 'user')"/>
-      <xsl:with-param name="traverse" select="true()"/>
-    </xsl:apply-templates>
+    <xsl:if test="string-length(normalize-space($index))">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+        <xsl:with-param name="subject" select="$index"/>
+        <xsl:with-param name="predicate" select="concat($CGTO, 'user')"/>
+        <xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
   </xsl:param>
 
   <xsl:param name="state">
+    <xsl:choose>
+      <xsl:when test="normalize-space($space) = ''">
+        <xsl:message terminate="yes">cannot find space for <xsl:value-of select="$schemes"/></xsl:message>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:message>skos:footer space: `<xsl:value-of select="$space"/>`</xsl:message>
+      </xsl:otherwise>
+    </xsl:choose>
+
     <xsl:if test="string-length(normalize-space($user))">
       <xsl:variable name="_">
         <xsl:apply-templates select="." mode="rdfa:object-resources">
@@ -1252,7 +1265,7 @@
 	<xsl:with-param name="traverse" select="false()"/>
       </xsl:apply-templates>
     </xsl:variable>
-    <xsl:message>wat <xsl:value-of select="$_"/></xsl:message>
+    <xsl:message>skos:footer wat <xsl:value-of select="$_"/></xsl:message>
     <xsl:if test="string-length(normalize-space($_))">
       <xsl:apply-templates select="document($space)/*" mode="rdfa:filter-by-type">
 	<xsl:with-param name="subjects" select="$_"/>

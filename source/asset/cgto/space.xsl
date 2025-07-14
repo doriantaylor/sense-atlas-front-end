@@ -288,6 +288,7 @@
         <li>
           <form xsl:use-attribute-sets="cgto:form-post-self">
             <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+            <input type="hidden" name="! sioc:space_of :" value="{$subject}"/>
             <select name="rdf:type :">
               <option value="ibis:Network">IBIS Network</option>
               <option value="skos:ConceptScheme">Concept Scheme</option>

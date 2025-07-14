@@ -44,6 +44,8 @@
   <x:prop uri="http://xmlns.com/foaf/0.1/name"/>
 </x:lprops>
 
+<xsl:variable name="rdfa:LABEL-PREDS" select="document('')/xsl:stylesheet/x:lprops/x:prop/@uri"/>
+
 <x:doc>
   <h2>Utilities</h2>
 </x:doc>
@@ -348,7 +350,7 @@
   <h3>rdfa:get-type</h3>
 </x:doc>
 
-<xsl:template match="html:*" mode="rdfa:get-type">
+<xsl:template match="html:*" mode="rdfa:get-type" name="rdfa:get-type">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="subject">
     <xsl:apply-templates select="." mode="rdfa:get-subject">
@@ -358,7 +360,7 @@
 
   <xsl:apply-templates select="." mode="rdfa:object-resources">
     <xsl:with-param name="base" select="$base"/>
-    <xsl:with-param name="subject" select="$subjects"/>
+    <xsl:with-param name="subject" select="$subject"/>
     <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
   </xsl:apply-templates>
 </xsl:template>
@@ -818,6 +820,75 @@
       <xsl:with-param name="type"          select="$type"/>
     </xsl:apply-templates>
   </body>
+</xsl:template>
+
+<x:doc>
+  <h2>rdfa:get-label</h2>
+  <p>Get the predicate-object pair that constitutes the most appropriate label.</p>
+</x:doc>
+
+<xsl:template match="html:*" mode="rdfa:get-label" name="rdfa:get-label">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base"  select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+  <xsl:param name="predicates" select="$rdfa:LABEL-PREDS"/>
+
+  <!--<xsl:message>ok wtf <xsl:value-of select="count($predicates)"/></xsl:message>-->
+
+  <xsl:if test="count($predicates)">
+    <xsl:variable name="predicate" select="string($predicates[1])"/>
+
+    <xsl:variable name="literal">
+      <xsl:apply-templates select="." mode="rdfa:object-literal-quick">
+        <xsl:with-param name="base" select="$base"/>
+        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="predicate" select="$predicate"/>
+      </xsl:apply-templates>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="string-length(normalize-space($literal))">
+        <xsl:value-of select="concat($predicate, ' ', $literal)"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="rdfa:get-label">
+          <xsl:with-param name="base" select="$base"/>
+        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="predicates" select="$predicates[position() &gt; 1]"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="rdfa:literal-value">
+  <xsl:param name="literal">
+    <xsl:message terminate="yes">`literal` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:value-of select="substring-before($literal, $rdfa:UNIT-SEP)"/>
+</xsl:template>
+
+<xsl:template name="rdfa:literal-language">
+  <xsl:param name="literal">
+    <xsl:message terminate="yes">`literal` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:variable name="_" select="substring-after($literal, $rdfa:UNIT-SEP)"/>
+  <xsl:if test="starts-with($_, '@')">
+    <xsl:value-of select="substring-after($_, '@')"/>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="rdfa:literal-datatype">
+  <xsl:param name="literal">
+    <xsl:message terminate="yes">`literal` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:variable name="_" select="substring-after($literal, $rdfa:UNIT-SEP)"/>
+  <xsl:if test="not(starts-with($_, '@'))">
+    <xsl:value-of select="$_"/>
+  </xsl:if>
 </xsl:template>
 
 </xsl:stylesheet>

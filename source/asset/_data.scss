@@ -11,6 +11,7 @@ $PREFIXES: (
     skos: "http://www.w3.org/2004/02/skos/core#",
     ibis: "https://vocab.methodandstructure.com/ibis#",
     pm:   "https://vocab.methodandstructure.com/process-model#",
+    ci:   "https://vocab.methodandstructure.com/content-inventory#",
     bibo: "http://purl.org/ontology/bibo",
     dct:  "http://purl.org/dc/terms/",
     foaf: "http://xmlns.com/foaf/0.1/",
@@ -87,6 +88,10 @@ $CLASS_PALETTE: (
 
     // //
     // "org:ChangeEvent": (),
+
+    // hue 28
+    "ci:Audience":                     (#1a0e09, #352119, #603e32, #7f5444,
+                                        #d89d8a, #f4ded8, #c05a00, #ffdbd1),
 
     // hue 38
     "gr:ProductOrService":             (#170e09, #312219, #514132, #775743,

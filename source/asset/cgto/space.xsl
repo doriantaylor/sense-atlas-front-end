@@ -13,20 +13,27 @@
 
 <xsl:import href="/asset/rdfa-util"/>
 
+<xsl:output
+  method="xml" media-type="application/xhtml+xml"
+  indent="yes" omit-xml-declaration="no"
+  encoding="utf-8" doctype-public=""/>
+
 <x:doc>
   <h1>Collaborative Graph Tool Space</h1>
   <p>This template manages what is effectively the <q>home page</q> for collaborative graph tools like <a href="https://senseatlas.net/">Sense Atlas</a>.</p>
 </x:doc>
 
 <!-- too bad firefox still has no namespace:: axis -->
-<xsl:variable name="RDF"  select="$rdfa:RDF-NS"/>
-<xsl:variable name="RDFS" select="$rdfa:RDFS-NS"/>
-<xsl:variable name="CGTO" select="'https://vocab.methodandstructure.com/graph-tool#'"/>
-<xsl:variable name="IBIS" select="'https://vocab.methodandstructure.com/ibis#'"/>
-<xsl:variable name="SIOC" select="'http://rdfs.org/sioc/ns#'"/>
-<xsl:variable name="SKOS" select="'http://www.w3.org/2004/02/skos/core#'"/>
-<xsl:variable name="XHV"  select="'http://www.w3.org/1999/xhtml/vocab#'"/>
-<xsl:variable name="XSD"  select="$rdfa:XSD-NS"/>
+<xsl:variable name="RDF"   select="$rdfa:RDF-NS"/>
+<xsl:variable name="RDFS"  select="$rdfa:RDFS-NS"/>
+<xsl:variable name="DCT"   select="'http://purl.org/dc/terms/'"/>
+<xsl:variable name="CGTO"  select="'https://vocab.methodandstructure.com/graph-tool#'"/>
+<xsl:variable name="IBIS"  select="'https://vocab.methodandstructure.com/ibis#'"/>
+<xsl:variable name="SIOC"  select="'http://rdfs.org/sioc/ns#'"/>
+<xsl:variable name="SIOCT" select="'http://rdfs.org/sioc/types#'"/>
+<xsl:variable name="SKOS"  select="'http://www.w3.org/2004/02/skos/core#'"/>
+<xsl:variable name="XHV"   select="'http://www.w3.org/1999/xhtml/vocab#'"/>
+<xsl:variable name="XSD"   select="$rdfa:XSD-NS"/>
 
 <x:doc>
   <h2>Metadata</h2>
@@ -182,84 +189,47 @@
 
   <xsl:message>subject: <xsl:value-of select="$subject"/> index: <xsl:value-of select="$index"/> user: <xsl:value-of select="$user"/></xsl:message>
 
-  <xsl:choose>
-    <xsl:when test="string-length(normalize-space($user))">
-      <xsl:variable name="state">
-        <xsl:variable name="_">
-          <xsl:apply-templates select="." mode="rdfa:object-resources">
-	    <xsl:with-param name="subject" select="$user"/>
-	    <xsl:with-param name="predicate" select="concat($CGTO, 'state')"/>
-	    <xsl:with-param name="traverse" select="true()"/>
-          </xsl:apply-templates>
-          <xsl:text> </xsl:text>
-          <xsl:apply-templates select="." mode="rdfa:subject-resources">
-	    <xsl:with-param name="object" select="$user"/>
-	    <xsl:with-param name="predicate" select="concat($CGTO, 'owner')"/>
-	    <xsl:with-param name="traverse" select="true()"/>
-          </xsl:apply-templates>
-        </xsl:variable>
-        <xsl:call-template name="str:safe-first-token">
-          <xsl:with-param name="tokens">
-            <xsl:call-template name="str:token-intersection">
-              <xsl:with-param name="left" select="$contents"/>
-              <xsl:with-param name="right" select="$_"/>
-            </xsl:call-template>
-          </xsl:with-param>
-        </xsl:call-template>
+  <xsl:variable name="state">
+    <xsl:if test="string-length($user)">
+      <xsl:variable name="_">
+        <xsl:apply-templates select="." mode="rdfa:object-resources">
+	  <xsl:with-param name="subject" select="$user"/>
+	  <xsl:with-param name="predicate" select="concat($CGTO, 'state')"/>
+	  <xsl:with-param name="traverse" select="true()"/>
+        </xsl:apply-templates>
+        <xsl:text> </xsl:text>
+        <xsl:apply-templates select="." mode="rdfa:subject-resources">
+	  <xsl:with-param name="object" select="$user"/>
+	  <xsl:with-param name="predicate" select="concat($CGTO, 'owner')"/>
+	  <xsl:with-param name="traverse" select="true()"/>
+        </xsl:apply-templates>
       </xsl:variable>
+      <xsl:call-template name="str:safe-first-token">
+        <xsl:with-param name="tokens">
+          <xsl:call-template name="str:token-intersection">
+            <xsl:with-param name="left" select="$contents"/>
+            <xsl:with-param name="right" select="$_"/>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:variable>
 
-      <!-- XXX modal to check for foaf:name? -->
+  <!-- XXX modal to check for foaf:name? -->
 
-      <xsl:choose>
-        <xsl:when test="string-length(normalize-space($state))">
-          <xsl:variable name="focus">
-            <xsl:apply-templates select="." mode="rdfa:object-resources">
-	      <xsl:with-param name="subject" select="$state"/>
-	      <xsl:with-param name="predicate" select="concat($CGTO, 'focus')"/>
-	      <xsl:with-param name="traverse" select="true()"/>
-            </xsl:apply-templates>
-          </xsl:variable>
-          <xsl:choose>
-            <xsl:when test="string-length(normalize-space($focus)) and not(contains(normalize-space($focus), ' '))">
-              <!-- show focus -->
-              <xsl:apply-templates select="." mode="cgto:show-focus">
-                <xsl:with-param name="base" select="$base"/>
-                <xsl:with-param name="resource-path" select="$resource-path"/>
-                <xsl:with-param name="rewrite" select="$rewrite"/>
-                <xsl:with-param name="main" select="$main"/>
-                <xsl:with-param name="heading" select="$heading"/>
-                <xsl:with-param name="subject" select="$subject"/>
-                <xsl:with-param name="focus" select="$focus"/>
-              </xsl:apply-templates>
-            </xsl:when>
-            <xsl:otherwise>
-              <!-- there are either zero foci or there are more than one -->
-              <xsl:apply-templates select="." mode="cgto:select-focus">
-                <xsl:with-param name="base" select="$base"/>
-                <xsl:with-param name="resource-path" select="$resource-path"/>
-                <xsl:with-param name="rewrite" select="$rewrite"/>
-                <xsl:with-param name="main" select="$main"/>
-                <xsl:with-param name="heading" select="$heading"/>
-                <xsl:with-param name="subject" select="$subject"/>
-                <xsl:with-param name="state" select="$state"/>
-                <xsl:with-param name="focus" select="$focus"/>
-              </xsl:apply-templates>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:when>
-        <xsl:otherwise>
-          <!-- no state, show modal to initialize  -->
-          <h1>no state object; need modal here</h1>
-        </xsl:otherwise>
-      </xsl:choose>
+  <xsl:choose>
+    <xsl:when test="string-length($user) and not(string-length($state))">
+      <p>state modal goes here</p>
     </xsl:when>
     <xsl:otherwise>
       <!-- no user; show list -->
       <xsl:apply-templates select="." mode="cgto:plain-list">
         <xsl:with-param name="subject" select="$subject"/>
         <xsl:with-param name="property" select="concat($SIOC, 'space_of')"/>
-        <xsl:with-param name="types" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
+        <!-- note the spaces you ass, that's why it wasn't showing up -->
+        <xsl:with-param name="types" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme ' , $SIOCT, 'AddressBook')"/>
         <xsl:with-param name="label-prop" select="concat($SKOS, 'prefLabel')"/>
+        <xsl:with-param name="can-write" select="string-length($user)"/>
       </xsl:apply-templates>
     </xsl:otherwise>
   </xsl:choose>
@@ -282,6 +252,7 @@
     <xsl:message terminate="yes">`types` parameter required</xsl:message>
   </xsl:param>
   <xsl:param name="label-prop" select="concat($RDFS, 'label')"/>
+  <xsl:param name="can-write" select="false()"/>
 
   <xsl:variable name="resources">
     <xsl:variable name="_">
@@ -307,12 +278,26 @@
     </xsl:call-template>
   </xsl:variable>
 
-  <xsl:if test="string-length($resources)">
+  <xsl:if test="string-length($resources) or $can-write">
     <ul rel="{$property-curie}">
       <xsl:call-template name="cgto:plain-list-items">
         <xsl:with-param name="resources" select="$resources"/>
         <xsl:with-param name="label-prop" select="$label-prop"/>
       </xsl:call-template>
+      <xsl:if test="$can-write">
+        <li>
+          <form xsl:use-attribute-sets="cgto:form-post-self">
+            <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+            <select name="rdf:type :">
+              <option value="ibis:Network">IBIS Network</option>
+              <option value="skos:ConceptScheme">Concept Scheme</option>
+              <option value="sioct:AddressBook">Address Book</option>
+            </select>
+            <input type="text" name="= skos:prefLabel" placeholder="Name it&#x2026;"/>
+            <button class="fa fa-plus"/>
+          </form>
+        </li>
+      </xsl:if>
     </ul>
   </xsl:if>
 </xsl:template>

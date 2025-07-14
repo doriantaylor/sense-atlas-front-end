@@ -586,9 +586,9 @@ html {
                             margin: 0;
                             padding: 0;
                             display: flex;
-                            flex-wrap: wrap;
+                            //flex-wrap: wrap;
                             gap: 0.25rem;
-                            font-size: 66.6%;
+                            font-size: 60%;
                             > li {
                                 display: inline-block;
                                 max-width: 50%;
@@ -731,13 +731,16 @@ html {
         }
 
         &[typeof~="cgto:Space"] {
-            height: fit-content;
+            box-sizing: border-box;
+            min-height: 100vh;
+            //max-height: fit-content;
             box-shadow: inset 0px 0px 40px black;
             font-weight: 300;
             padding-top: 2em;
             background-image: url(/asset/picture-of-graph-screen-smaller);
             background-repeat: no-repeat;
-            background-size: contain;
+            background-size: 100vw auto;
+            overflow: auto;
 
             h1, h2, h3, h4, h5, h6 {
                 text-align: left;

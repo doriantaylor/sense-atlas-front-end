@@ -26,8 +26,9 @@ export default class RDFViz {
     static validTypes = [
         'foaf:Agent', 'foaf:Person', 'foaf:Organization', 'org:Organization',
         'org:FormalOrganization', 'org:OrganizationalCollaboration',
-	'org:OrganizationalUnit', 'skos:Concept',
-	'ibis:Issue', 'ibis:Position', 'ibis:Argument'];
+	'org:OrganizationalUnit', 'org:Role', 'skos:Concept', 'ci:Audience',
+	'ibis:Issue', 'ibis:Position', 'ibis:Argument',
+        'pm:Goal', 'pm:Task', 'pm:Target'];
 
     static labels = {
         'foaf:Person':             'foaf:name',
@@ -35,7 +36,9 @@ export default class RDFViz {
         'org:Organization':        'foaf:name',
         'org:OrganizationalUnit':  'foaf:name',
         'org:FormalOrganization':  'foaf:name',
+        'org:Role':                'skos:prefLabel',
         'skos:Concept':            'skos:prefLabel',
+        'ci:Audience':             'skos:prefLabel',
         'ibis:Issue':              'rdf:value',
         'ibis:Position':           'rdf:value',
         'ibis:Argument':           'rdf:value',

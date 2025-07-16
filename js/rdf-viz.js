@@ -254,7 +254,7 @@ export default class RDFViz {
 			    me.attach(target);
 			    if (typeof postamble == 'function') {
 				console.log('calling postamble');
-				postamble(me);
+				postamble.bind(me)(me);
 			    }
 			}
 		    };
@@ -266,6 +266,7 @@ export default class RDFViz {
         else console.error('window not available yet');
     }
 
+    // XXX this might be obsolete
     getRoot () {
         if (this.root) return this.root;
 

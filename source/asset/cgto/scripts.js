@@ -94,7 +94,8 @@ document.addEventListener('load-graph', function () {
 
     const intersect = (a1, a2, fn) => {
         fn = fn || ((a, b) => a == b);
-        return a1.reduce((x, a) => a2.some(b => fn(a, b)) ? (x.push(a), x) : x);
+        return a1.reduce(
+            ((x, a) => a2.some(b => fn(a, b)) ? (x.push(a), x) : x), []);
     };
     const has = (a, b) => a.some(x => b.some(y => x.equals(y)));
 
@@ -369,6 +370,10 @@ document.addEventListener('load-graph', function () {
             // append <datalist> to end of <body>
         };
 
+        [['big-friggin-list', skos('Concept'), true],
+         ['agents', foaf('Agent'), true]
+        ].forEach(([id, type, inferred]) => loadDataList(id, type, inferred));
+
 	const OMO = function (e) {
 	    const t = e.target;
 	    const href = t.href ? t.href.baseVal || t.href :
@@ -395,10 +400,6 @@ document.addEventListener('load-graph', function () {
 
 	    return true;
 	};
-
-        [['big-friggin-list', skos('Concept'), true],
-         ['agents', foaf('Agent'), true]
-        ].forEach(([id, type, inferred]) => loadDataList(id, type, inferred));
 
 	Array.from(document.querySelectorAll(
 	    'section.relations li[typeof], svg a[typeof]')).forEach(elem => {

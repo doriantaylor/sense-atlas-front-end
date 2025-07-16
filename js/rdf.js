@@ -3,16 +3,12 @@ import * as RDFLib from 'rdflib';
 
 // XXX rewrite all this in typescript? get on that program?? lol
 
-// pull everything out but the namespace function
+// pull everything out but the namespace function and the store
 const { Namespace: origNSFunc, Store, ...rest } = RDFLib;
 
 class _Namespace extends RDFLib.NamedNode {
     constructor (iri) {
         super(iri);
-    }
-
-    toString() {
-        return this.value;
     }
 }
 
@@ -36,9 +32,6 @@ function Namespace (iri, factory) {
         apply: (target, thisArg, args) => target.apply(thisArg, args),
     });
 };
-
-const RDFNS   = Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-const RDFTYPE = RDFNS.type;
 
 class NSMap {
     constructor (initial) {
@@ -172,6 +165,10 @@ class NSMap {
 
 };
 
+// i'm sure this is everywhere, lol
+const RDFNS   = Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+const RDFTYPE = RDFNS.type;
+
 // for some reason doing it this way won't trip rollup into messing with `this`
 const storeMixin =  {
     getResources(args) {
@@ -214,7 +211,9 @@ const storeMixin =  {
     },
 
     // create a new array with the intersection of the contents of
-    // both; really should just be in the array prototype
+    // both; really should just be in the array prototype; not sure
+    // what i was thinking when i made this or why it's here but
+    // leaving it here for now
     intersect (left, right, fn) {
         fn ||= ((a, b) => a == b);
         return left.reduce(

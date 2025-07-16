@@ -37,6 +37,9 @@ function Namespace (iri, factory) {
     });
 };
 
+const RDFNS   = Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+const RDFTYPE = RDFNS.type;
+
 class NSMap {
     constructor (initial) {
         // coerce object to thing
@@ -45,8 +48,8 @@ class NSMap {
             initial = Object.entries(initial);
 
         initial = initial.map(([k, v]) => [
-            k.toString(), (v instanceof RDF.Namespace) ? v :
-                RDF.Namespace(v.toString())]);
+            k.toString(), (v instanceof RDFLib.Namespace) ? v :
+                RDFLib.Namespace(v.toString())]);
 
         this._fwd = new Map(initial);
         // this._rev = new Map(this._fwd.entries().map(([k, v]) => [v.value, k]));
@@ -223,7 +226,7 @@ const storeMixin =  {
     },
 
     getTypes (subject) {
-        return this.getResources({ subject: subject, fwd: this.a });
+        return this.getResources({ subject: subject, fwd: RDFTYPE });
     },
 
     hasTypes (subject, types) {

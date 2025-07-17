@@ -19,7 +19,7 @@ TARGET = target
 
 XSLT_ASSETS = transclude.xsl rdfa.xsl ibis.xsl
 # SCSS_ASSETS = ibis.scss
-JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js utilities.js markup-mixup.js  cgto/scripts.js
+JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js utilities.js markup-mixup.js  sense-atlas.js cgto/scripts.js
 
 GITHUB = https://raw.githubusercontent.com/doriantaylor
 LOCAL  = $(HOME)/clients/me
@@ -199,10 +199,13 @@ $(TARGET)/asset/hierarchical.js : $(TARGET)/asset
 	cd js; $(NPM) run build; cd -
 
 $(TARGET)/asset/utilities.js : $(TARGET)/asset
-	$(RSYNC) $(SOURCE)/asset/utilities.js $(TARGET)/asset/
+	$(RSYNC) $(subst $(TARGET),$(SOURCE),$@) $(dir $@)
+
+$(TARGET)/asset/sense-atlas.js : $(TARGET)/asset
+	$(RSYNC) $(subst $(TARGET),$(SOURCE),$@) $(dir $@)
 
 $(TARGET)/asset/cgto/scripts.js : $(TARGET)/asset/cgto
-	$(RSYNC) $(SOURCE)/asset/cgto/scripts.js $(TARGET)/asset/cgto/
+	$(RSYNC) $(subst $(TARGET),$(SOURCE),$@) $(dir $@)
 
 $(TARGET)/asset/markup-mixup.js : $(TARGET)/asset
 	@ if [ -f $(LOCAL)/js-markup-mixup/markup-mixup.js ]; \

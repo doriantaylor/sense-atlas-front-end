@@ -314,4 +314,156 @@ export default class RDFViz {
 
         return null;
     }
+
+    async derefPP (start, path) {
+        const g = this.graph;
+
+        // coerce path to array
+        if (!path) path = [];
+        else if (!Array.isArray(path)) path = [path];
+
+        if (path.length > 0) {
+            // obtain the first element in the property path
+            let test = path[0];
+
+            // normalize the element
+            if (RDF.isNamedNode(test)) {
+                let tmp = test;
+                test = { subject: start, fwd: tmp };
+            }
+            else if (typeof test === 'object') {
+                let patch = {};
+                if (test.fwd) patch['subject'] = start;
+                else if (test.rev) patch['object'] = start;
+
+                test = Object.assign({}, test, patch);
+            }
+            else throw new Error('not sure what to do with path: ' +
+                                 JSON.stringify(path));
+
+            // check the existing graph for the thing
+            let nexts = g.getResources(test);
+
+            // if none, then fetch `start`
+            if (nexts.length == 0) {
+                console.debug(`dereferencing ${start}`);
+                // okay *now* check
+                await g.fetcher.load(start);
+                nexts = g.getResources(test);
+                // if still none, bail out or raise or something i dunno,
+                // probably raise
+                if (nexts.length == 0)
+                    throw new Error(`could not find ${JSON.stringify(test)}` +
+                                    ` after dereferencing ${start}`);
+            }
+
+            console.debug(`found ${nexts[0]}`);
+
+            // onto the next one
+            return this.derefPP(nexts[0], path.slice(1));
+
+            //path = path.slice(1);
+            //return path.length > 0 ? derefPP(nexts[0], path) : start;
+        }
+
+        return start;
+    }
+
+    async handlePagination (subject, seen) {
+        // add to seen
+        seen = seen || [];
+        seen.push(subject);
+
+        const g  = this.graph;
+        const ns = g.namespaces;
+
+        const next = g.getResources({
+            subject: subject, fwd: ns.xhv('next')
+        }).filter(x => seen.some(y => y.equals(x)))[0];
+
+        // load the next one
+        if (next) {
+            await g.fetcher.load(next);
+            return this.handlePagination(next, seen);
+        }
+
+        // our termination condition
+        return subject;
+    }
+
+    /*
+     * Traverse a path
+     *
+     */
+    async loadDataList (subject, path, id, type, inferred) {
+        const g       = this.graph;
+        const ns      = g.namespaces;
+        const fetcher = g.fetcher;
+
+        const a    = ns.rdf.type;
+        const cgto = ns.cgto;
+        const ww = { fwd: cgto.window, rev: cgto['window-of'] };
+
+        this.derefPP(subject, path).then(resource => {
+            console.log(`hooray ${resource}`);
+            fetcher.load(resource).then(() => {
+                let obs = g.getResources({ object: type, fwd: ns.cgto.class});
+                if (obs.length > 0) {
+                    let pred = cgto[
+                        (inferred ? 'inferred' : 'asserted') + '-subjects'];
+                    let invs = this.derefPP(obs[0], [pred, ww]).then((s) => {
+                        let types = g.getTypes(s);
+                        // console.log(types);
+
+                        let window;
+                        if (g.has(types, [cgto.Window])) {
+                            let inv = g.getResources(
+                                {subject: s, fwd: ww.rev, rev: ww.fwd });
+                            window = s;
+                            s = inv[0];
+                        }
+                        else {
+                            console.log(`${s} should be the inventory`);
+
+                            console.log(g.match(null, ww.rev, s));
+
+                            let windows = g.getResources(
+                                { subject: s, rev: ww.rev });
+                            console.log(windows);
+                            window = windows[0];
+                        }
+                        this.handlePagination(window).then((w) => {
+                            console.log(`pagination complete: ${w}`);
+                            let members = g.getResources(
+                                { subject: s, fwd: ns.rdfs('member')});
+                            console.log(`${members.length} members`);
+                            let options = members.map((m) => {
+                                let types = g.getTypes(m);
+                                let [lp, lo] = g.getLabel(m, types);
+
+                                let out = {
+                                    '#option': lo.value,
+                                    about: m.value, value: m.value,
+                                    typeof: types.map(t => ns.abbreviate(t)) };
+                                if (lp) out.property = ns.abbreviate(lp);
+
+                                return out;
+                            });
+
+                            // generate the list
+                            MARKUP({ parent: document.body,
+                                     spec: { '#datalist': options, id: id } });
+
+                            // gotta reset it lol (XXX CARGO CULT??)
+                            Array.from(
+                                document.querySelectorAll(
+                                    `*[list="${id}"]`)).forEach(
+                                        e => e.setAttribute('list', id));
+                        });
+                        //console.log(s, window);
+                    });
+                }
+            });
+        });
+    }
 }

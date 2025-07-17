@@ -55,6 +55,7 @@
   <script type="text/javascript" src="/asset/markup-mixup"></script>
   <script type="text/javascript" src="/asset/complex"></script>
   <script type="text/javascript" src="/asset/d3"></script>
+  <script type="text/javascript" src="/asset/sense-atlas"></script>
   <script type="text/javascript" src="/asset/hierarchical"></script>
   <script type="text/javascript" src="/asset/force-directed"></script>
   <script type="text/javascript" src="/asset/cgto/scripts"></script>

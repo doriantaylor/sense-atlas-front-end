@@ -4,7 +4,7 @@ import * as RDFLib from 'rdflib';
 // XXX rewrite all this in typescript? get on that program?? lol
 
 // pull everything out but the namespace function and the store
-const { Namespace: origNSFunc, Store, ...rest } = RDFLib;
+const { Namespace: origNSFunc, graph: _, ...rest } = RDFLib;
 
 class _Namespace extends RDFLib.NamedNode {
     constructor (iri) {
@@ -127,7 +127,7 @@ class NSMap {
 
             let prefix = null, namespace = null;
             this._fwd.entries().forEach(([pfx, nsURI]) => {
-                nsURI = nsURI('').value;
+                nsURI = nsURI.value;
                 if (uri.startsWith(nsURI)) {
                     if (!namespace || nsURI.length > namespace.length) {
                         prefix    = pfx;
@@ -169,8 +169,20 @@ class NSMap {
 const RDFNS   = Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
 const RDFTYPE = RDFNS.type;
 
-// for some reason doing it this way won't trip rollup into messing with `this`
-const storeMixin =  {
+const rdfv = RDFLib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
+const rdfs = RDFLib.Namespace('http://www.w3.org/2000/01/rdf-schema#');
+const dct  = RDFLib.Namespace('http://purl.org/dc/terms/');
+const skos = RDFLib.Namespace('http://www.w3.org/2004/02/skos/core#');
+const foaf = RDFLib.Namespace('http://xmlns.com/foaf/0.1/');
+
+const NSMapMixin = (superclass) => class extends superclass {
+
+    constructor (...args) {
+        const out = super(...args);
+        this.namespaces = new NSMap();
+        return out;
+    }
+
     getResources(args) {
         const collect = {};
         if (args.fwd) {
@@ -198,7 +210,7 @@ const storeMixin =  {
         }
 
         return Object.values(collect);
-    },
+    }
 
     getLiteralSimple (subject, predicate) {
         const out = [];
@@ -208,7 +220,7 @@ const storeMixin =  {
         });
 
         return out;
-    },
+    }
 
     // create a new array with the intersection of the contents of
     // both; really should just be in the array prototype; not sure
@@ -218,32 +230,58 @@ const storeMixin =  {
         fn ||= ((a, b) => a == b);
         return left.reduce(
             ((x, a) => right.some(b => fn(a, b)) ? (x.push(a), x) : x), []);
-    },
+    }
 
     has (a, b) {
         return a.some(x => b.some(y => x.equals(y)));
-    },
+    }
 
     getTypes (subject) {
         return this.getResources({ subject: subject, fwd: RDFTYPE });
-    },
+    }
 
     hasTypes (subject, types) {
         if (!types) types = [];
         if (!Array.isArray(types)) types = [types];
 
         return this.has(this.getTypes(subject), types);
-    },
+    }
+
+    getLabel (subject, types) {
+        if (!types) types = this.getTypes(subject);
+        if (!Array.isArray(types)) types = [types];
+        // XXX MAKE THIS LESS STUPID
+        let label = [
+            skos('prefLabel'), rdfv('value'), rdfs('label'),
+            dct('title'), foaf('name')].reduce((out, p) => {
+                // console.log(p);
+                let o = this.getLiteralSimple(subject, p).toSorted(
+                    (a, b) => a.compareTerm(b))[0];
+                // this will pick the first predicate
+                if (!out.length && o) return [p, o];
+                return out;
+            });
+        return label.length ? label : [null, subject];
+    };
+
 };
 
-// whatever, cram the mixin into Store's prototype
-Object.assign(Store.prototype, storeMixin);
+function graph (features, opts) {
+    // i don't think anything picks this up?
+    opts ||= { rdfFactory: RDFLib.DataFactory };
+    const cls = opts.storeClass || RDFLib.Store;
+    if (!(RDFLib.Store.prototype == cls.prototype ||
+          RDFLib.Store.prototype.isPrototypeOf(cls.prototype)))
+        throw new Error('opts.storeClass must be a descendant of RDF.Store');
+    return new (NSMapMixin(cls))(features, opts);
+}
 
 // aand back out
 //export { RDF as default };
 export default {
     ...rest,
-    Store,
+    graph,
+    NSMapMixin,
     Namespace,
     NSMap,
 };

@@ -58,6 +58,16 @@
   <script type="text/javascript" src="/asset/sense-atlas"></script>
   <script type="text/javascript" src="/asset/hierarchical"></script>
   <script type="text/javascript" src="/asset/force-directed"></script>
+
+  <xsl:apply-templates select="." mode="rdfa:head-extra-extra"/>
+
+</xsl:template>
+
+<xsl:template match="html:head" mode="rdfa:head-extra-extra">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+
   <script type="text/javascript" src="/asset/cgto/scripts"></script>
 
 </xsl:template>

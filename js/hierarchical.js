@@ -216,7 +216,7 @@ export default class HierRDF extends RDFViz {
         const defs = svg.append('defs');
 
         Object.values(pmap).forEach(predicate => {
-            const about = this.abbreviate(predicate);
+            const about = ns.abbreviate(predicate);
             const id = about.replace(':', '.'); // make this a legal id
             ['', '.subject'].forEach(x => {
                 defs.append('marker').attr('id', id + x)
@@ -327,7 +327,7 @@ export default class HierRDF extends RDFViz {
                       .mul(d3p.width / 2);
 
                 const a = nodeg.append('a').attr('xlink:href', node.data.id)
-                      .attr('typeof', this.abbreviate(nmap[node.data.id].type))
+                      .attr('typeof', ns.abbreviate(nmap[node.data.id].type))
                       .attr('xlink:title', rnode.title);
 
                 // console.log(node.data.id, me);
@@ -421,8 +421,8 @@ export default class HierRDF extends RDFViz {
                     const rel = (lmap[s] || {})[o];
                     const rev = (lmap[o] || {})[s];
 
-                    if (rel) path.attr('rel', this.abbreviate(rel.predicate));
-                    if (rev) path.attr('rev', this.abbreviate(rev.predicate));
+                    if (rel) path.attr('rel', ns.abbreviate(rel.predicate));
+                    if (rev) path.attr('rev', ns.abbreviate(rev.predicate));
                 });
             });
         }
@@ -431,7 +431,7 @@ export default class HierRDF extends RDFViz {
             const node = nodes[0];
 
             const a = nodeg.append('a').attr('xlink:href', node.id)
-                  .attr('typeof', this.abbreviate(node.type))
+                  .attr('typeof', ns.abbreviate(node.type))
                   .attr('xlink:title', node.title);
 
             if (node.id == me.href) a.attr('class', 'subject');

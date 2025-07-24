@@ -73,6 +73,7 @@ export default class ForceRDF extends RDFViz {
               validTypes = this.validTypes,
               labels     = this.labels,
               inverses   = this.inverses,
+              prefer     = this.prefer,
               symmetric  = this.symmetric;
 
         // first we get all the nodes of valid types
@@ -80,28 +81,25 @@ export default class ForceRDF extends RDFViz {
         const nodes = this.nodes = [];
 
         graph.match(null, a).forEach(stmt => {
-            if (validTypes.some(t => t.equals(stmt.object))) {
+            if (graph.has([stmt.object], validTypes)) {
                 // get the label
                 let label = stmt.subject.value;
-                const lp = [ns['dct']('title'), ns['rdfs']('label')];
+                const lp = [ns.dct.title, ns.rdfs.label];
+
+                // unshift label for type
                 if (labels[stmt.object.value])
                     lp.unshift(labels[stmt.object.value]);
                 for (let i = 0; i < lp.length; i++) {
                     let x = graph.match(stmt.subject, lp[i]).filter(
-                        s => s.object.termType == 'Literal');
+                        s => RDF.isLiteral(s.object));
                     if (x.length > 0) {
                         label = x[0].object.value;
                         break;
                     }
                 }
 
+                // XXX we might no longer need this
                 const s = this.rewriteUUID(stmt.subject);
-
-                // get the in+outdegree
-                const degree = graph.match(stmt.subject).filter(
-                    s => s.object.termType == 'NamedNode').length +
-                      graph.match(null, null, stmt.subject).filter(
-                          s => s.subject.termType == 'NamedNode').length - 1;
 
                 // add this mess to the list
                 nodes.push(nmap[stmt.subject.value] = {
@@ -109,7 +107,7 @@ export default class ForceRDF extends RDFViz {
                     title:   label, // for d3
                     subject: stmt.subject,
                     type:    stmt.object,
-                    degree:  degree,
+                    degree:  0,
                 });
             }
         });
@@ -121,15 +119,24 @@ export default class ForceRDF extends RDFViz {
         nodes.forEach(rec => {
             // we already know these are here
             graph.match(rec.subject).forEach(stmt => {
-                // only look at the edges containing nodes we already have
-                if (!nmap[stmt.object.value]) return;
-                let s = stmt.subject, p = stmt.predicate, o = stmt.object;
-                if (inverses[p.value]) {
+                // only look at the edges connecting nodes we already have
+                if (!(RDF.isNamedNode(stmt.object) && nmap[stmt.object.value]))
+                    return;
+
+                // gotta say, i can get used to destructuring binds
+                let { subject: s, predicate: p, object: o } = stmt;
+
+                // count the degree here so you don't get distorted
+                nmap[stmt.subject.value].degree++;
+                nmap[stmt.object.value].degree++;
+
+                if (prefer[p.value]) {
                     s = stmt.object;
                     p = inverses[p.value];
                     o = stmt.subject;
                 }
 
+                // XXX again i suspect this is not necessary now
                 let src = this.rewriteUUID(s);
                 let tgt = this.rewriteUUID(o);
 
@@ -240,12 +247,12 @@ export default class ForceRDF extends RDFViz {
               .data(links)
               .join('line')
               .attr('about',    e => e.source.id)
-              .attr('rel',      e => this.abbreviate(e.predicate))
+              .attr('rel',      e => ns.abbreviate(e.predicate))
               .attr('resource', e => e.target.id)
               .attr('class',    e => [e.source, e.target].some(
                   x => x.id == window.location.href) ? 'subject' : null)
         // .attr('marker-end',
-        //       e => `url(#${this.abbreviate(e.predicate).replace(':', '.')})`)
+        //       e => `url(#${ns.abbreviate(e.predicate).replace(':', '.')})`)
               .attr('stroke-width', 1);
 
         const nodeHover = state => {
@@ -271,7 +278,7 @@ export default class ForceRDF extends RDFViz {
 
         // let's make a bunch of markers then i guess
         Object.keys(lmap).forEach(predicate => {
-            const about = this.abbreviate(predicate);
+            const about = ns.abbreviate(predicate);
             const id = about.replace(':', '.'); // make this a legal id
             ['', '.subject'].forEach(x => {
                 defs.append('marker').attr('id', id + x)
@@ -296,7 +303,7 @@ export default class ForceRDF extends RDFViz {
               .attr('class', n => n.id == window.location.href ? 'subject' : null)
               .attr('about', n => n.id) // redundant but xlink:href can't select
               .attr('xlink:href', n => n.id)
-              .attr('typeof', n => this.abbreviate(n.type))
+              .attr('typeof', n => ns.abbreviate(n.type))
               .on('mouseover', nodeHover(true))
               .on('mouseout', nodeHover(false))
               .call(drag(simulation));

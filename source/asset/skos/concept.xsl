@@ -21,6 +21,9 @@
   indent="yes" omit-xml-declaration="no"
   encoding="utf-8" doctype-public=""/>
 
+<xsl:variable name="skos:SEQUENCE" select="document('')/xsl:stylesheet/x:sequence[1]"/>
+<xsl:variable name="skos:INVERSES" select="document('')/xsl:stylesheet/x:inverses[1]"/>
+
 <xsl:template match="html:body" mode="rdfa:body-content">
   <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="resource-path" select="$base"/>
@@ -789,11 +792,10 @@
   <xsl:variable name="can-write" select="string-length($user) != 0"/>
 
   <xsl:variable name="current" select="."/>
-  <xsl:variable name="sequence" select="document('')/xsl:stylesheet/x:sequence[1]"/>
 
   <xsl:message> well we made it here lol </xsl:message>
 
-  <xsl:for-each select="$sequence/x:class[@uri = $type]/x:prop">
+  <xsl:for-each select="$skos:SEQUENCE/x:class[@uri = $type]/x:prop">
     <xsl:variable name="targets">
       <xsl:apply-templates select="$current" mode="rdfa:object-resources">
         <xsl:with-param name="subject" select="$subject"/>
@@ -817,12 +819,12 @@
         <h3 property="rdfs:label"><xsl:value-of select="x:label"/></h3>
         <xsl:if test="$can-write">
           <xsl:apply-templates select="." mode="skos:add-relation">
-            <xsl:with-param name="base"    select="$base"/>
-            <xsl:with-param name="current" select="$current"/>
-            <xsl:with-param name="subject" select="$subject"/>
-            <xsl:with-param name="schemes" select="$schemes"/>
-            <xsl:with-param name="user"    select="$user"/>
-            <xsl:with-param name="focus"   select="$focus"/>
+            <xsl:with-param name="base"        select="$base"/>
+            <xsl:with-param name="current"     select="$current"/>
+            <xsl:with-param name="subject"     select="$subject"/>
+            <xsl:with-param name="collections" select="$schemes"/>
+            <xsl:with-param name="user"        select="$user"/>
+            <xsl:with-param name="focus"       select="$focus"/>
           </xsl:apply-templates>
         </xsl:if>
         <xsl:if test="$has-targets">
@@ -835,7 +837,7 @@
               <xsl:with-param name="rewrite"       select="$rewrite"/>
               <xsl:with-param name="main"          select="$main"/>
               <xsl:with-param name="heading"       select="$heading"/>
-              <xsl:with-param name="predicate"     select="@uri"/>
+              <xsl:with-param name="rel"           select="@uri"/>
               <xsl:with-param name="stack"         select="$targets"/>
               <xsl:with-param name="can-write"     select="$can-write"/>
             </xsl:apply-templates>
@@ -860,56 +862,120 @@
       <xsl:with-param name="debug" select="false()"/>
     </xsl:apply-templates>
   </xsl:param>
-  <xsl:param name="schemes">
-    <xsl:message terminate="yes">`schemes` parameter required</xsl:message>
+  <xsl:param name="collections">
+    <xsl:message terminate="yes">`collections` parameter required</xsl:message>
   </xsl:param>
+  <xsl:param name="member-rel" select="concat($SKOS, 'inScheme')"/>
+  <xsl:param name="member-rev"/>
   <xsl:param name="user">
     <xsl:message terminate="yes">`user` parameter required</xsl:message>
   </xsl:param>
-  <xsl:param name="focus">
+  <!--<xsl:param name="focus">
     <xsl:message terminate="yes">`focus` parameter required</xsl:message>
-  </xsl:param>
-
-  <xsl:variable name="predicate" select="string(@uri)"/>
-
-  <xsl:variable name="p-curie">
-    <xsl:call-template name="rdfa:make-curie">
-      <xsl:with-param name="uri" select="@uri"/>
-      <xsl:with-param name="node" select="$current"/>
-    </xsl:call-template>
-  </xsl:variable>
-
- <xsl:variable name="inverse">
-    <xsl:variable name="_" select="document('')/xsl:stylesheet/x:inverses"/>
-    <xsl:value-of select="($_/x:pair[@a=$predicate]/@b|$_/x:pair[@b=$predicate]/@a)[1]"/>
-  </xsl:variable>
-
-  <xsl:variable name="i-curie">
-    <xsl:call-template name="rdfa:make-curie">
-      <xsl:with-param name="uri" select="$inverse"/>
-      <xsl:with-param name="node" select="$current"/>
-    </xsl:call-template>
-  </xsl:variable>
+  </xsl:param>-->
 
   <xsl:variable name="prefixes">
     <xsl:apply-templates select="$current" mode="rdfa:merge-prefixes">
-      <xsl:with-param name="with" select="'ci: https://vocab.methodandstructure.com/content-inventory# cgto: https://vocab.methodandstructure.com/graph-tool# dct: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ ibis: https://vocab.methodandstructure.com/ibis# pm: https://vocab.methodandstructure.com/process-model# rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns# rdfs: http://www.w3.org/2000/01/rdf-schema# xsd: http://www.w3.org/2001/XMLSchema#'"/>
+      <xsl:with-param name="with" select="'ci: https://vocab.methodandstructure.com/content-inventory# cgto: https://vocab.methodandstructure.com/graph-tool# dct: http://purl.org/dc/terms/ foaf: http://xmlns.com/foaf/0.1/ ibis: https://vocab.methodandstructure.com/ibis# org: http://www.w3.org/ns/org# pm: https://vocab.methodandstructure.com/process-model# rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns# rdfs: http://www.w3.org/2000/01/rdf-schema# xsd: http://www.w3.org/2001/XMLSchema#'"/>
     </xsl:apply-templates>
   </xsl:variable>
 
-  <xsl:variable name="sequence" select="document('')/xsl:stylesheet/x:sequence[1]"/>
+  <xsl:variable name="rel">
+    <xsl:choose>
+      <xsl:when test="string-length(@uri)">
+        <xsl:value-of select="@uri"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="($skos:INVERSES/x:pair[@a=current()/@rev]/@b|$skos:INVERSES/x:pair[@b=current()/@rev]/@a)[1]"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="rel-curie">
+    <xsl:if test="string-length($rel)">
+      <xsl:call-template name="rdfa:make-curie">
+        <xsl:with-param name="uri" select="$rel"/>
+        <xsl:with-param name="node" select="$current"/>
+        <xsl:with-param name="prefixes" select="$prefixes"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="rev">
+    <xsl:choose>
+      <xsl:when test="string-length(@rev)">
+        <xsl:value-of select="@rev"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="($skos:INVERSES/x:pair[@a=current()/@uri]/@b|$skos:INVERSES/x:pair[@b=current()/@uri]/@a)[1]"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="rev-curie">
+    <xsl:if test="string-length($rev)">
+      <xsl:call-template name="rdfa:make-curie">
+        <xsl:with-param name="uri" select="$rev"/>
+        <xsl:with-param name="node" select="$current"/>
+        <xsl:with-param name="prefixes" select="$prefixes"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="mrel-curie">
+    <xsl:if test="string-length($member-rel)">
+      <xsl:call-template name="rdfa:make-curie">
+        <xsl:with-param name="uri" select="$member-rel"/>
+        <xsl:with-param name="node" select="$current"/>
+        <xsl:with-param name="prefixes" select="$prefixes"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="mrev-curie">
+    <xsl:if test="string-length($member-rev)">
+      <xsl:call-template name="rdfa:make-curie">
+        <xsl:with-param name="uri" select="$member-rev"/>
+        <xsl:with-param name="node" select="$current"/>
+        <xsl:with-param name="prefixes" select="$prefixes"/>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:variable>
+
   <!--<h1>focus <xsl:value-of select="$focus"/></h1>-->
 
   <form method="POST" action="" accept-charset="utf-8">
     <input class="new" type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-    <input class="new" type="hidden" name="{$i-curie} :" value="{$base}"/>
+    <input class="new" type="hidden">
+      <xsl:attribute name="name">
+        <xsl:choose>
+          <xsl:when test="string-length($rev-curie)">
+            <xsl:value-of select="concat($rev-curie, ' :')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="concat('! ', $rel-curie, ' :')"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:attribute>
+      <xsl:attribute name="value"><xsl:value-of select="$base"/></xsl:attribute>
+    </input>
     <input class="new" type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
     <input class="new" type="hidden" name="dct:creator :" value="{$user}"/>
     <!-- not sure yet if i want this to attach to all schemes or just the focused one -->
     <!--<input class="new" type="hidden" name="skos:inScheme :" value="{$focus}"/>-->
     <xsl:call-template name="skos:hidden-fields">
-      <xsl:with-param name="name" select="'skos:inScheme :'"/>
-      <xsl:with-param name="values" select="$schemes"/>
+      <!--<xsl:with-param name="name" select="'skos:inScheme :'"/>-->
+      <xsl:with-param name="name">
+        <xsl:choose>
+          <xsl:when test="string-length($mrel-curie)">
+            <xsl:value-of select="concat($mrel-curie, ' :')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="concat('! ', $mrev-curie, ' :')"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:with-param>
+      <xsl:with-param name="values" select="$collections"/>
       <xsl:with-param name="css-class" select="'new'"/>
     </xsl:call-template>
     <!--
@@ -918,7 +984,7 @@
     </xsl:apply-templates>-->
 
     <xsl:for-each select="x:range">
-      <xsl:variable name="class" select="$sequence/x:class[@uri = current()/@uri]"/>
+      <xsl:variable name="class" select="$skos:SEQUENCE/x:class[@uri = current()/@uri]"/>
       <xsl:variable name="label" select="normalize-space($class/x:label[1])"/>
       <xsl:variable name="c-curie">
         <xsl:call-template name="rdfa:make-curie">
@@ -942,14 +1008,23 @@
     </xsl:for-each>
     <input class="new" type="hidden" name="= rdf:type : $" value="$type"/>
     <input class="existing" disabled="disabled" type="hidden" name="$ neighbour" value=""/>
-    <input class="existing" disabled="disabled" type="hidden" name="{$p-curie} : $" value="$neighbour"/>
+    <input class="existing" disabled="disabled" type="hidden" name="{$rel-curie} : $" value="$neighbour"/>
     <!-- fucking safari and its tabindex -->
     <input tabindex="{count(x:range)}" type="text" name="$ label" list="big-friggin-list" autocomplete="off"/>
     <!-- this is down here now because the javascript i wrote is goofed -->
     <!--<input class="existing" disabled="disabled" type="hidden" name="! skos:inScheme {$focus} : $" value="$SUBJECT"/>-->
     <xsl:call-template name="skos:hidden-fields">
-      <xsl:with-param name="name" select="'$neighbour skos:inScheme :'"/>
-      <xsl:with-param name="values" select="$schemes"/>
+      <xsl:with-param name="name">
+        <xsl:choose>
+          <xsl:when test="string-length($mrel-curie)">
+            <xsl:value-of select="concat('$neighbour ', $mrel-curie, ' :')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="concat('! $neighbour ', $mrev-curie, ' :')"/>
+          </xsl:otherwise>
+        </xsl:choose>
+      </xsl:with-param>
+      <xsl:with-param name="values" select="$collections"/>
       <xsl:with-param name="disabled" select="true()"/>
       <xsl:with-param name="css-class" select="'existing'"/>
     </xsl:call-template>
@@ -1026,8 +1101,8 @@
   <xsl:param name="rewrite" select="''"/>
   <xsl:param name="main"    select="false()"/>
   <xsl:param name="heading" select="0"/>
-
-  <xsl:param name="predicate" select="''"/>
+  <xsl:param name="rel" select="''"/>
+  <xsl:param name="rev" select="($skos:INVERSES/x:pair[@a=$rel]/@b|$skos:INVERSES/x:pair[@b=$rel]/@a)[1]"/>
   <xsl:param name="stack" select="''"/>
   <xsl:param name="can-write" select="false()"/>
 
@@ -1055,8 +1130,7 @@
       </xsl:call-template>
     </xsl:variable>
 
-    <xsl:variable name="sequence" select="document('')/xsl:stylesheet/x:sequence[1]"/>
-    <xsl:variable name="lprop" select="$sequence/x:class[@uri = $type]/x:lprop/@uri"/>
+    <xsl:variable name="lprop" select="$skos:SEQUENCE/x:class[@uri = $type]/x:lprop/@uri"/>
 
     <xsl:variable name="label-curie">
       <xsl:call-template name="rdfa:make-curie">
@@ -1073,30 +1147,37 @@
       </xsl:apply-templates>
     </xsl:variable>
 
-    <xsl:variable name="p-curie">
-      <xsl:call-template name="rdfa:make-curie">
-        <xsl:with-param name="uri" select="$predicate"/>
-        <xsl:with-param name="node" select="."/>
-      </xsl:call-template>
+    <xsl:variable name="rel-curie">
+      <xsl:if test="string-length($rel)">
+        <xsl:call-template name="rdfa:make-curie">
+          <xsl:with-param name="uri" select="$rel"/>
+          <xsl:with-param name="node" select="."/>
+        </xsl:call-template>
+      </xsl:if>
     </xsl:variable>
 
-    <xsl:variable name="inverse">
-      <xsl:variable name="_" select="document('')/xsl:stylesheet/x:inverses"/>
-      <xsl:value-of select="($_/x:pair[@a=$predicate]/@b|$_/x:pair[@b=$predicate]/@a)[1]"/>
-    </xsl:variable>
-
-    <xsl:variable name="i-curie">
-      <xsl:call-template name="rdfa:make-curie">
-        <xsl:with-param name="uri" select="$inverse"/>
-        <xsl:with-param name="node" select="."/>
-      </xsl:call-template>
+    <xsl:variable name="rev-curie">
+      <xsl:if test="string-length($rev)">
+        <xsl:call-template name="rdfa:make-curie">
+          <xsl:with-param name="uri" select="$rev"/>
+          <xsl:with-param name="node" select="."/>
+        </xsl:call-template>
+      </xsl:if>
     </xsl:variable>
 
     <li about="{$first}" typeof="{$type-curie}">
       <form accept-charset="utf-8" action="" method="POST">
         <xsl:if test="$can-write">
-          <input name="-! {$i-curie} :" type="hidden" value="{$first}"/>
-          <button class="disconnect fa fa-unlink" name="- {$p-curie} :" value="{$first}"></button>
+          <xsl:if test="string-length($rev-curie)">
+            <input name="-! {$rev-curie} :" type="hidden" value="{$first}"/>
+          </xsl:if>
+          <button class="disconnect fa fa-unlink" value="{$first}">
+            <xsl:if test="string-length($rel-curie)">
+              <xsl:attribute name="name">
+                <xsl:value-of select="concat('- ', $rel-curie, ' :')"/>
+              </xsl:attribute>
+            </xsl:if>
+          </button>
         </xsl:if>
         <a href="{$first}" property="{$label-curie}">
           <xsl:value-of select="substring-before($label, $rdfa:UNIT-SEP)"/>
@@ -1111,7 +1192,8 @@
         <xsl:with-param name="rewrite"       select="$rewrite"/>
         <xsl:with-param name="main"          select="$main"/>
         <xsl:with-param name="heading"       select="$heading"/>
-        <xsl:with-param name="predicate"     select="$predicate"/>
+        <xsl:with-param name="rel"           select="$rel"/>
+        <xsl:with-param name="rev"           select="$rev"/>
         <xsl:with-param name="stack"         select="$rest"/>
         <xsl:with-param name="can-write"     select="$can-write"/>
       </xsl:apply-templates>
@@ -1819,8 +1901,7 @@
       <xsl:text> </xsl:text>
     </xsl:variable>
 
-    <xsl:variable name="sequence" select="document('')/xsl:stylesheet/x:sequence[1]"/>
-    <xsl:variable name="lprop" select="$sequence/x:class[contains($types, @uri)]/x:lprop/@uri"/>
+    <xsl:variable name="lprop" select="$skos:SEQUENCE/x:class[contains($types, @uri)]/x:lprop/@uri"/>
 
     <xsl:variable name="type-curie">
       <xsl:call-template name="rdfa:make-curie-list">
@@ -1855,7 +1936,6 @@
   </xsl:if>
 </xsl:template>
 
-<xsl:variable name="skos:SEQUENCE" select="document('')/xsl:stylesheet/x:sequence"/>
 
 <xsl:template name="skos:get-class-label">
   <xsl:param name="class">
@@ -1992,6 +2072,7 @@
 
 <x:doc>
   <h2>DATA</h2>
+  <p>Yes I know this could probably be represented as RDF/XML but it's much less of a hassle for now to have it in an intermediate representation. We can dream though.</p>
 </x:doc>
 
 <x:lprops>
@@ -2036,6 +2117,30 @@
   <x:pair a="http://www.w3.org/ns/org#hasMember" b="http://www.w3.org/ns/org#memberOf"/>
   <x:pair a="http://www.w3.org/ns/org#hasSubOrganization" b="http://www.w3.org/ns/org#subOrganizatonOf"/>
   <x:pair a="http://www.w3.org/ns/org#hasUnit" b="http://www.w3.org/ns/org#unitOf"/>
+  <!-- rel -->
+  <x:pair a="http://purl.org/vocab/relationship/acquaintanceOf" b="http://purl.org/vocab/relationship/acquaintanceOf"/>
+  <x:pair a="http://purl.org/vocab/relationship/ancestorOf" b="http://purl.org/vocab/relationship/descendantOf"/>
+  <x:pair a="http://purl.org/vocab/relationship/apprenticeTo" b="http://purl.org/vocab/relationship/mentorOf"/>
+  <x:pair a="http://purl.org/vocab/relationship/childOf" b="http://purl.org/vocab/relationship/parentOf"/>
+  <x:pair a="http://purl.org/vocab/relationship/closeFriendOf" b="http://purl.org/vocab/relationship/closeFriendOf"/>
+  <x:pair a="http://purl.org/vocab/relationship/collaboratesWith" b="http://purl.org/vocab/relationship/collaboratesWith"/>
+  <x:pair a="http://purl.org/vocab/relationship/colleagueOf" b="http://purl.org/vocab/relationship/colleagueOf"/>
+  <!-- descendant of -->
+  <x:pair a="http://purl.org/vocab/relationship/employedBy" b="http://purl.org/vocab/relationship/employerOf"/>
+  <x:pair a="http://purl.org/vocab/relationship/engagedTo" b="http://purl.org/vocab/relationship/engagedTo"/>
+  <x:pair a="http://purl.org/vocab/relationship/friendOf" b="http://purl.org/vocab/relationship/friendOf"/>
+  <x:pair a="http://purl.org/vocab/relationship/grandchildOf" b="http://purl.org/vocab/relationship/grandparentOf"/>
+  <!-- grandparent of -->
+  <x:pair a="http://purl.org/vocab/relationship/hasMet" b="http://purl.org/vocab/relationship/hasMet"/>
+  <x:pair a="http://purl.org/vocab/relationship/lifePartnerOf" b="http://purl.org/vocab/relationship/lifePartnerOf"/>
+  <x:pair a="http://purl.org/vocab/relationship/livesWith" b="http://purl.org/vocab/relationship/livesWith"/>
+  <x:pair a="http://purl.org/vocab/relationship/lostContactWith" b="http://purl.org/vocab/relationship/lostContactWith"/>
+  <!-- mentor of -->
+  <x:pair a="http://purl.org/vocab/relationship/neighborOf" b="http://purl.org/vocab/relationship/neighborOf"/>
+  <!-- parent of -->
+  <x:pair a="http://purl.org/vocab/relationship/siblingOf" b="http://purl.org/vocab/relationship/siblingOf"/>
+  <x:pair a="http://purl.org/vocab/relationship/spouseOf" b="http://purl.org/vocab/relationship/spouseOf"/>
+  <x:pair a="http://purl.org/vocab/relationship/worksWith" b="http://purl.org/vocab/relationship/worksWith"/>
 </x:inverses>
 
 <!-- XXX i feel like some of this could be SHACL and the rest of it could be the ontologies themselves -->
@@ -2470,6 +2575,23 @@
     </x:prop>
   </x:class>
   <!-- foaf/org -->
+  <x:class uri="http://xmlns.com/foaf/0.1/Agent" icon="&#xf256;">
+    <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
+    <x:label>Agent</x:label>
+    <x:prop uri="http://www.w3.org/ns/org#headOf">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Head Of</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#memberOf">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:label>Member Of</x:label>
+    </x:prop>
+  </x:class>
   <x:class uri="http://xmlns.com/foaf/0.1/Person" icon="&#xf007;">
     <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
     <x:label>Person</x:label>
@@ -2477,19 +2599,22 @@
       <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
       <x:label>Knows</x:label>
     </x:prop>
-    <x:prop uri="http://www.w3.org/ns/org#memberOf">
-      <x:range uri="http://www.w3.org/ns/org#Organization"/>
-      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
-      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
-      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
-      <x:label>In Organization</x:label>
-    </x:prop>
     <x:prop uri="http://www.w3.org/ns/org#headOf">
       <x:range uri="http://www.w3.org/ns/org#Organization"/>
       <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
       <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
       <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
       <x:label>Head Of</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#memberOf">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:label>Member Of</x:label>
+    </x:prop>
+    <x:prop rev="http://www.w3.org/ns/org#reportsTo">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Has Reports</x:label>
     </x:prop>
     <x:prop uri="http://www.w3.org/ns/org#reportsTo">
       <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
@@ -2507,6 +2632,10 @@
   <x:class uri="http://www.w3.org/ns/org#Organization" icon="&#xf1ad;">
     <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
     <x:label>Organization</x:label>
+    <x:prop rev="http://www.w3.org/ns/org#headOf">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Has Head</x:label>
+    </x:prop>
     <x:prop uri="http://www.w3.org/ns/org#hasMember">
       <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
       <x:label>Has Member</x:label>
@@ -2518,14 +2647,29 @@
       <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
       <x:label>Has Sub-Organization</x:label>
     </x:prop>
-    <x:prop uri="http://www.w3.org/ns/org#hasUnit">
+    <x:prop uri="http://www.w3.org/ns/org#subOrganizationOf">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
       <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
-      <x:label>Has Unit</x:label>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Sub-Organization Of</x:label>
+    </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#linkedTo">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Linked To</x:label>
     </x:prop>
   </x:class>
-  <x:class uri="http://www.w3.org/ns/org#FormalOrganization" icon="&#xed45;">
+  <!--<x:class uri="http://www.w3.org/ns/org#FormalOrganization" icon="&#xe4d5;">-->N
+  <x:class uri="http://www.w3.org/ns/org#FormalOrganization" icon="&#xe4d2;">
     <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
     <x:label>Formal Organization</x:label>
+    <x:prop rev="http://www.w3.org/ns/org#headOf">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Has Head</x:label>
+    </x:prop>
     <x:prop uri="http://www.w3.org/ns/org#hasMember">
       <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
       <x:label>Has Member</x:label>
@@ -2548,10 +2692,21 @@
       <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
       <x:label>Has Unit</x:label>
     </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#linkedTo">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Linked To</x:label>
+    </x:prop>
   </x:class>
   <x:class uri="http://www.w3.org/ns/org#OrganizationalUnit" icon="&#xe594;">
     <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
     <x:label>Organizational Unit</x:label>
+    <x:prop rev="http://www.w3.org/ns/org#headOf">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Has Head</x:label>
+    </x:prop>
     <x:prop uri="http://www.w3.org/ns/org#hasMember">
       <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
       <x:label>Has Member</x:label>
@@ -2581,10 +2736,21 @@
       <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
       <x:label>Unit Of</x:label>
     </x:prop>
+    <x:prop uri="http://www.w3.org/ns/org#linkedTo">
+      <x:range uri="http://www.w3.org/ns/org#Organization"/>
+      <x:range uri="http://www.w3.org/ns/org#FormalOrganization"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalUnit"/>
+      <x:range uri="http://www.w3.org/ns/org#OrganizationalCollaboration"/>
+      <x:label>Linked To</x:label>
+    </x:prop>
   </x:class>
   <x:class uri="http://www.w3.org/ns/org#OrganizationalCollaboration" icon="&#xf2b5;">
     <x:lprop uri="http://xmlns.com/foaf/0.1/name"/>
     <x:label>Organizational Collaboration</x:label>
+    <x:prop rev="http://www.w3.org/ns/org#headOf">
+      <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
+      <x:label>Has Head</x:label>
+    </x:prop>
     <x:prop uri="http://www.w3.org/ns/org#hasMember">
       <x:range uri="http://xmlns.com/foaf/0.1/Person"/>
       <x:label>Has Member</x:label>

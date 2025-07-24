@@ -19,7 +19,7 @@ TARGET = target
 
 XSLT_ASSETS = transclude.xsl rdfa.xsl ibis.xsl
 # SCSS_ASSETS = ibis.scss
-JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js utilities.js markup-mixup.js  sense-atlas.js cgto/scripts.js
+JS_ASSETS   = complex.js d3.js rdf.js rdf-viz.js force-directed.js hierarchical.js utilities.js markup-mixup.js  sense-atlas.js cgto/scripts.js foaf/scripts.js
 
 GITHUB = https://raw.githubusercontent.com/doriantaylor
 LOCAL  = $(HOME)/clients/me
@@ -205,6 +205,9 @@ $(TARGET)/asset/sense-atlas.js : $(TARGET)/asset
 	$(RSYNC) $(subst $(TARGET),$(SOURCE),$@) $(dir $@)
 
 $(TARGET)/asset/cgto/scripts.js : $(TARGET)/asset/cgto
+	$(RSYNC) $(subst $(TARGET),$(SOURCE),$@) $(dir $@)
+
+$(TARGET)/asset/foaf/scripts.js : $(TARGET)/asset/foaf
 	$(RSYNC) $(subst $(TARGET),$(SOURCE),$@) $(dir $@)
 
 $(TARGET)/asset/markup-mixup.js : $(TARGET)/asset

@@ -23,4 +23,41 @@
   indent="yes" omit-xml-declaration="no"
   encoding="utf-8" doctype-public=""/>
 
+<xsl:template name="foaf:relationships">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+  <xsl:param name="subject">
+    <xsl:message terminate="yes">`subject` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="type">
+    <xsl:message terminate="yes">`type` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="user">
+    <xsl:message terminate="yes">`user` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="collections">
+    <xsl:message terminate="yes">`collections` parameter required</xsl:message>
+  </xsl:param>
+  <!-- relationships with people -->
+  <xsl:call-template name="foaf:rel-subset">
+    <xsl:with-param name="subject" select="$subject"/>
+    <xsl:with-param name="type" select="$type"/>
+    <xsl:with-param name="subset">personal</xsl:with-param>
+    <xsl:with-param name="user" select="$user"/>
+    <xsl:with-param name="collections" select="$collections"/>
+  </xsl:call-template>
+
+  <!-- relationships with organizations -->
+  <xsl:call-template name="foaf:rel-subset">
+    <xsl:with-param name="subject" select="$subject"/>
+    <xsl:with-param name="type" select="$type"/>
+    <xsl:with-param name="subset">professional</xsl:with-param>
+    <xsl:with-param name="user" select="$user"/>
+    <xsl:with-param name="collections" select="$collections"/>
+  </xsl:call-template>
+</xsl:template>
+
 </xsl:stylesheet>

@@ -146,7 +146,7 @@ export default class RDFViz {
         this.a = ns.rdf('type');
 
         this.validTypes = [].concat(
-            this.constructor.validTypes, rdfParams.validTypes || []).map(
+            rdfParams.validTypes || this.constructor.validTypes).map(
                 x => ns.expand(x)).reduce((o, x) => {
                     x = ns.expand(x);
                     if (!(o.some(y => x.equals(y)))) o.push(x);
@@ -192,10 +192,9 @@ export default class RDFViz {
         if (window) {
             // XXX this is dumb but due to https://bugzilla.mozilla.org/show_bug.cgi?id=325891
 	    // console.log('wat', this);
-	    const fetcher = new RDF.Fetcher(this.graph);
 	    const me = this;
 
-	    fetcher.load(url, {
+	    this.graph.fetcher.load(url, {
 		// this overrides the actual <base href="">
 		// baseURI: window.location.href,
 		noRDFa: false }).then(() => {

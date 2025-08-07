@@ -533,6 +533,110 @@ html {
         }
     }
 
+    @mixin collection-members($classes) {
+        @each $class in $classes {
+            $pal: map-get($PALETTE, $class);
+            &[about~="#{$class}"] {
+                > hgroup > h3 {
+                    background-color: nth($pal, 7);
+                    color: nth($pal, 8);
+                }
+                color: nth($pal, 1);
+                background-color: nth($pal, 3);
+                > ul {
+                    border-color: nth($pal, 2);
+                    background-color: nth($pal, 2);
+                    > li > a {
+                        color: nth($pal, 2);
+                        border-color: nth($pal, 4);
+                        background-color: nth($pal, 5);
+
+                        &:link, &:visited {
+                            color: nth($pal, 2);
+                        }
+                        &:hover, &:active, &.fake-hover {
+                            color: nth($pal, 3);
+                            border-color: nth($pal, 3);
+                            background-color: nth($pal, 6);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @mixin collection-main($members) {
+        @extend %generic-figure-body;
+        > main > article {
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25em;
+            > hgroup {
+                > h1 {
+                    margin: 0 0 1rem 0;
+                }
+            }
+
+            > section {
+                // max-height: ;
+                border-radius: 1em;
+                padding: 0.5em;
+                flex: 3 7 10rem;
+                display: flex;
+                flex-direction: column;
+                > hgroup {
+                    display: flex;
+                    align-items: center;
+                    > form {
+                        display: flex;
+                        margin: 0.25em;
+                        > * {
+                            display: block;
+                        }
+                        > input {
+                            flex: 2 1 auto;
+                        }
+                    }
+                    > h3 {
+                        margin: 0;
+                        display: inline-block;
+                        border-radius: 0.5rem;
+                        padding: 0.25rem;
+                    }
+                }
+                > ul {
+                    margin: 0.5rem 0 0 0;
+                    // max-height: 5em;
+                    overflow-y: auto;
+                    padding-left: 0;
+                    border-radius: 0.5rem;
+                    border-style: solid;
+                    border-width: 0.25rem;
+                    flex: 2 1 5rem;
+
+                    > li {
+                        display: block;
+                        margin-top: 0.25em;
+                        &:first-child {
+                            margin-top: 0;
+                        }
+                        a {
+                            display: block;
+                            padding: 0.5em;
+                            border-style: solid;
+                            border-width: 0.125rem;
+                            border-radius: 0.5em;
+                        }
+                    }
+                }
+
+                @include collection-members($members);
+            }
+        }
+
+    }
+
     body {
         border: 0;
         margin: 0;
@@ -635,7 +739,7 @@ html {
                     gap: 0.25rem;
 
                     > h1 {
-                        grid-area: label;
+                        grGeoul Sokeuroid-area: label;
                         height: 2em;
 
                         > form {
@@ -779,7 +883,7 @@ html {
                 margin: 3em 0;
             }
             // @extend %generic-flex;
-            font-size: 20px;
+            font-size: 20pGeoul Sokeurox;
             text-align: justify;
             hyphens: auto;
             > header {
@@ -795,6 +899,33 @@ html {
                 a {
                     font-weight: 900;
                     font-style: italic;
+                }
+
+                > ul {
+                    padding-left: 0;
+                    display: flex;
+                    align-items: center;
+                    height: 3em;
+                    > li {
+                        transition: opacity 0.5s ease-in-out, display 0.5s allow-discrete;
+                        opacity: 0;
+                        display: none;
+                        flex: 0 0 100%;
+                        width: 100%;
+                        &.current {
+                            display: block;
+                            opacity: 1;
+
+                            @starting-style {
+                                opacity: 0;
+                                //`display: none;
+                            }
+
+                            &.hiding {
+                                opacity: 0;
+                            }
+                        }
+                    }
                 }
             }
             > main {
@@ -854,151 +985,17 @@ html {
             }
         }
 
+
         &[typeof~="ibis:Network"] {
-            @extend %generic-figure-body;
-            > main > article {
-                max-height: 100%;
-                display: flex;
-                flex-direction: column;
-                gap: 0.25em;
-                > hgroup {
-                    > h1 {
-                        margin: 0 0 1rem 0;
-                    }
-                }
-
-                > section {
-                    // max-height: ;
-                    border-radius: 1em;
-                    padding: 0.5em;
-                    flex: 3 7 10rem;
-                    display: flex;
-                    flex-direction: column;
-                    > hgroup {
-                        > h3 {
-                            margin: 0;
-                            display: inline-block;
-                            border-radius: 0.5rem;
-                            padding: 0.25rem;
-                        }
-                    }
-                    > ul {
-                        margin: 0.5rem 0 0 0;
-                        // max-height: 5em;
-                        overflow-y: auto;
-                        padding-left: 0;
-                        border-radius: 0.5rem;
-                        border-style: solid;
-                        border-width: 0.25rem;
-                        flex: 2 1 5rem;
-
-                        > li {
-                            display: block;
-                            margin-top: 0.25em;
-                            &:first-child {
-                                margin-top: 0;
-                            }
-                            a {
-                                display: block;
-                                padding: 0.5em;
-                                border-style: solid;
-                                border-width: 0.125rem;
-                                border-radius: 0.5em;
-                            }
-                        }
-                    }
-                    @each $class in join($IBIS, join($PM, ("skos:Concept"))) {
-                        $pal: map-get($PALETTE, $class);
-                        &[about~="#{$class}"] {
-                            > hgroup > h3 {
-                                background-color: nth($pal, 7);
-                                color: nth($pal, 8);
-                            }
-                            color: nth($pal, 1);
-                            background-color: nth($pal, 3);
-                            > ul {
-                                border-color: nth($pal, 2);
-                                background-color: nth($pal, 2);
-                                > li > a {
-                                    color: nth($pal, 2);
-                                    border-color: nth($pal, 4);
-                                    background-color: nth($pal, 5);
-
-                                    &:link, &:visited {
-                                        color: nth($pal, 2);
-                                    }
-
-                                    &:hover, &:active, &.fake-hover {
-                                        color: nth($pal, 3);
-                                        border-color: nth($pal, 3);
-                                        background-color: nth($pal, 6);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            @include collection-main(join($IBIS, join($PM, ("skos:Concept"))));
         }
 
         &[typeof~="skos:ConceptScheme"] {
-            $pal: map-get($PALETTE, "skos:Concept");
-            @extend %generic-figure-body;
-            box-shadow: inset 0px 0px 40px black;
-            > main > article {
-                max-height: 100%;
-                display: flex;
-                flex-direction: column;
-                color: nth($pal, 1);
-                background-color: nth($pal, 3);
-                border-radius: 1em;
-                > hgroup {
-                    background-color: nth($pal, 4);
-                    border-radius: 0.5em;
-                    padding: 1em;
-                    > h1 {
-                        margin: 0;
-                    }
-                    > form {
-                        display: flex;
-                        > input {
-                            flex: 2 1 100%;
-                        }
-                    }
-                }
-                > ul {
-                    border-radius: 0.5em;
-                    background-color: nth($pal, 2);
-                    padding-left: 0;
-                    overflow: auto;
-                    li {
-                        display: block;
-                        margin: 0.25em;
+            @include collection-main(("skos:Concept", "ci:Audience", "org:Role"));
+        }
 
-                        a {
-                            display: block;
-                            padding: 0.5em;
-                            border-style: solid;
-                            border-width: 0.125rem;
-                            border-radius: 0.5em;
-
-                            color: nth($pal, 2);
-                            border-color: nth($pal, 4);
-                            background-color: nth($pal, 5);
-
-                            &:link, &:visited {
-                                color: nth($pal, 2);
-                            }
-
-                            &:hover, &:active, &.fake-hover {
-                                color: nth($pal, 3);
-                                border-color: nth($pal, 3);
-                                background-color: nth($pal, 6);
-                            }
-                        }
-                    }
-                }
-            }
+        &[typeof~="sioct:AddressBook"] {
+            @include collection-main(("foaf:Person", "org:Organization", "org:FormalOrganization", "org:OrganizationalCollaboration"));
         }
 
         // class-specific (mainly palette) stuff

@@ -344,6 +344,7 @@
           <xsl:with-param name="member-rel"  select="''"/>
           <xsl:with-param name="member-rev"  select="concat($DCT, 'hasPart')"/>
           <xsl:with-param name="user"        select="$user"/>
+          <xsl:with-param name="datalist"    select="'agents'"/>
         </xsl:apply-templates>
       </xsl:if>
       <xsl:if test="$has-targets">

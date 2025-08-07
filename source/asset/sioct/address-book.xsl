@@ -5,7 +5,8 @@
 		xmlns:ibis="https://vocab.methodandstructure.com/ibis#"
                 xmlns:skos="http://www.w3.org/2004/02/skos/core#"
 		xmlns:cgto="https://vocab.methodandstructure.com/graph-tool#"
-		xmlns:pm="https://vocab.methodandstructure.com/process-model#"
+                xmlns:foaf="http://xmlns.com/foaf/0.1/"
+                xmlns:org="http://www.w3.org/ns/org#"
                 xmlns:sioc="http://rdfs.org/sioc/ns#"
                 xmlns:sioct="http://rdfs.org/sioc/types#"
 		xmlns:x="urn:x-dummy:"
@@ -22,5 +23,274 @@
   method="xml" media-type="application/xhtml+xml"
   indent="yes" omit-xml-declaration="no"
   encoding="utf-8" doctype-public=""/>
+
+<xsl:variable name="FOAF" select="'http://xmlns.com/foaf/0.1/'"/>
+<xsl:variable name="ORG" select="'http://www.w3.org/ns/org#'"/>
+
+
+<xsl:template match="html:body" mode="rdfa:body-content">
+    <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+  <xsl:param name="main"    select="false()"/>
+  <xsl:param name="heading" select="0"/>
+
+  <xsl:param name="subject">
+    <xsl:apply-templates select="." mode="rdfa:get-subject">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="debug" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:param>
+
+  <xsl:variable name="space">
+    <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="subjects" select="$subject"/>
+      <!-- XXX there is a bug in the prefix resolution somewhere -->
+      <xsl:with-param name="predicates" select="'http://rdfs.org/sioc/ns#has_space ^http://rdfs.org/sioc/ns#space_of'"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="index">
+    <xsl:if test="string-length(normalize-space($space))">
+      <xsl:apply-templates select="." mode="rdfa:object-resources">
+	<xsl:with-param name="subject" select="$space"/>
+	<xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#index'"/>
+	<xsl:with-param name="traverse" select="true()"/>
+      </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="user">
+    <xsl:if test="string-length(normalize-space($index))">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$index"/>
+      <xsl:with-param name="predicate" select="'https://vocab.methodandstructure.com/graph-tool#user'"/>
+      <xsl:with-param name="traverse" select="true()"/>
+    </xsl:apply-templates>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="state">
+    <xsl:if test="string-length(normalize-space($user))">
+      <xsl:variable name="_">
+        <xsl:apply-templates select="." mode="rdfa:object-resources">
+	  <xsl:with-param name="subject" select="$user"/>
+	  <xsl:with-param name="predicate" select="concat($CGTO, 'state')"/>
+	  <xsl:with-param name="traverse" select="true()"/>
+        </xsl:apply-templates>
+        <xsl:text> </xsl:text>
+        <xsl:apply-templates select="." mode="rdfa:subject-resources">
+	  <xsl:with-param name="object" select="$user"/>
+	  <xsl:with-param name="predicate" select="concat($CGTO, 'owner')"/>
+	  <xsl:with-param name="traverse" select="true()"/>
+        </xsl:apply-templates>
+      </xsl:variable>
+      <xsl:call-template name="str:safe-first-token">
+        <xsl:with-param name="tokens">
+          <xsl:call-template name="str:token-intersection">
+            <xsl:with-param name="left">
+              <xsl:apply-templates select="." mode="rdfa:object-resources">
+                <xsl:with-param name="subject" select="$space"/>
+                <xsl:with-param name="predicate" select="concat($SIOC, 'space_of')"/>
+                <xsl:with-param name="traverse" select="true()"/>
+              </xsl:apply-templates>
+            </xsl:with-param>
+            <xsl:with-param name="right" select="$_"/>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:if>
+  </xsl:variable>
+
+  <xsl:variable name="can-write" select="string-length($user)"/>
+
+  <xsl:variable name="adjacents">
+    <xsl:apply-templates select="." mode="rdfa:multi-object-resources">
+      <xsl:with-param name="subjects" select="$subject"/>
+      <xsl:with-param name="predicates" select="'http://purl.org/dc/terms/hasPart ^http://purl.org/dc/terms/isPartOf'"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="people">
+    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
+      <xsl:with-param name="subjects" select="$adjacents"/>
+      <xsl:with-param name="classes" select="concat($FOAF, 'Person')"/>
+      <xsl:with-param name="traverse" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="orgs">
+    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
+      <xsl:with-param name="subjects" select="$adjacents"/>
+      <xsl:with-param name="classes" select="concat($ORG, 'Organization')"/>
+      <xsl:with-param name="traverse" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="formal-orgs">
+    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
+      <xsl:with-param name="subjects" select="$adjacents"/>
+      <xsl:with-param name="classes" select="concat($ORG, 'FormalOrganization')"/>
+      <xsl:with-param name="traverse" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="endeavours">
+    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
+      <xsl:with-param name="subjects" select="$adjacents"/>
+      <xsl:with-param name="classes" select="concat($ORG, 'OrganizationalCollaboration')"/>
+      <xsl:with-param name="traverse" select="false()"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <xsl:variable name="label-raw">
+    <xsl:apply-templates select="." mode="skos:object-form-label">
+      <xsl:with-param name="subject" select="$subject"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+  <xsl:variable name="label-prop" select="substring-before($label-raw, ' ')"/>
+  <xsl:variable name="label-val" select="substring-after($label-raw, ' ')"/>
+  <xsl:variable name="label" select="substring-before($label-val, $rdfa:UNIT-SEP)"/>
+  <xsl:variable name="label-type">
+    <xsl:if test="not(starts-with(substring-after($label-val, $rdfa:UNIT-SEP), '@'))">
+      <xsl:value-of select="substring-after($label-val, $rdfa:UNIT-SEP)"/>
+    </xsl:if>
+  </xsl:variable>
+  <xsl:variable name="label-lang">
+    <xsl:if test="starts-with(substring-after($label-val, $rdfa:UNIT-SEP), '@')">
+      <xsl:value-of select="substring-after($label-val, concat($rdfa:UNIT-SEP, ' '))"/>
+    </xsl:if>
+  </xsl:variable>
+
+  <main>
+    <article>
+      <hgroup>
+        <h1>
+          <xsl:if test="$label-prop">
+            <xsl:attribute name="property">
+	      <xsl:value-of select="$label-prop"/>
+            </xsl:attribute>
+            <xsl:if test="$label-type">
+	      <xsl:attribute name="datatype"><xsl:value-of select="$label-type"/></xsl:attribute>
+            </xsl:if>
+            <xsl:if test="$label-lang">
+	      <xsl:attribute name="xml:lang"><xsl:value-of select="$label-lang"/></xsl:attribute>
+            </xsl:if>
+          </xsl:if>
+          <xsl:value-of select="$label"/>
+        </h1>
+      </hgroup>
+
+      <xsl:if test="$can-write or string-length(normalize-space($people))">
+        <section about="foaf:Person">
+          <hgroup>
+            <h3>People</h3>
+            <xsl:if test="$can-write">
+              <form method="POST" action="" accept-charset="utf-8">
+                <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+                <input type="hidden" name="! dct:hasPart :" value="{$subject}"/>
+                <input type="hidden" name="rdf:type :" value="foaf:Person"/>
+                <input type="text" name="= foaf:name"/>
+                <button class="fa fa-plus"/>
+              </form>
+            </xsl:if>
+          </hgroup>
+
+          <xsl:if test="string-length(normalize-space($people))">
+            <ul>
+              <xsl:call-template name="skos:concept-scheme-list-item">
+                <xsl:with-param name="resources" select="$people"/>
+                <xsl:with-param name="lprop" select="concat($FOAF, 'name')"/>
+              </xsl:call-template>
+            </ul>
+          </xsl:if>
+        </section>
+      </xsl:if>
+
+      <xsl:if test="$can-write or string-length(normalize-space($orgs))">
+        <section about="org:Organization">
+          <hgroup>
+            <h3>Organizations (Plain)</h3>
+            <xsl:if test="$can-write">
+              <form method="POST" action="" accept-charset="utf-8">
+                <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+                <input type="hidden" name="! dct:hasPart :" value="{$subject}"/>
+                <input type="hidden" name="rdf:type :" value="org:Organization"/>
+                <input type="text" name="= foaf:name"/>
+                <button class="fa fa-plus"/>
+              </form>
+            </xsl:if>
+          </hgroup>
+
+          <xsl:if test="string-length(normalize-space($orgs))">
+            <ul>
+              <xsl:call-template name="skos:concept-scheme-list-item">
+                <xsl:with-param name="resources" select="$orgs"/>
+                <xsl:with-param name="lprop" select="concat($FOAF, 'name')"/>
+              </xsl:call-template>
+            </ul>
+          </xsl:if>
+        </section>
+      </xsl:if>
+
+      <xsl:if test="$can-write or string-length(normalize-space($formal-orgs))">
+        <section about="org:Organization">
+          <hgroup>
+            <h3>Formal Organizations</h3>
+            <xsl:if test="$can-write">
+              <form method="POST" action="" accept-charset="utf-8">
+                <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+                <input type="hidden" name="! dct:hasPart :" value="{$subject}"/>
+                <input type="hidden" name="rdf:type :" value="org:FormalOrganization"/>
+                <input type="text" name="= foaf:name"/>
+                <button class="fa fa-plus"/>
+              </form>
+            </xsl:if>
+          </hgroup>
+
+          <xsl:if test="string-length(normalize-space($formal-orgs))">
+            <ul>
+              <xsl:call-template name="skos:concept-scheme-list-item">
+                <xsl:with-param name="resources" select="$formal-orgs"/>
+                <xsl:with-param name="lprop" select="concat($FOAF, 'name')"/>
+              </xsl:call-template>
+            </ul>
+          </xsl:if>
+        </section>
+      </xsl:if>
+
+      <xsl:if test="$can-write or string-length(normalize-space($endeavours))">
+        <section about="org:OrganizationalCollaboration">
+          <hgroup>
+            <h3>Endeavours/Partnerships</h3>
+            <xsl:if test="$can-write">
+              <form method="POST" action="" accept-charset="utf-8">
+                <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+                <input type="hidden" name="! dct:hasPart :" value="{$subject}"/>
+                <input type="hidden" name="rdf:type :" value="org:OrganizationalCollaboration"/>
+                <input type="text" name="= foaf:name"/>
+                <button class="fa fa-plus"/>
+              </form>
+            </xsl:if>
+          </hgroup>
+
+          <xsl:if test="string-length(normalize-space($endeavours))">
+            <ul>
+              <xsl:call-template name="skos:concept-scheme-list-item">
+                <xsl:with-param name="resources" select="$endeavours"/>
+                <xsl:with-param name="lprop" select="concat($FOAF, 'name')"/>
+              </xsl:call-template>
+            </ul>
+          </xsl:if>
+        </section>
+      </xsl:if>
+
+    </article>
+    <figure id="force" class="aside"/>
+  </main>
+
+</xsl:template>
+
 
 </xsl:stylesheet>

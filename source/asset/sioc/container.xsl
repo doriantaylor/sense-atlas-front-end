@@ -16,7 +16,7 @@
 		xmlns="http://www.w3.org/1999/xhtml"
 		exclude-result-prefixes="html str uri rdfa xc x">
 
-<xsl:import href="/asset/cgto/space"/>
+<xsl:import href="/asset/skos/concept-scheme"/>
 
 <xsl:output
   method="xml" media-type="application/xhtml+xml"

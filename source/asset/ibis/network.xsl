@@ -220,29 +220,10 @@
         </h1>
       </hgroup>
 
-      <xsl:if test="false()">
-        <form method="POST" action="" accept-charset="utf-8">
-          <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-          <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
-	  <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
-	  <input type="hidden" name="dct:creator :" value="{$user}"/>
-          <select name="= rdf:type :">
-            <option value="ibis:Issue">Issue</option>
-            <option value="ibis:Position">Position</option>
-            <option value="ibis:Argument">Argument</option>
-            <option value="pm:Goal">Goal</option>
-            <option value="pm:Task">Task</option>
-            <option value="pm:Target">Target</option>
-          </select>
-          <input type="text" name="= rdf:value"/>
-          <button class="fa fa-plus"/>
-        </form>
-      </xsl:if>
       <xsl:if test="$can-write or string-length(normalize-space($issues))">
         <section about="ibis:Issue">
           <hgroup>
             <h3>Issues</h3>
-          </hgroup>
           <xsl:if test="$can-write">
             <form method="POST" action="" accept-charset="utf-8">
               <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
@@ -254,6 +235,7 @@
               <button class="fa fa-plus"/>
             </form>
           </xsl:if>
+          </hgroup>
 
           <xsl:if test="string-length(normalize-space($issues))">
           <ul>
@@ -269,7 +251,6 @@
         <section about="ibis:Position">
           <hgroup>
             <h3>Positions</h3>
-          </hgroup>
           <xsl:if test="$can-write">
             <form method="POST" action="" accept-charset="utf-8">
               <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
@@ -281,6 +262,7 @@
               <button class="fa fa-plus"/>
             </form>
           </xsl:if>
+          </hgroup>
 
           <xsl:if test="string-length(normalize-space($positions))">
           <ul>
@@ -296,7 +278,6 @@
         <section about="ibis:Argument">
           <hgroup>
             <h3>Arguments</h3>
-          </hgroup>
           <xsl:if test="$can-write">
             <form method="POST" action="" accept-charset="utf-8">
               <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
@@ -308,6 +289,7 @@
               <button class="fa fa-plus"/>
             </form>
           </xsl:if>
+          </hgroup>
 
           <xsl:if test="string-length(normalize-space($arguments))">
           <ul>
@@ -323,7 +305,6 @@
         <section about="pm:Goal">
           <hgroup>
             <h3>Goals</h3>
-          </hgroup>
           <xsl:if test="$can-write">
             <form method="POST" action="" accept-charset="utf-8">
               <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
@@ -335,6 +316,7 @@
               <button class="fa fa-plus"/>
             </form>
           </xsl:if>
+          </hgroup>
 
           <xsl:if test="string-length(normalize-space($goals))">
             <ul>
@@ -350,7 +332,6 @@
         <section about="pm:Task">
           <hgroup>
             <h3>Tasks</h3>
-          </hgroup>
           <xsl:if test="$can-write">
             <form method="POST" action="" accept-charset="utf-8">
               <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
@@ -362,6 +343,7 @@
               <button class="fa fa-plus"/>
             </form>
           </xsl:if>
+          </hgroup>
 
           <xsl:if test="string-length(normalize-space($tasks))">
           <ul>
@@ -377,7 +359,6 @@
         <section about="pm:Target">
           <hgroup>
             <h3>Targets</h3>
-          </hgroup>
           <xsl:if test="$can-write">
             <form method="POST" action="" accept-charset="utf-8">
               <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
@@ -389,6 +370,7 @@
               <button class="fa fa-plus"/>
             </form>
           </xsl:if>
+          </hgroup>
 
           <xsl:if test="string-length(normalize-space($targets))">
           <ul>
@@ -404,7 +386,6 @@
         <section about="skos:Concept">
           <hgroup>
             <h3>Concepts</h3>
-          </hgroup>
         <xsl:if test="$can-write">
         <form method="POST" action="" accept-charset="utf-8">
           <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
@@ -416,7 +397,9 @@
           <button class="fa fa-plus"/>
         </form>
         </xsl:if>
-        <xsl:if test="string-length(normalize-space($concepts))">
+          </hgroup>
+
+          <xsl:if test="string-length(normalize-space($concepts))">
           <ul>
             <xsl:call-template name="skos:concept-scheme-list-item">
               <xsl:with-param name="resources" select="$concepts"/>

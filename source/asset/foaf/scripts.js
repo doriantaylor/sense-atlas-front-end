@@ -2,7 +2,7 @@ document.addEventListener('can-load-graph', function () {
     // console.log('zap lol');
     const g = this.graph;
 
-    const { rdf: rdfv, dct, foaf, org } = this.graph.namespaces;
+    const { rdf: rdfv, dct, foaf, org, sioc, cgto } = this.graph.namespaces;
 
     const foafTypes = ['Agent', 'Person', 'Organization'].map(t => foaf(t));
     const orgTypes  = ['Organization', 'FormalOrganization',
@@ -34,5 +34,10 @@ document.addEventListener('can-load-graph', function () {
     if (document.getElementById('force'))
         this.dataviz.installFetchOnLoad(collections, '#force', postamble);
     else console.log("wah wah link not found");
+
+    dataviz.loadDataList(me, [
+        { fwd: dct('isPartOf'), rev: dct('hasPart') },
+        { fwd: sioc('has_space'), rev: sioc('space_of') },
+        cgto('index'), cgto('by-class'), ], 'agents', foaf('Agent'), true);
 });
 

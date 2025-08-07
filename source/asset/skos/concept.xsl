@@ -96,6 +96,8 @@
     </xsl:if>
   </xsl:variable>
 
+  <xsl:message>rdfa:body-content schemes: <xsl:value-of select="$schemes"/> space: <xsl:value-of select="$space"/></xsl:message>
+
   <!--
       Given that we potentially have more than one concept scheme, we
       necessarily have to account for more than one space. Here we can
@@ -870,6 +872,7 @@
   <xsl:param name="user">
     <xsl:message terminate="yes">`user` parameter required</xsl:message>
   </xsl:param>
+  <xsl:param name="datalist" select="'big-friggin-list'"/>
   <!--<xsl:param name="focus">
     <xsl:message terminate="yes">`focus` parameter required</xsl:message>
   </xsl:param>-->
@@ -1010,7 +1013,7 @@
     <input class="existing" disabled="disabled" type="hidden" name="$ neighbour" value=""/>
     <input class="existing" disabled="disabled" type="hidden" name="{$rel-curie} : $" value="$neighbour"/>
     <!-- fucking safari and its tabindex -->
-    <input tabindex="{count(x:range)}" type="text" name="$ label" list="big-friggin-list" autocomplete="off"/>
+    <input tabindex="{count(x:range)}" type="text" name="$ label" list="{$datalist}" autocomplete="off"/>
     <!-- this is down here now because the javascript i wrote is goofed -->
     <!--<input class="existing" disabled="disabled" type="hidden" name="! skos:inScheme {$focus} : $" value="$SUBJECT"/>-->
     <xsl:call-template name="skos:hidden-fields">
@@ -1254,6 +1257,7 @@
     </xsl:apply-templates>
   </xsl:param>
 
+
   <xsl:param name="index">
     <xsl:if test="string-length(normalize-space($space))">
       <xsl:apply-templates select="." mode="rdfa:object-resources">
@@ -1324,6 +1328,8 @@
       </xsl:apply-templates>
     </xsl:if>
   </xsl:param>
+
+  <xsl:message>skos:footer schemes: <xsl:value-of select="$schemes"/> space: <xsl:value-of select="$space"/></xsl:message>
 
   <xsl:variable name="space-label-raw">
     <xsl:apply-templates select="document($space)/*" mode="rdfa:object-literal-quick">

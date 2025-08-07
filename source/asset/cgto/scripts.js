@@ -193,3 +193,66 @@ document.addEventListener('can-load-graph', function () {
         ], id, type, inferred));
     });
 });
+
+// all this is for the text carousel on the homepage
+
+function randomElem (list) {
+    list = Array.from(list);
+    const i = Math.floor(Math.random() * list.length);
+    return list[i];
+}
+
+function transit (event) {
+    if (event.propertyName != 'opacity') return;
+
+    const cl = this.classList;
+
+    if (cl.contains('hiding')) {
+        console.debug('done with this…');
+        cl.remove('hiding');
+        cl.remove('current');
+        cl.add('seen');
+        // delay for chrome
+        const wtf = () => this.parentNode.showRandomItem();
+        window.setTimeout(wtf, 100);
+        // this.parentNode.showRandomItem();
+    }
+    else if (cl.contains('current')) {
+        window.setTimeout(() => {
+            console.debug('toggling off current…');
+            cl.add('hiding');
+        }, 5000);
+    }
+    else {
+        // ??
+    }
+}
+
+function showRandomItem () {
+    console.log('picking a random list item…');
+    let items = Array.from(this.children);
+
+    let using = items.filter(item => !item.classList.contains('seen'));
+
+    if (using.length == 0) {
+        items.forEach(item => item.classList.remove('seen'));
+        using = items;
+    }
+
+    const li = using[Math.floor(Math.random() * using.length)];
+
+    li.classList.add('current');
+}
+
+window.addEventListener('load', () => {
+    const ul = document.querySelector('ul.text-carousel');
+
+    if (ul) {
+        ul.showRandomItem = showRandomItem;
+
+        Array.from(ul.children).forEach((li) => {
+            li.addEventListener('transitionend', transit);
+        });
+        ul.showRandomItem();
+    }
+});

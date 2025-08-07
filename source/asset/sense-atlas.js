@@ -159,10 +159,12 @@ window.addEventListener('load', function () {
 
         if (list) {
             Array.from(list.querySelectorAll('option')).forEach(o => {
-                const type = o.getAttribute('typeof');
+                const types = (o.getAttribute('typeof') || '').trim().split(/\s+/);
 
-                if (type !== input.value) o.disabled = true;
-                else o.disabled = false;
+                // console.debug(input.value, types);
+
+                if (types.includes(input.value)) o.disabled = false;
+                else o.disabled = true;
             });
         }
     };

@@ -294,6 +294,9 @@
   </xsl:variable>
 
   <xsl:if test="$first">
+    <xsl:if test="$debug">
+      <xsl:message>rdfa:multi-object-resources testing predicate <xsl:value-of select="$first"/></xsl:message>
+    </xsl:if>
     <xsl:variable name="_">
       <xsl:choose>
 	<xsl:when test="starts-with($first, '^')">
@@ -339,6 +342,10 @@
       </xsl:apply-templates>
     </xsl:if>
     </xsl:variable>
+
+    <xsl:if test="$debug">
+      <xsl:message>rdfa:multi-object-resources raw output: <xsl:value-of select="$_"/></xsl:message>
+    </xsl:if>
 
     <xsl:call-template name="str:unique-tokens">
       <xsl:with-param name="string" select="$_"/>

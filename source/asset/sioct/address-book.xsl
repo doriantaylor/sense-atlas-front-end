@@ -25,11 +25,20 @@
   encoding="utf-8" doctype-public=""/>
 
 <xsl:variable name="FOAF" select="'http://xmlns.com/foaf/0.1/'"/>
-<xsl:variable name="ORG" select="'http://www.w3.org/ns/org#'"/>
+<xsl:variable name="ORG"  select="'http://www.w3.org/ns/org#'"/>
 
+
+<xsl:template match="html:head" mode="rdfa:head-extra-extra">
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="resource-path" select="$base"/>
+  <xsl:param name="rewrite" select="''"/>
+
+  <script type="text/javascript" src="/asset/foaf/scripts"></script>
+
+</xsl:template>
 
 <xsl:template match="html:body" mode="rdfa:body-content">
-    <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
+  <xsl:param name="base" select="normalize-space((ancestor-or-self::html:html[html:head/html:base[@href]][1]/html:head/html:base[@href])[1]/@href)"/>
   <xsl:param name="resource-path" select="$base"/>
   <xsl:param name="rewrite" select="''"/>
   <xsl:param name="main"    select="false()"/>
@@ -112,38 +121,6 @@
     </xsl:apply-templates>
   </xsl:variable>
 
-  <xsl:variable name="people">
-    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
-      <xsl:with-param name="subjects" select="$adjacents"/>
-      <xsl:with-param name="classes" select="concat($FOAF, 'Person')"/>
-      <xsl:with-param name="traverse" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <xsl:variable name="orgs">
-    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
-      <xsl:with-param name="subjects" select="$adjacents"/>
-      <xsl:with-param name="classes" select="concat($ORG, 'Organization')"/>
-      <xsl:with-param name="traverse" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <xsl:variable name="formal-orgs">
-    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
-      <xsl:with-param name="subjects" select="$adjacents"/>
-      <xsl:with-param name="classes" select="concat($ORG, 'FormalOrganization')"/>
-      <xsl:with-param name="traverse" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <xsl:variable name="endeavours">
-    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
-      <xsl:with-param name="subjects" select="$adjacents"/>
-      <xsl:with-param name="classes" select="concat($ORG, 'OrganizationalCollaboration')"/>
-      <xsl:with-param name="traverse" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
   <xsl:variable name="label-raw">
     <xsl:apply-templates select="." mode="skos:object-form-label">
       <xsl:with-param name="subject" select="$subject"/>
@@ -182,109 +159,57 @@
         </h1>
       </hgroup>
 
-      <xsl:if test="$can-write or string-length(normalize-space($people))">
-        <section about="foaf:Person">
-          <hgroup>
-            <h3>People</h3>
-            <xsl:if test="$can-write">
-              <form method="POST" action="" accept-charset="utf-8">
-                <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-                <input type="hidden" name="! dct:hasPart :" value="{$subject}"/>
-                <input type="hidden" name="rdf:type :" value="foaf:Person"/>
-                <input type="text" name="= foaf:name"/>
-                <button class="fa fa-plus"/>
-              </form>
-            </xsl:if>
-          </hgroup>
+      <xsl:call-template name="skos:concept-scheme-section">
+        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="adjacents" select="$adjacents"/>
+        <xsl:with-param name="type" select="'foaf:Person'"/>
+        <xsl:with-param name="member-prop" select="'^dct:hasPart'"/>
+        <xsl:with-param name="label-prop" select="'foaf:name'"/>
+        <xsl:with-param name="add-created" select="false()"/>
+        <xsl:with-param name="add-creator" select="false()"/>
+        <xsl:with-param name="sec-label">People</xsl:with-param>
+        <xsl:with-param name="can-write" select="$can-write"/>
+        <xsl:with-param name="placeholder">Add new person&#x2026;</xsl:with-param>
+      </xsl:call-template>
 
-          <xsl:if test="string-length(normalize-space($people))">
-            <ul>
-              <xsl:call-template name="skos:concept-scheme-list-item">
-                <xsl:with-param name="resources" select="$people"/>
-                <xsl:with-param name="lprop" select="concat($FOAF, 'name')"/>
-              </xsl:call-template>
-            </ul>
-          </xsl:if>
-        </section>
-      </xsl:if>
+      <xsl:call-template name="skos:concept-scheme-section">
+        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="adjacents" select="$adjacents"/>
+        <xsl:with-param name="type" select="'org:FormalOrganization'"/>
+        <xsl:with-param name="member-prop" select="'^dct:hasPart'"/>
+        <xsl:with-param name="label-prop" select="'foaf:name'"/>
+        <xsl:with-param name="add-created" select="false()"/>
+        <xsl:with-param name="add-creator" select="false()"/>
+        <xsl:with-param name="sec-label">Legal Business Entities</xsl:with-param>
+        <xsl:with-param name="can-write" select="$can-write"/>
+        <xsl:with-param name="placeholder">Add new business entity&#x2026;</xsl:with-param>
+      </xsl:call-template>
 
-      <xsl:if test="$can-write or string-length(normalize-space($orgs))">
-        <section about="org:Organization">
-          <hgroup>
-            <h3>Organizations (Plain)</h3>
-            <xsl:if test="$can-write">
-              <form method="POST" action="" accept-charset="utf-8">
-                <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-                <input type="hidden" name="! dct:hasPart :" value="{$subject}"/>
-                <input type="hidden" name="rdf:type :" value="org:Organization"/>
-                <input type="text" name="= foaf:name"/>
-                <button class="fa fa-plus"/>
-              </form>
-            </xsl:if>
-          </hgroup>
+      <xsl:call-template name="skos:concept-scheme-section">
+        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="adjacents" select="$adjacents"/>
+        <xsl:with-param name="type" select="'org:Organization'"/>
+        <xsl:with-param name="member-prop" select="'^dct:hasPart'"/>
+        <xsl:with-param name="label-prop" select="'foaf:name'"/>
+        <xsl:with-param name="add-created" select="false()"/>
+        <xsl:with-param name="add-creator" select="false()"/>
+        <xsl:with-param name="sec-label">Informal Organizations</xsl:with-param>
+        <xsl:with-param name="can-write" select="$can-write"/>
+        <xsl:with-param name="placeholder">Add new organization&#x2026;</xsl:with-param>
+      </xsl:call-template>
 
-          <xsl:if test="string-length(normalize-space($orgs))">
-            <ul>
-              <xsl:call-template name="skos:concept-scheme-list-item">
-                <xsl:with-param name="resources" select="$orgs"/>
-                <xsl:with-param name="lprop" select="concat($FOAF, 'name')"/>
-              </xsl:call-template>
-            </ul>
-          </xsl:if>
-        </section>
-      </xsl:if>
-
-      <xsl:if test="$can-write or string-length(normalize-space($formal-orgs))">
-        <section about="org:Organization">
-          <hgroup>
-            <h3>Formal Organizations</h3>
-            <xsl:if test="$can-write">
-              <form method="POST" action="" accept-charset="utf-8">
-                <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-                <input type="hidden" name="! dct:hasPart :" value="{$subject}"/>
-                <input type="hidden" name="rdf:type :" value="org:FormalOrganization"/>
-                <input type="text" name="= foaf:name"/>
-                <button class="fa fa-plus"/>
-              </form>
-            </xsl:if>
-          </hgroup>
-
-          <xsl:if test="string-length(normalize-space($formal-orgs))">
-            <ul>
-              <xsl:call-template name="skos:concept-scheme-list-item">
-                <xsl:with-param name="resources" select="$formal-orgs"/>
-                <xsl:with-param name="lprop" select="concat($FOAF, 'name')"/>
-              </xsl:call-template>
-            </ul>
-          </xsl:if>
-        </section>
-      </xsl:if>
-
-      <xsl:if test="$can-write or string-length(normalize-space($endeavours))">
-        <section about="org:OrganizationalCollaboration">
-          <hgroup>
-            <h3>Endeavours/Partnerships</h3>
-            <xsl:if test="$can-write">
-              <form method="POST" action="" accept-charset="utf-8">
-                <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-                <input type="hidden" name="! dct:hasPart :" value="{$subject}"/>
-                <input type="hidden" name="rdf:type :" value="org:OrganizationalCollaboration"/>
-                <input type="text" name="= foaf:name"/>
-                <button class="fa fa-plus"/>
-              </form>
-            </xsl:if>
-          </hgroup>
-
-          <xsl:if test="string-length(normalize-space($endeavours))">
-            <ul>
-              <xsl:call-template name="skos:concept-scheme-list-item">
-                <xsl:with-param name="resources" select="$endeavours"/>
-                <xsl:with-param name="lprop" select="concat($FOAF, 'name')"/>
-              </xsl:call-template>
-            </ul>
-          </xsl:if>
-        </section>
-      </xsl:if>
+      <xsl:call-template name="skos:concept-scheme-section">
+        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="adjacents" select="$adjacents"/>
+        <xsl:with-param name="type" select="'org:OrganizationalCollaboration'"/>
+        <xsl:with-param name="member-prop" select="'^dct:hasPart'"/>
+        <xsl:with-param name="label-prop" select="'foaf:name'"/>
+        <xsl:with-param name="add-created" select="false()"/>
+        <xsl:with-param name="add-creator" select="false()"/>
+        <xsl:with-param name="sec-label">Endeavours</xsl:with-param>
+        <xsl:with-param name="can-write" select="$can-write"/>
+        <xsl:with-param name="placeholder">Add new endeavour&#x2026;</xsl:with-param>
+      </xsl:call-template>
 
     </article>
     <figure id="force" class="aside"/>

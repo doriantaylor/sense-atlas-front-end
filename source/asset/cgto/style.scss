@@ -739,7 +739,7 @@ html {
                     gap: 0.25rem;
 
                     > h1 {
-                        grGeoul Sokeuroid-area: label;
+                        grid-area: label;
                         height: 2em;
 
                         > form {
@@ -883,7 +883,7 @@ html {
                 margin: 3em 0;
             }
             // @extend %generic-flex;
-            font-size: 20pGeoul Sokeurox;
+            font-size: 20px;
             text-align: justify;
             hyphens: auto;
             > header {
@@ -987,11 +987,11 @@ html {
 
 
         &[typeof~="ibis:Network"] {
-            @include collection-main(join($IBIS, join($PM, ("skos:Concept"))));
+            @include collection-main(join($IBIS, join($PM, $SKOS)));
         }
 
         &[typeof~="skos:ConceptScheme"] {
-            @include collection-main(("skos:Concept", "ci:Audience", "org:Role"));
+            @include collection-main($SKOS);
         }
 
         &[typeof~="sioct:AddressBook"] {

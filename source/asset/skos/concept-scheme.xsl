@@ -82,30 +82,6 @@
     </xsl:apply-templates>
   </xsl:variable>
 
-  <xsl:variable name="concepts">
-    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
-      <xsl:with-param name="subjects" select="$adjacents"/>
-      <xsl:with-param name="classes" select="concat($SKOS, 'Concept')"/>
-      <xsl:with-param name="traverse" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <xsl:variable name="audiences">
-    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
-      <xsl:with-param name="subjects" select="$adjacents"/>
-      <xsl:with-param name="classes" select="concat($CI, 'Audience')"/>
-      <xsl:with-param name="traverse" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
-  <xsl:variable name="roles">
-    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
-      <xsl:with-param name="subjects" select="$adjacents"/>
-      <xsl:with-param name="classes" select="concat($ORG, 'Role')"/>
-      <xsl:with-param name="traverse" select="false()"/>
-    </xsl:apply-templates>
-  </xsl:variable>
-
   <xsl:variable name="label-raw">
     <xsl:apply-templates select="." mode="skos:object-form-label">
       <xsl:with-param name="subject" select="$subject"/>
@@ -146,83 +122,35 @@
         </xsl:if>
       </hgroup>
 
-      <xsl:if test="$can-write or string-length($concepts)">
-        <section about="skos:Concept">
-          <hgroup>
-            <h3>Concepts</h3>
-            <xsl:if test="$can-write">
-              <form method="POST" action="" accept-charset="utf-8">
-                <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-                <input type="hidden" name="rdf:type :" value="skos:Concept"/>
-                <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
-	        <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
-	        <input type="hidden" name="dct:creator :" value="{$user}"/>
-                <input type="text" name="= skos:prefLabel" placeholder="Add a new concept&#x2026;"/>
-                <button class="fa fa-plus"/>
-              </form>
-            </xsl:if>
-          </hgroup>
-          <xsl:if test="string-length(normalize-space($concepts))">
-            <ul>
-              <xsl:call-template name="skos:concept-scheme-list-item">
-                <xsl:with-param name="resources" select="normalize-space($concepts)"/>
-              </xsl:call-template>
-            </ul>
-          </xsl:if>
-        </section>
-      </xsl:if>
+      <xsl:comment>oh hi</xsl:comment>
 
-      <xsl:if test="$can-write or string-length($audiences)">
-        <section about="ci:Audience">
-          <hgroup>
-            <h3>Concepts</h3>
-            <xsl:if test="$can-write">
-              <form method="POST" action="" accept-charset="utf-8">
-                <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-                <input type="hidden" name="rdf:type :" value="ci:Audience"/>
-                <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
-	        <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
-	        <input type="hidden" name="dct:creator :" value="{$user}"/>
-                <input type="text" name="= skos:prefLabel" placeholder="Add a new audience&#x2026;"/>
-                <button class="fa fa-plus"/>
-              </form>
-            </xsl:if>
-          </hgroup>
-          <xsl:if test="string-length(normalize-space($audiences))">
-            <ul>
-              <xsl:call-template name="skos:concept-scheme-list-item">
-                <xsl:with-param name="resources" select="normalize-space($audiences)"/>
-              </xsl:call-template>
-            </ul>
-          </xsl:if>
-        </section>
-      </xsl:if>
+      <xsl:call-template name="skos:concept-scheme-section">
+        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="adjacents" select="$adjacents"/>
+        <xsl:with-param name="can-write" select="$can-write"/>
+        <xsl:with-param name="user" select="$user"/>
+        <xsl:with-param name="placeholder">Add new concept&#x2026;</xsl:with-param>
+      </xsl:call-template>
 
-      <xsl:if test="$can-write or string-length($roles)">
-        <section about="org:Role">
-          <hgroup>
-            <h3>Concepts</h3>
-            <xsl:if test="$can-write">
-              <form method="POST" action="" accept-charset="utf-8">
-                <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
-                <input type="hidden" name="rdf:type :" value="org:Role"/>
-                <input type="hidden" name="skos:inScheme :" value="{$subject}"/>
-	        <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
-	        <input type="hidden" name="dct:creator :" value="{$user}"/>
-                <input type="text" name="= skos:prefLabel" placeholder="Add a new role&#x2026;"/>
-                <button class="fa fa-plus"/>
-              </form>
-            </xsl:if>
-          </hgroup>
-          <xsl:if test="string-length(normalize-space($roles))">
-            <ul>
-              <xsl:call-template name="skos:concept-scheme-list-item">
-                <xsl:with-param name="resources" select="normalize-space($roles)"/>
-              </xsl:call-template>
-            </ul>
-          </xsl:if>
-        </section>
-      </xsl:if>
+      <xsl:call-template name="skos:concept-scheme-section">
+        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="adjacents" select="$adjacents"/>
+        <xsl:with-param name="type" select="'ci:Audience'"/>
+        <xsl:with-param name="sec-label">Audiences</xsl:with-param>
+        <xsl:with-param name="can-write" select="$can-write"/>
+        <xsl:with-param name="user" select="$user"/>
+        <xsl:with-param name="placeholder">Add new audience&#x2026;</xsl:with-param>
+      </xsl:call-template>
+
+      <xsl:call-template name="skos:concept-scheme-section">
+        <xsl:with-param name="subject" select="$subject"/>
+        <xsl:with-param name="adjacents" select="$adjacents"/>
+        <xsl:with-param name="type" select="'org:Role'"/>
+        <xsl:with-param name="sec-label">Roles</xsl:with-param>
+        <xsl:with-param name="can-write" select="$can-write"/>
+        <xsl:with-param name="user" select="$user"/>
+        <xsl:with-param name="placeholder">Add new role&#x2026;</xsl:with-param>
+      </xsl:call-template>
 
     </article>
     <figure id="force" class="aside"/>
@@ -238,6 +166,88 @@
     <xsl:with-param name="index"         select="$index"/>
     <xsl:with-param name="user"          select="$user"/>
   </xsl:call-template>
+
+</xsl:template>
+
+<x:doc>
+  <h3>skos:concept-scheme-section</h3>
+</x:doc>
+
+<xsl:template name="skos:concept-scheme-section">
+  <xsl:param name="subject">
+    <xsl:message terminate="yes">`subject` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="adjacents">
+    <xsl:message terminate="yes">`adjacents` parameter required</xsl:message>
+  </xsl:param>
+  <xsl:param name="type" select="'skos:Concept'"/>
+  <xsl:param name="sec-label" select="'Concepts'"/>
+  <xsl:param name="member-prop" select="'skos:inScheme'"/>
+  <xsl:param name="label-prop" select="'skos:prefLabel'"/>
+  <xsl:param name="add-created" select="true()"/>
+  <xsl:param name="add-creator" select="true()"/>
+  <xsl:param name="can-write" select="false()"/>
+  <xsl:param name="placeholder" select="'Add new&#x2026;'"/>
+  <xsl:param name="traverse" select="false()"/>
+  <xsl:param name="user">
+    <xsl:if test="$add-creator">
+      <xsl:message terminate="yes">`user` parameter required</xsl:message>
+    </xsl:if>
+  </xsl:param>
+
+  <xsl:variable name="resources">
+    <xsl:apply-templates select="." mode="rdfa:filter-by-type">
+      <xsl:with-param name="subjects" select="$adjacents"/>
+      <xsl:with-param name="classes" select="$type"/>
+      <xsl:with-param name="traverse" select="$traverse"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
+  <!-- why oh why did i make the rdf-kv protocol deviate from sparql notation -->
+  <xsl:variable name="rel-name">
+    <xsl:choose>
+      <xsl:when test="starts-with(normalize-space($member-prop), '^')">
+        <xsl:text>! </xsl:text>
+        <xsl:value-of select="substring-after(normalize-space($member-prop), '^')"/>
+        <xsl:text> :</xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="normalize-space($member-prop)"/><xsl:text> :</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:if test="$can-write or string-length(normalize-space($resources))">
+    <section about="{$type}">
+      <hgroup>
+        <h3><xsl:value-of select="$sec-label"/></h3>
+        <xsl:if test="$can-write">
+          <form method="POST" action="" accept-charset="utf-8">
+            <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
+            <input type="hidden" name="rdf:type :" value="{$type}"/>
+            <input type="hidden" name="{$rel-name}" value="{$subject}"/>
+            <xsl:if test="$add-created">
+	      <input type="hidden" name="dct:created ^xsd:dateTime $" value="$NEW_TIME_UTC"/>
+            </xsl:if>
+            <xsl:if test="$add-creator">
+	      <input type="hidden" name="dct:creator :" value="{$user}"/>
+            </xsl:if>
+            <input type="text" name="= {$label-prop}" placeholder="{$placeholder}"/>
+            <button class="fa fa-plus"/>
+          </form>
+        </xsl:if>
+      </hgroup>
+      <xsl:if test="string-length(normalize-space($resources))">
+        <ul>
+          <xsl:call-template name="skos:concept-scheme-list-item">
+            <xsl:with-param name="resources" select="normalize-space($resources)"/>
+            <xsl:with-param name="label-prop" select="$label-prop"/>
+          </xsl:call-template>
+        </ul>
+      </xsl:if>
+    </section>
+  </xsl:if>
+
 </xsl:template>
 
 <x:doc>
@@ -249,7 +259,20 @@
   <xsl:param name="resources">
     <xsl:message terminate="yes">`resources` parameter required</xsl:message>
   </xsl:param>
-  <xsl:param name="lprop" select="concat($SKOS, 'prefLabel')"/>
+  <xsl:param name="label-prop" select="concat($SKOS, 'prefLabel')"/>
+
+  <xsl:variable name="lprop">
+    <xsl:choose>
+      <xsl:when test="contains($label-prop, ':') and starts-with($label-prop, 'http')">
+        <xsl:value-of select="$label-prop"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="rdfa:resolve-curie">
+          <xsl:with-param name="curie" select="$label-prop"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
 
   <xsl:variable name="first">
     <xsl:call-template name="str:safe-first-token">
@@ -308,7 +331,7 @@
   <xsl:if test="string-length($rest)">
     <xsl:call-template name="skos:concept-scheme-list-item">
       <xsl:with-param name="resources" select="$rest"/>
-      <xsl:with-param name="lprop" select="$lprop"/>
+      <xsl:with-param name="label-prop" select="$lprop"/>
     </xsl:call-template>
   </xsl:if>
 </xsl:template>

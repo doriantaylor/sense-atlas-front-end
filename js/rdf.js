@@ -260,7 +260,7 @@ const NSMapMixin = (superclass) => class extends superclass {
                 // this will pick the first predicate
                 if (!out.length && o) return [p, o];
                 return out;
-            });
+            }, []);
         return label.length ? label : [null, subject];
     };
 

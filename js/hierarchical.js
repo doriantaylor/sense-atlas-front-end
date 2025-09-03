@@ -166,8 +166,10 @@ export default class HierRDF extends RDFViz {
                 // XXX TODO add pruning constraint, eg at least one
                 // node must be the same type (or on the same list)
                 // as the page's subject
-                if (validateEdge &&
-                    !validateEdge(nmap[src.value], nmap[tgt.value], p)) return;
+                if (typeof validateEdge === 'function') {
+                    const ve = validateEdge.bind(this);
+                    if (!ve(nmap[src.value], nmap[tgt.value], p)) return;
+                }
 
                 // okay now we add the record if it isn't already there
                 lmap[src.value] ||= {};
@@ -196,7 +198,11 @@ export default class HierRDF extends RDFViz {
 
         // take a third pass to prune out the extraneous nodes
         for (const [k, rec] of Object.entries(nmap)) {
-            if (validateNode && !validateNode(rec)) {
+            let valid = true;
+            if (typeof validateNode === 'function')
+                valid = !!validateNode.bind(this)(rec);
+
+            if (!valid) {
                 //console.log(rec);
                 rec.neighbours.forEach(n => {
                     const v = n.value;

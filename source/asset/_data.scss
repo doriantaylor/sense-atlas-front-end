@@ -307,7 +307,28 @@ $PROP_PALETTE: (
     // "org:changedBy":            (),
     // "org:originalOrganization": (),
     // "org:resultedFrom":         (),
-    // "org:resultedIn":           ()
+    // "org:resultedIn":           (),
+
+    // hue 216
+    "ci:recognizes":                   (#0a1214, #1b282c, #354a51, #48626b,
+                                        #85b2c1, #c6e8f4, #008398, #afecff),
+    "ci:recognized-by":                (#0a1214, #1b282c, #354a51, #48626b,
+                                        #85b2c1, #c6e8f4, #008398, #afecff),
+    // hue 193
+    "ci:understands":                  (#0a1212, #1b2828, #344b4b, #476364,
+                                        #83b4b4, #97f1f2, #008585, #00fbfd),
+    "ci:understood-by":                (#0a1212, #1b2828, #344b4b, #476364,
+                                        #83b4b4, #97f1f2, #008585, #00fbfd),
+    // hue 122
+    "ci:values":                       (#0b1309, #1c2919, #374c32, #4a6543,
+                                        #88b77d, #abf598, #378800, #7dff46),
+    "ci:valued-by":                    (#0b1309, #1c2919, #374c32, #4a6543,
+                                        #88b77d, #abf598, #378800, #7dff46),
+    // hue 12
+    "ci:eschews":                      (#21090a, #411a1a, #733233, #974545,
+                                        #d79c9d, #f4dddd, #ef0007, #ffdada),
+    "ci:eschewed-by":                  (#21090a, #411a1a, #733233, #974545,
+                                        #d79c9d, #f4dddd, #ef0007, #ffdada)
 );
 
 $CLASSES:    map-keys($CLASS_PALETTE);
@@ -330,7 +351,8 @@ $ICONS: (
     "org:OrganizationalUnit":          "\e594",
     "org:OrganizationalCollaboration": "\f2b5",
     "org:Role":                        "\f508",
-    "gr:ProductOrService":             "\f07a"
+    "gr:ProductOrService":             "\f07a",
+    "ci:Audience":                     "\e595"
 );
 
 $BOUNDARIES: (
@@ -349,4 +371,7 @@ $FADE: (
 //              "ibis:Argument": argument, "skos:Concept": concept);
 
 $IBIS: ("ibis:Issue", "ibis:Position", "ibis:Argument");
-$PM:   ("pm:Goal", "pm:Task", "pm:Target")
+$PM:   ("pm:Goal", "pm:Task", "pm:Target");
+$SKOS: ("skos:Concept", "ci:Audience", "org:Role");
+$FOAF: ("foaf:Person", "org:Organization", "org:FormalOrganization",
+        "org:OrganizationalCollaboration");

@@ -688,10 +688,28 @@
   <xsl:param name="state" select="''"/>
   <xsl:param name="traverse" select="true()"/>
   <xsl:param name="continued" select="false()"/>
+  <xsl:param name="prefixes">
+    <xsl:apply-templates select="." mode="rdfa:prefix-stack"/>
+  </xsl:param>
 
   <xsl:if test="not(string-length($class))">
     <xsl:message terminate="yes">required parameter `classes` or `class`</xsl:message>
   </xsl:if>
+
+  <xsl:variable name="resolved">
+    <xsl:choose>
+      <xsl:when test="$continued">
+        <xsl:value-of select="$class"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:call-template name="rdfa:resolve-curie-list">
+          <xsl:with-param name="list" select="$classes"/>
+          <xsl:with-param name="base" select="$base"/>
+          <xsl:with-param name="prefixes" select="$prefixes"/>
+        </xsl:call-template>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
 
   <xsl:variable name="first">
     <xsl:call-template name="str:safe-first-token">
@@ -726,7 +744,7 @@
     <xsl:variable name="match">
       <xsl:call-template name="str:token-intersection">
         <xsl:with-param name="left" select="$types"/>
-        <xsl:with-param name="right" select="$class"/>
+        <xsl:with-param name="right" select="$resolved"/>
       </xsl:call-template>
     </xsl:variable>
 
@@ -743,9 +761,10 @@
       <xsl:apply-templates select="." mode="rdfa:filter-by-type">
 	<xsl:with-param name="base"      select="$base"/>
 	<xsl:with-param name="subjects"  select="$rest"/>
-	<xsl:with-param name="classes"   select="$classes"/>
+	<xsl:with-param name="classes"   select="$resolved"/>
 	<xsl:with-param name="traverse"  select="$traverse"/>
 	<xsl:with-param name="continued" select="true()"/>
+        <xsl:with-param name="prefixes"  select="$prefixes"/>
       </xsl:apply-templates>
     </xsl:if>
   </xsl:if>

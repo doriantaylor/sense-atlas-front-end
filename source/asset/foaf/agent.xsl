@@ -291,31 +291,37 @@
     <xsl:variable name="prop" select="."/>
     <xsl:variable name="seqprop" select="($sequence/x:prop[@rev = string($prop/@rev)]|$sequence/x:prop[@uri = string($prop/@uri)])[1]"/>
 
-    <xsl:comment>rel: <xsl:value-of select="$prop/@uri"/> rev: <xsl:value-of select="$prop/@rev"/> sequence: <xsl:value-of select="count($sequence)"/> seqprop: <xsl:value-of select="count($seqprop)"/></xsl:comment>
+    <xsl:variable name="rel" select="($prop/@uri|($skos:INVERSES/x:pair[@a=$prop/@rev]/@b|$skos:INVERSES/x:pair[@b=$prop/@rev]/@a)[1])[1]"/>
+    <xsl:variable name="rev" select="($prop/@rev|($skos:INVERSES/x:pair[@a=$prop/@uri]/@b|$skos:INVERSES/x:pair[@b=$prop/@uri]/@a)[1])[1]"/>
+
+    <xsl:comment>rel: <xsl:value-of select="$rel"/> rev: <xsl:value-of select="$rev"/> sequence: <xsl:value-of select="count($sequence)"/> seqprop: <xsl:value-of select="count($seqprop)"/></xsl:comment>
 
     <xsl:variable name="reversed" select="count($seqprop/@rev) != 0"/>
 
     <xsl:variable name="targets">
-      <xsl:choose>
-        <xsl:when test="$reversed">
+      <xsl:variable name="_">
+        <xsl:if test="$rev">
           <xsl:apply-templates select="$current" mode="rdfa:subject-resources">
             <xsl:with-param name="object" select="$subject"/>
             <xsl:with-param name="base" select="$base"/>
-            <xsl:with-param name="predicate" select="$seqprop/@rev"/>
+            <xsl:with-param name="predicate" select="$rev"/>
           </xsl:apply-templates>
-        </xsl:when>
-        <xsl:otherwise>
+        </xsl:if>
+        <xsl:text> </xsl:text>
+        <xsl:if test="$rel">
           <xsl:apply-templates select="$current" mode="rdfa:object-resources">
             <xsl:with-param name="subject" select="$subject"/>
             <xsl:with-param name="base" select="$base"/>
-            <xsl:with-param name="predicate" select="$seqprop/@uri"/>
+            <xsl:with-param name="predicate" select="$rel"/>
           </xsl:apply-templates>
-        </xsl:otherwise>
-      </xsl:choose>
+        </xsl:if>
+      </xsl:variable>
+      <xsl:call-template name="str:unique-tokens">
+        <xsl:with-param name="string" select="normalize-space($_)"/>
+      </xsl:call-template>
     </xsl:variable>
     <xsl:variable name="has-targets" select="normalize-space($targets) != ''"/>
     <xsl:variable name="uri" select="string(($seqprop/@rev|$seqprop/@uri)[1])"/>
-
 
     <xsl:variable name="curie">
       <xsl:call-template name="rdfa:make-curie">
@@ -363,8 +369,8 @@
               <xsl:with-param name="base"          select="$base"/>
               <xsl:with-param name="resource-path" select="$resource-path"/>
               <xsl:with-param name="rewrite"       select="$rewrite"/>
-              <xsl:with-param name="rel"           select="$seqprop/@uri"/>
-              <xsl:with-param name="rev"           select="$seqprop/@rev"/>
+              <xsl:with-param name="rel"           select="$rel"/>
+              <xsl:with-param name="rev"           select="$rev"/>
               <xsl:with-param name="stack"         select="$targets"/>
               <xsl:with-param name="can-write"     select="$can-write"/>
           </xsl:apply-templates>
@@ -397,19 +403,19 @@
 <x:select subset="plain">
   <x:class uri="http://xmlns.com/foaf/0.1/Agent"/>
   <x:prop uri="http://www.w3.org/ns/org#headOf"/>
-  <x:prop uri="http://www.w3.org/ns/org#memberOf"/>
+  <x:prop uri="http://www.w3.org/ns/org#memberOf" rev="http://www.w3.org/ns/org#hasMember"/>
 </x:select>
 
 <!-- for people -->
 <x:select subset="personal">
   <x:class uri="http://xmlns.com/foaf/0.1/Person"/>
-  <x:prop uri="http://xmlns.com/foaf/0.1/knows"/>
+  <x:prop uri="http://xmlns.com/foaf/0.1/knows" rev="http://xmlns.com/foaf/0.1/knows"/>
 </x:select>
 
 <x:select subset="professional">
   <x:class uri="http://xmlns.com/foaf/0.1/Person"/>
   <x:prop uri="http://www.w3.org/ns/org#headOf"/>
-  <x:prop uri="http://www.w3.org/ns/org#memberOf"/>
+  <x:prop uri="http://www.w3.org/ns/org#memberOf" rev="http://www.w3.org/ns/org#hasMember"/>
   <x:prop uri="http://www.w3.org/ns/org#reportsTo"/>
   <x:prop rev="http://www.w3.org/ns/org#reportsTo">
     <x:label>Has Reports</x:label>
@@ -433,7 +439,7 @@
   <x:class uri="http://www.w3.org/ns/org#Organization"/>
   <x:prop uri="http://www.w3.org/ns/org#hasSubOrganization"/>
   <x:prop uri="http://www.w3.org/ns/org#subOrganizationOf"/>
-  <x:prop uri="http://www.w3.org/ns/org#linkedTo"/>
+  <x:prop uri="http://www.w3.org/ns/org#linkedTo" rev="http://www.w3.org/ns/org#linkedTo"/>
 </x:select>
 
 <x:select subset="orgs">
@@ -441,7 +447,7 @@
   <x:prop uri="http://www.w3.org/ns/org#hasUnit"/>
   <x:prop uri="http://www.w3.org/ns/org#hasSubOrganization"/>
   <x:prop uri="http://www.w3.org/ns/org#subOrganizationOf"/>
-  <x:prop uri="http://www.w3.org/ns/org#linkedTo"/>
+  <x:prop uri="http://www.w3.org/ns/org#linkedTo" rev="http://www.w3.org/ns/org#linkedTo"/>
 </x:select>
 
 <x:select subset="orgs">
@@ -449,7 +455,7 @@
   <x:prop uri="http://www.w3.org/ns/org#unitOf"/>
   <x:prop uri="http://www.w3.org/ns/org#hasSubOrganization"/>
   <x:prop uri="http://www.w3.org/ns/org#subOrganizationOf"/>
-  <x:prop uri="http://www.w3.org/ns/org#linkedTo"/>
+  <x:prop uri="http://www.w3.org/ns/org#linkedTo" rev="http://www.w3.org/ns/org#linkedTo"/>
 </x:select>
 
 <x:select subset="orgs">
@@ -457,7 +463,7 @@
   <x:prop uri="http://www.w3.org/ns/org#hasMember"/>
   <x:prop uri="http://www.w3.org/ns/org#hasSubOrganization"/>
   <x:prop uri="http://www.w3.org/ns/org#subOrganizationOf"/>
-  <x:prop uri="http://www.w3.org/ns/org#linkedTo"/>
+  <x:prop uri="http://www.w3.org/ns/org#linkedTo" rev="http://www.w3.org/ns/org#linkedTo"/>
 </x:select>
 
 <rdf:RDF>

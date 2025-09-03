@@ -86,6 +86,7 @@ export default class RDFViz {
 	'pm:subtask':              'pm:supertask',
 	'pm:variant':              'pm:variant',
 	// FOAF/ORG
+        'foaf:knows':              'foaf:knows',
 	'org:hasMember':           'org:memberOf',
 	'org:hasSubOrganization':  'org:subOrganizatonOf',
 	'org:hasUnit':             'org:unitOf',
@@ -125,6 +126,7 @@ export default class RDFViz {
 	'pm:method':         'pm:instance',
         'pm:outcome':	     'pm:process',
         'pm:supertask':	     'pm:subtask',
+        'org:memberOf':	     'org:hasMember',
     };
 
     constructor (graph, rdfParams = {}, d3Params = {}) {
@@ -163,7 +165,10 @@ export default class RDFViz {
         this.inverses = Object.entries(Object.assign(
             {}, this.constructor.inverses, rdfParams.inverses || {})).reduce(
                 (x, [k, v]) => {
-                    x[ns.expand(k).value] = ns.expand(v);
+                    k = ns.expand(k);
+                    v = ns.expand(v);
+                    x[k.value] = v;
+                    x[v.value] = k;
                     return x;
                 }, {});
 

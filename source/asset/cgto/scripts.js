@@ -20,17 +20,17 @@ document.addEventListener('can-load-graph', function () {
 
     // orrrrrrrrrr we just don't care about this and render all the schemes at once
 
-    const { rdf: rdfv, rdfs, foaf, org, ibis, pm,
+    const { rdf: rdfv, rdfs, ci, foaf, org, ibis, pm,
             skos, xhv, dct, cgto, qb, sioc } = this.graph.namespaces;
 
-    const skosc       = skos('Concept');
+    const skosTypes   = [skos('Concept'), org('Role'), ci('Audience')];
     const ibisTypes   = ['Issue', 'Position', 'Argument'].map(t => ibis(t));
     const pmTypes     = ['Goal', 'Task', 'Target', 'Action', 'Method'].map(t => pm(t));
     const foafTypes   = ['Agent', 'Person', 'Organization'].map(t => foaf(t));
     const orgTypes    = ['Organization', 'FormalOrganization',
 			 'OrganizationalCollaboration', 'OrganizationalUnit',
 			 'Role', 'Post', 'Membership', 'Site'].map(t => org(t));
-    const entityTypes = [skosc].concat(ibisTypes, pmTypes, foafTypes, orgTypes);
+    const entityTypes = skosTypes.concat(ibisTypes, pmTypes, foafTypes, orgTypes);
 
     const me = RDF.sym(window.location.href);
     const a  = rdfv('type');
@@ -73,7 +73,7 @@ document.addEventListener('can-load-graph', function () {
 
     const TYPES = {
         ibis: ibisTypes.concat(pmTypes),
-        skos: [skosc],
+        skos: skosTypes,
         foaf: foafTypes.concat(orgTypes),
     };
 
@@ -112,21 +112,11 @@ document.addEventListener('can-load-graph', function () {
         // this gets run afterward
         validateNode: (node) => {
 	    // `this` goes missing because javascript
-	    const s1 = schemes.map(x => dataviz.rewriteUUID(x));
-	    const s2 = getSchemes(node.subject).map(x => dataviz.rewriteUUID(x));
-            //console.log(s1, s2);
-	    if (g.has(s1, s2)) {
-		//console.log(node);
-		return true;
-		//if ([ibis('Network'), skos('node.type
-		//if (!isEntity) return true;
+	    const ss = getSchemes(node.subject);
 
-		// returns the node if it's not the only one
-		// return node.neighbours.length > 0 ? true : test(node.type);
+            if (!g.has(schemes, ss)) return false;
 
-		//return test(node.type);
-	    }
-	    return false;
+            return true;
         },
     }, {
         preserveAspectRatio: 'xMidYMid meet', layering: 'Simplex',

@@ -134,7 +134,22 @@
     </article>
     <figure id="force" class="aside"/>
   </main>
-
+  <xsl:comment>colls: <xsl:value-of select="$collections"/></xsl:comment>
+  <xsl:call-template name="skos:footer">
+    <xsl:with-param name="base"          select="$base"/>
+    <xsl:with-param name="resource-path" select="$resource-path"/>
+    <xsl:with-param name="rewrite"       select="$rewrite"/>
+    <xsl:with-param name="heading"       select="$heading"/>
+    <xsl:with-param name="subject"       select="$subject"/>
+    <xsl:with-param name="type"          select="$type"/>
+    <xsl:with-param name="scheme-types"  select="concat($SIOCT, 'AddressBook')"/>
+    <xsl:with-param name="new-type"      select="'sioct:AddressBook'"/>
+    <xsl:with-param name="new-pred"      select="'dct:isPartOf'"/>
+    <xsl:with-param name="schemes"       select="$collections"/>
+    <xsl:with-param name="space"         select="$space"/>
+    <xsl:with-param name="index"         select="$index"/>
+    <xsl:with-param name="user"          select="$user"/>
+  </xsl:call-template>
 </xsl:template>
 
 <x:doc>

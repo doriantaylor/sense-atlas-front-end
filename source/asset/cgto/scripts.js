@@ -92,6 +92,9 @@ document.addEventListener('can-load-graph', function () {
     // anyway get the scheme
     const schemes = isEntity ? getSchemes(me) : [me];
 
+    // XXX THIS IS DUMB AND SUCKS
+    const tcache = {};
+
     // console.log(types);
 
     // D3 STUFF
@@ -107,6 +110,10 @@ document.addEventListener('can-load-graph', function () {
 	    // console.log([source, target, predicate]);
             //return true;
             if (!isEntity) return true;
+
+            tcache[source.id] ||= source.type;
+            tcache[target.id] ||= target.type;
+
             return test(source.type) || test(target.type);
         },
         // this gets run afterward
@@ -116,7 +123,17 @@ document.addEventListener('can-load-graph', function () {
 
             if (!g.has(schemes, ss)) return false;
 
-            return true;
+            const ok = node.neighbours.some(s => {
+                const types = tcache[s.value] ||= g.getTypes(s);
+                console.log(types);
+                return test(types);
+            });
+
+            //console.log(node);
+
+            const out = test(node.type) || ok;
+
+            return out;
         },
     }, {
         preserveAspectRatio: 'xMidYMid meet', layering: 'Simplex',

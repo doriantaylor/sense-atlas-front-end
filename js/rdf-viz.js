@@ -85,6 +85,12 @@ export default class RDFViz {
 	'pm:process':              'pm:outcome',
 	'pm:subtask':              'pm:supertask',
 	'pm:variant':              'pm:variant',
+        // CI
+        'ci:recognizes':           'ci:recognized-by',
+        'ci:understands':          'ci:understood-by',
+        'ci:values':               'ci:valued-by',
+        'ci:eschews':              'ci:eschewed-by',
+        'ci:exemplar':             'ci:exemplfies',
 	// FOAF/ORG
         'foaf:knows':              'foaf:knows',
 	'org:hasMember':           'org:memberOf',
@@ -127,6 +133,11 @@ export default class RDFViz {
         'pm:outcome':	     'pm:process',
         'pm:supertask':	     'pm:subtask',
         'org:memberOf':	     'org:hasMember',
+        'ci:recognized-by':  'ci:recognizes',
+        'ci:understood-by':  'ci:understands',
+        'ci:valued-by':      'ci:values',
+        'ci:eschewed-by':    'ci:eschews',
+        'ci:exemplifies':    'ci:exemplar',
     };
 
     constructor (graph, rdfParams = {}, d3Params = {}) {
@@ -186,6 +197,10 @@ export default class RDFViz {
                     x[ns.expand(k).value] = ns.expand(v);
                     return x;
                 }, {});
+
+        // execute the preamble
+        if (typeof rdfParams.preamble === 'function')
+            rdfParams.preamble.bind(this)();
     }
 
     init () {

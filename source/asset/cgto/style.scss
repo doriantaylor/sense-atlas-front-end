@@ -727,7 +727,11 @@ html {
         }
 
         // skos-only selectors
-        &[typeof~="skos:Concept"] {
+        $skos: ();
+        @each $class in $SKOS {
+            $skos: append($skos, "&[typeof~=\"#{$class}\"]", comma);
+        }
+        #{$skos} {
             > main > article {
                 grid-template-rows: 16rem auto;
 

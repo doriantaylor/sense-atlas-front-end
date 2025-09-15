@@ -168,7 +168,10 @@ export default class HierRDF extends RDFViz {
                 // as the page's subject
                 if (typeof validateEdge === 'function') {
                     const ve = validateEdge.bind(this);
-                    if (!ve(nmap[src.value], nmap[tgt.value], p)) return;
+                    if (!ve(nmap[src.value], nmap[tgt.value], p)) {
+                        console.debug(`pruning invalid edge ${src} ${p} ${tgt} .`);
+                        return;
+                    }
                 }
 
                 // okay now we add the record if it isn't already there
@@ -203,7 +206,7 @@ export default class HierRDF extends RDFViz {
                 valid = !!validateNode.bind(this)(rec);
 
             if (!valid) {
-                //console.log(rec);
+                console.debug(`pruning invalid node ${rec.subject}`);
                 rec.neighbours.forEach(n => {
                     const v = n.value;
                     if ((lmap[k] || {})[v]) delete lmap[k][v];

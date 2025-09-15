@@ -1228,12 +1228,16 @@
       <xsl:with-param name="predicate" select="$rdfa:RDF-TYPE"/>
     </xsl:apply-templates>
   </xsl:param>
+  <xsl:param name="scheme-types" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
+  <xsl:param name="scheme-preds" select="'skos:inScheme skos:topConceptOf ^skos:hasTopConcept'"/>
+  <xsl:param name="new-type" select="'ibis:Network'"/>
+  <xsl:param name="new-pred" select="'skos:inScheme'"/>
 
   <xsl:param name="schemes">
     <xsl:variable name="_">
       <xsl:call-template name="str:token-intersection">
 	<xsl:with-param name="left" select="$type"/>
-	<xsl:with-param name="right" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
+	<xsl:with-param name="right" select="$scheme-types"/>
       </xsl:call-template>
     </xsl:variable>
     <xsl:choose>
@@ -1243,7 +1247,7 @@
       <xsl:otherwise>
 	<xsl:apply-templates select="." mode="rdfa:multi-object-resources">
 	  <xsl:with-param name="subjects" select="$subject"/>
-	  <xsl:with-param name="predicates" select="'skos:inScheme skos:topConceptOf ^skos:hasTopConcept'"/>
+	  <xsl:with-param name="predicates" select="$scheme-preds"/>
 	</xsl:apply-templates>
       </xsl:otherwise>
     </xsl:choose>
@@ -1353,11 +1357,11 @@
 	<xsl:with-param name="traverse" select="false()"/>
       </xsl:apply-templates>
     </xsl:variable>
-    <xsl:message>skos:footer wat <xsl:value-of select="$_"/></xsl:message>
+    <xsl:message>skos:footer wat <xsl:value-of select="$_"/> filter by: <xsl:value-of select="$scheme-types"/></xsl:message>
     <xsl:if test="string-length(normalize-space($_))">
       <xsl:apply-templates select="document($space)/*" mode="rdfa:filter-by-type">
 	<xsl:with-param name="subjects" select="$_"/>
-	<xsl:with-param name="classes" select="concat($IBIS, 'Network ', $SKOS, 'ConceptScheme')"/>
+	<xsl:with-param name="classes" select="$scheme-types"/>
 	<xsl:with-param name="traverse" select="false()"/>
       </xsl:apply-templates>
     </xsl:if>
@@ -1383,6 +1387,8 @@
       <li>state: <xsl:value-of select="$state"/></li>
       <li>focus: <xsl:value-of select="$focus"/></li>-->
 
+      <xsl:comment>my schemes: <xsl:value-of select="$schemes"/> all schemes: <xsl:value-of select="$all-schemes"/> space(s): <xsl:value-of select="$space"/></xsl:comment>
+
       <xsl:apply-templates select="document($space)/*" mode="skos:scheme-item">
 	<xsl:with-param name="subject"    select="$subject"/>
 	<xsl:with-param name="schemes"    select="$all-schemes"/>
@@ -1390,6 +1396,7 @@
 	<xsl:with-param name="focus"      select="$focus"/>
 	<xsl:with-param name="state"      select="$state"/>
 	<xsl:with-param name="is-concept" select="not($is-scheme)"/>
+	<xsl:with-param name="predicate"  select="$new-pred"/>
       </xsl:apply-templates>
       <xsl:if test="string-length($state)">
         <!-- get the neighbours of $subject filtered by type -->
@@ -1397,16 +1404,7 @@
 	  <form class="new-scheme" method="POST" action="">
 	    <input type="hidden" name="$ SUBJECT $" value="$NEW_UUID_URN"/>
             <input type="hidden" name="! sioc:space_of :" value="{$space}"/>
-	    <xsl:choose>
-	      <xsl:when test="false()">
-		<label><input name="= rdf:type :" type="radio" value="ibis:Network" checked="checked"/> IBIS Network</label>
-	  <xsl:text>&#xa0;</xsl:text>
-	  <label><input name="= rdf:type :" value="skos:ConceptScheme" type="radio"/> SKOS Concepts</label>
-	      </xsl:when>
-	      <xsl:otherwise>
-		<input type="hidden" name="= rdf:type :" value="ibis:Network"/>
-	      </xsl:otherwise>
-	    </xsl:choose>
+	    <input type="hidden" name="= rdf:type :" value="{$new-type}"/>
 	    <input type="text" name="= skos:prefLabel" placeholder="Name&#x2026;"/>
 	    <xsl:if test="false()">
 	      <label><input type="checkbox" name="! skos:inScheme :" value="{$subject}"/> Import this entity</label>
@@ -1560,6 +1558,7 @@
     <xsl:message terminate="yes">skos:scheme-item: `state` parameter required</xsl:message>
   </xsl:param>
   <xsl:param name="is-concept" select="false()"/>
+  <xsl:param name="predicate" select="'skos:inScheme'"/>
 
   <xsl:variable name="snorm" select="normalize-space($schemes)"/>
 
@@ -1583,7 +1582,7 @@
     <li>
       <a href="{$first}">
 	<xsl:if test="$is-attached">
-	  <xsl:attribute name="rel">skos:inScheme</xsl:attribute>
+	  <xsl:attribute name="rel"><xsl:value-of select="$predicate"/></xsl:attribute>
 	</xsl:if>
 	<xsl:call-template name="skos:scheme-item-label">
 	  <xsl:with-param name="subject" select="$first"/>
@@ -1597,10 +1596,10 @@
 	    <!-- 'detach' button if attached -->
 	    <xsl:choose>
 	      <xsl:when test="$is-attached">
-		<button name="- skos:inScheme :" value="{$first}">Detach</button>
+		<button name="- {$predicate} :" value="{$first}">Detach</button>
 	      </xsl:when>
 	      <xsl:otherwise>
-	        <button name="skos:inScheme :" value="{$first}">Attach</button>
+	        <button name="{$predicate} :" value="{$first}">Attach</button>
 	      </xsl:otherwise>
 	    </xsl:choose>
 	  </xsl:if>

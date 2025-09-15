@@ -2,6 +2,10 @@ document.addEventListener('can-load-graph', function () {
     // console.log('zap lol');
     const g = this.graph;
 
+    // also grab this page and shove it in the graph
+    this.rdfa = new RDF.RDFaProcessor(g, { base: window.location.href });
+    this.rdfa.process(this);
+
     const { rdf: rdfv, dct, foaf, org, sioc, cgto } = this.graph.namespaces;
 
     const foafTypes = ['Agent', 'Person', 'Organization'].map(t => foaf(t));
@@ -28,6 +32,9 @@ document.addEventListener('can-load-graph', function () {
         width: 1000, height: 1000, preserveAspectRatio: 'xMidYMid meet',
     });
 
+    const preamble  = () => {
+    };
+
     const postamble = (dv) => {
     };
 
@@ -35,9 +42,14 @@ document.addEventListener('can-load-graph', function () {
         this.dataviz.installFetchOnLoad(collections, '#force', postamble);
     else console.log("wah wah link not found");
 
-    dataviz.loadDataList(me, [
+    const path = [
         { fwd: dct('isPartOf'), rev: dct('hasPart') },
         { fwd: sioc('has_space'), rev: sioc('space_of') },
-        cgto('index'), cgto('by-class'), ], 'agents', foaf('Agent'), true);
+        cgto('index'), cgto('by-class'), ];
+
+    // shift off the first step when we're on that rung
+    if (!isAgent) path.shift();
+
+    this.dataviz.loadDataList(me, path, 'agents', foaf('Agent'), true);
 });
 

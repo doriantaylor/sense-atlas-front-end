@@ -102,13 +102,15 @@ export default class ForceRDF extends RDFViz {
                 const s = this.rewriteUUID(stmt.subject);
 
                 // add this mess to the list
-                nodes.push(nmap[stmt.subject.value] = {
-                    id:      s.value, // for d3
-                    title:   label, // for d3
-                    subject: stmt.subject,
-                    type:    stmt.object,
-                    degree:  0,
-                });
+                if (!nmap[stmt.subject.value]) {
+                    nodes.push(nmap[stmt.subject.value] = {
+                        id:      s.value, // for d3
+                        title:   label, // for d3
+                        subject: stmt.subject,
+                        type:    stmt.object,
+                        degree:  0,
+                    });
+                }
             }
         });
 

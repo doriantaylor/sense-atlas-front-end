@@ -1620,6 +1620,7 @@
 	<xsl:with-param name="focus"      select="$focus"/>
 	<xsl:with-param name="state"      select="$state"/>
 	<xsl:with-param name="is-concept" select="$is-concept"/>
+        <xsl:with-param name="predicate"  select="$predicate"/>
       </xsl:apply-templates>
     </xsl:if>
   </xsl:if>
@@ -2343,6 +2344,15 @@
       <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
       <x:label>Questioned By</x:label>
     </x:prop>
+    <x:prop uri="https://vocab.methodandstructure.com/ibis#questions">
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Target"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Argument"/>
+      <x:range uri="https://vocab.methodandstructure.com/ibis#Position"/>
+      <x:range uri="https://vocab.methodandstructure.com/process-model#Task"/>
+      <x:label>Questions</x:label>
+    </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#suggests">
       <x:range uri="https://vocab.methodandstructure.com/ibis#Issue"/>
       <x:range uri="https://vocab.methodandstructure.com/process-model#Goal"/>
@@ -2818,14 +2828,20 @@
     <x:label>Role</x:label>
     <x:prop uri="http://www.w3.org/2004/02/skos/core#broader">
       <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
+      <x:range uri="https://vocab.methodandstructure.com/content-inventory#Audience"/>
+      <x:range uri="http://www.w3.org/ns/org#Role"/>
       <x:label>Has Broader</x:label>
     </x:prop>
     <x:prop uri="http://www.w3.org/2004/02/skos/core#narrower">
       <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
+      <x:range uri="https://vocab.methodandstructure.com/content-inventory#Audience"/>
+      <x:range uri="http://www.w3.org/ns/org#Role"/>
       <x:label>Has Narrower</x:label>
     </x:prop>
     <x:prop uri="http://www.w3.org/2004/02/skos/core#related">
       <x:range uri="http://www.w3.org/2004/02/skos/core#Concept"/>
+      <x:range uri="https://vocab.methodandstructure.com/content-inventory#Audience"/>
+      <x:range uri="http://www.w3.org/ns/org#Role"/>
       <x:label>Has Related</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/ibis#concern-of">
@@ -2839,18 +2855,22 @@
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/content-inventory#valued-by">
       <x:range uri="https://vocab.methodandstructure.com/content-inventory#Audience"/>
+      <x:range uri="http://www.w3.org/ns/org#Role"/>
       <x:label>Valued By</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/content-inventory#eschewed-by">
       <x:range uri="https://vocab.methodandstructure.com/content-inventory#Audience"/>
+      <x:range uri="http://www.w3.org/ns/org#Role"/>
       <x:label>Eschewed By</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/content-inventory#understood-by">
       <x:range uri="https://vocab.methodandstructure.com/content-inventory#Audience"/>
+      <x:range uri="http://www.w3.org/ns/org#Role"/>
       <x:label>Understood By</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/content-inventory#recognized-by">
       <x:range uri="https://vocab.methodandstructure.com/content-inventory#Audience"/>
+      <x:range uri="http://www.w3.org/ns/org#Role"/>
       <x:label>Recognized By</x:label>
     </x:prop>
   </x:class>
@@ -2910,18 +2930,22 @@
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/content-inventory#valued-by">
       <x:range uri="https://vocab.methodandstructure.com/content-inventory#Audience"/>
+      <x:range uri="http://www.w3.org/ns/org#Role"/>
       <x:label>Valued By</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/content-inventory#eschewed-by">
       <x:range uri="https://vocab.methodandstructure.com/content-inventory#Audience"/>
+      <x:range uri="http://www.w3.org/ns/org#Role"/>
       <x:label>Eschewed By</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/content-inventory#understood-by">
       <x:range uri="https://vocab.methodandstructure.com/content-inventory#Audience"/>
+      <x:range uri="http://www.w3.org/ns/org#Role"/>
       <x:label>Understood By</x:label>
     </x:prop>
     <x:prop uri="https://vocab.methodandstructure.com/content-inventory#recognized-by">
       <x:range uri="https://vocab.methodandstructure.com/content-inventory#Audience"/>
+      <x:range uri="http://www.w3.org/ns/org#Role"/>
       <x:label>Recognized By</x:label>
     </x:prop>
   </x:class>

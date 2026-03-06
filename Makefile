@@ -181,7 +181,7 @@ js/node_modules :
 	cd js; npm install; cd -
 
 $(TARGET)/asset/complex.js : $(TARGET)/asset js/node_modules
-	$(RSYNC) js/node_modules/complex.js/complex.js $(TARGET)/asset/complex.js
+	$(RSYNC) js/node_modules/complex.js/dist/complex.js $(TARGET)/asset/complex.js
 
 $(TARGET)/asset/d3.js : $(TARGET)/asset
 	cd js; $(NPM) run build; cd -

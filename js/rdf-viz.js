@@ -197,10 +197,6 @@ export default class RDFViz {
                     x[ns.expand(k).value] = ns.expand(v);
                     return x;
                 }, {});
-
-        // execute the preamble
-        if (typeof rdfParams.preamble === 'function')
-            rdfParams.preamble.bind(this)();
     }
 
     init () {
@@ -293,6 +289,41 @@ export default class RDFViz {
         if (!path) path = [];
         else if (!Array.isArray(path)) path = [path];
 
+        console.log(`now dereferencing ${start}`);
+
+        // this will noop
+        const resp = await g.fetcher.load(start.doc());
+        // console.debug(resp);
+        // if (resp.url) {
+        //     const uri = g.sym(resp.url);
+        //     const doc = uri.doc();
+
+        //     if (!start.doc().equals(doc)) {
+        //         console.debug(`${start} -> ${uri}`);
+        //         start = uri;
+        //     }
+        // }
+
+        // this should deal with redirects
+        // if (!start.equals(start.doc()) &&
+        //     !start.equals(g.sym(document.location.href).doc())) {
+        //     console.log(`Now dereferencing ${start.value}`);
+        //     // just gonna make sure by FUCKING CARGO CULTING THIS SHIT
+        //     const resp = await g.fetcher.load(start, { baseURI: start.value.slice() });
+
+        //     if (resp.url) {
+        //         console.debug(resp);
+        //         // this is whatever comes off
+        //         const uri = g.sym(resp.url);
+        //         const doc = uri.doc();
+
+        //         if (!start.doc().equals(doc)) {
+        //             console.log(`${start.value} => ${uri.value}`);
+        //             start = uri;
+        //         }
+        //     }
+        // }
+
         if (path.length > 0) {
             // obtain the first element in the property path
             let test = path[0];
@@ -315,20 +346,11 @@ export default class RDFViz {
             // check the existing graph for the thing
             let nexts = g.getResources(test);
 
-            // if none, then fetch `start`
-            if (nexts.length == 0) {
-                console.debug(`dereferencing ${start}`);
-                // okay *now* check
-                await g.fetcher.load(start);
-                nexts = g.getResources(test);
-                // if still none, bail out or raise or something i dunno,
-                // probably raise
-                if (nexts.length == 0)
-                    throw new Error(`could not find ${JSON.stringify(test)}` +
-                                    ` after dereferencing ${start}`);
-            }
+            if (nexts.length == 0)
+                throw new Error(`could not find ${JSON.stringify(test)}` +
+                                ` after dereferencing ${start}`);
 
-            console.debug(`found ${nexts[0]}`);
+            console.debug(`following ${nexts[0].value}`);
 
             // onto the next one
             return this.derefPP(nexts[0], path.slice(1));
@@ -341,20 +363,30 @@ export default class RDFViz {
     }
 
     async handlePagination (subject, seen) {
+        console.log(`handling pagination for ${subject}`);
         // add to seen
         seen = seen || [];
-        seen.push(subject);
 
         const g  = this.graph;
-        const ns = g.namespaces;
+        // const ns = g.namespaces;
 
-        const next = g.getResources({
-            subject: subject, fwd: ns.xhv('next')
-        }).filter(x => seen.some(y => y.equals(x)))[0];
+        await g.fetcher.load(subject);
+
+        let next = g.getResources({
+            subject: subject, fwd: g.namespaces.xhv.next,
+        });
+
+        // console.debug(next);
+
+        next = next.filter(x => !seen.some(y => y.equals(x)))[0];
+
+        seen.push(subject);
+
+        // console.debug(next);
 
         // load the next one
         if (next) {
-            await g.fetcher.load(next);
+            console.log(`trying next ${next}`);
             return this.handlePagination(next, seen);
         }
 
@@ -378,13 +410,15 @@ export default class RDFViz {
         this.derefPP(subject, path).then(resource => {
             console.log(`hooray ${resource}`);
             fetcher.load(resource).then(() => {
-                let obs = g.getResources({ object: type, fwd: ns.cgto.class});
-                if (obs.length > 0) {
+                const obs = g.getResources({
+                    object: type, fwd: ns.cgto.class })[0];
+
+                if (obs) {
                     let pred = cgto[
                         (inferred ? 'inferred' : 'asserted') + '-subjects'];
-                    let invs = this.derefPP(obs[0], [pred, ww]).then((s) => {
+                    let invs = this.derefPP(obs, [pred, ww]).then((s) => {
                         let types = g.getTypes(s);
-                        // console.log(types);
+                        console.log(types);
 
                         let window;
                         if (g.has(types, [cgto.Window])) {
@@ -396,13 +430,14 @@ export default class RDFViz {
                         else {
                             console.log(`${s} should be the inventory`);
 
-                            console.log(g.match(null, ww.rev, s));
+                            // console.log(g.match(null, ww.rev, s));
 
                             let windows = g.getResources(
                                 { subject: s, rev: ww.rev });
                             console.log(windows);
                             window = windows[0];
                         }
+
                         this.handlePagination(window).then((w) => {
                             console.log(`pagination complete: ${w}`);
                             let members = g.getResources(

@@ -134,7 +134,7 @@
     </article>
     <figure id="force" class="aside"/>
   </main>
-  <xsl:comment>colls: <xsl:value-of select="$collections"/></xsl:comment>
+  <xsl:comment>collections: <xsl:value-of select="$collections"/></xsl:comment>
   <xsl:call-template name="skos:footer">
     <xsl:with-param name="base"          select="$base"/>
     <xsl:with-param name="resource-path" select="$resource-path"/>

@@ -776,6 +776,10 @@ html {
                         // flex-basis: 2fr;
                         padding: 0.25rem;
                     }
+                    > p[property~="skos:definition"] {
+                        grid-area: description;
+                        overflow-y: auto;
+                    }
                     > span[property~="dct:created"] {
                         grid-area: created;
                     }

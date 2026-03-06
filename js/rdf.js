@@ -1,6 +1,9 @@
 // repackage rdflib
 import * as RDFLib from 'rdflib';
 
+// wtf is this
+import * as setImmediate from 'setimmediate';
+
 // XXX rewrite all this in typescript? get on that program?? lol
 
 // pull everything out but the namespace function and the store
@@ -276,6 +279,9 @@ function graph (features, opts) {
     return new (NSMapMixin(cls))(features, opts);
 }
 
+// XXX i don't know lol
+if (window && !window.setImmediate) window.setImmediate = setImmediate;
+
 // aand back out
 //export { RDF as default };
 export default {
@@ -284,4 +290,5 @@ export default {
     NSMapMixin,
     Namespace,
     NSMap,
+    setImmediate,
 };

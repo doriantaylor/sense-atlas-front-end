@@ -725,6 +725,14 @@
     </xsl:apply-templates>
   </xsl:variable>
 
+  <xsl:variable name="principal">
+    <xsl:apply-templates select="." mode="rdfa:object-resources">
+      <xsl:with-param name="subject" select="$subject"/>
+      <xsl:with-param name="base" select="$base"/>
+      <xsl:with-param name="predicate" select="concat($IBIS, 'principal')"/>
+    </xsl:apply-templates>
+  </xsl:variable>
+
   <xsl:variable name="name">
     <xsl:if test="string-length(normalize-space($creator))">
       <xsl:variable name="_">

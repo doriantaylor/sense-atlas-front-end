@@ -211,7 +211,9 @@ window.addEventListener('load', function () {
                 // const val = new Date(Date.parse(this.value));
 
                 // turns out actually that you can do this
-                const val = this.valueAsDate;
+                let val = this.valueAsDate;
+                // for some reason this is null now??
+                if (!val) val = new Date(this.value);
 
                 // note the date is in local time
 
@@ -224,8 +226,9 @@ window.addEventListener('load', function () {
 
                 // …and this will coerce the time zone to zulu already
                 // this.setAttribute('value',val.toISOString());
-                const offsetMs = now.getTimezoneOffset() * 60000;
-                this.value = (new Date(val.valueOf() + offsetMs)).toISOString();
+                // const offsetMs = now.getTimezoneOffset() * 60000;
+                // this.value = (new Date(val.valueOf() + offsetMs)).toISOString();
+                this.value = val.toISOString();
 
                 console.log(`set datetime value to ${this.value}`);
 

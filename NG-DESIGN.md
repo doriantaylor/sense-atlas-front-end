@@ -172,6 +172,14 @@ The entire application state **MUST** be representable solely with (and therefor
 
 All _changes_ to application state will therefore implicitly be representable by [LD-Patch](https://www.w3.org/TR/ldpatch/).
 
+> _Why not SPARQL?_ Because it's basically a license to have people
+> DDoS your web server. SPARQL is way too resource-intensive per unit
+> for stuff like this which can just be equivalently handled by
+> traversing ordinary links on one side and LD-Patch on the
+> other. Access to SPARQL should only be handed out judiciously. Plus
+> anyway it's a chatty protocol that encodes a lot of overhead for
+> what we would be doing with it most of the time.
+
 Every state mutation is a change in the (client-side) graph first, UI second.
 
 Every change in the client-side graph **MUST** be registered and confirmed by the server first before being applied.
@@ -235,6 +243,8 @@ interactive svg graphics should have uniform (rdf) interfaces so the app doesn't
 (this implies a statement delta event type for which listeners can be registered on different DOM elements and then just hook into the built-in event propagation infrastructure **THIS IS ULTRA-IMPORTANT**)
 
 (this way any piece of document subtree has the same event interface whether it's html or svg or whatever)
+
+## Bill of Materials
 
 # Notes/Remarks
 

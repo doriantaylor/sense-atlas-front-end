@@ -165,17 +165,27 @@ let's not mess this up:
 
 The entire application state **MUST** be representable solely with (and therefore reconstructable from) RDF quads.
 
-All _changes_ to application state will therefore necessarily be representable by LD-Patch.
+All _changes_ to application state will therefore implicitly be representable by [LD-Patch](https://www.w3.org/TR/ldpatch/).
 
 Every state mutation is a change in the (client-side) graph first, UI second.
 
-Every change in the client-side graph is registered and confirmed by the server first before being applied.
+Every change in the client-side graph **MUST** be registered and confirmed by the server first before being applied.
 
 (The server **MAY** reject a change, eg on SHACL validation failure.)
 
 (The UI **SHOULD NOT** produce statement deltas that fail to pass SHACL validation on the server side.)
 
 The graph should fundamentally be equivalent to the sum of a log of statement deltas, such that replaying the log into a new store will produce an identical graph (this will be its own Project™ to be sure).
+
+composite UI mutation primitives (molecules?):
+
+* asserts/retracts several statements at once
+* representable as a single transaction/LD-Patch operation
+* can be tied to a single UI action (or eg input idle timeout?)
+* currently being handled as [RDF-KV](https://doriantaylor.com/rdf-kv) `POST` forms which translate to discrete transactions
+  * the `POST` does a naïve server round-trip (to a `303` that redirects to itself) which updates the state
+  * propose to replace with a `PATCH` request with the LD-Patch payload
+  * (RDF-KV can then be reimplemented as a request transform)
 
 ## Multiplayer
 
@@ -185,11 +195,15 @@ Identity/location of WebSocket URI **MUST** be a hypermedia assertion.
 
 (hang all this off "app" resource)
 
-there will also be other ephemeral state coming over the websocket like presence markers and cursor information and stuff
+there will also be other ephemeral state coming over the WebSocket like presence markers and cursor information and stuff
+
+(should probably define a WS subprotocol then)
+
+("my" graph changes go to the server, get validated, response is either `204` or `409` with error report; if successful the patch gets forwarded via websocket to all other connected subscribers)
 
 ## Accessibility
 
-the primary source of truth is the graph structure
+the primary source of truth is the graph structure (first the server, mirrored in the browser)
 
 this should drive the markup structure (including ARIA)
 
@@ -199,7 +213,7 @@ therefore screen readers **SHOULD** always work (ie this is a normative assertio
 
 ## Graphics
 
-CSS **SHOULD** be dispatched by RDFa whenever possible, instead of having to manage class names.
+CSS **SHOULD** be dispatched by RDFa whenever possible, instead of having to manage an entire other ménagerie of class names.
 
 State changes that alter the geometry of a graphical representation **SHOULD** be calculated in advance and then animated.
 
@@ -213,6 +227,8 @@ interactive svg graphics should have uniform (rdf) interfaces so the app doesn't
 
 (this implies a statement delta event type for which listeners can be registered on different DOM elements and then just hook into the built-in event propagation infrastructure **THIS IS ULTRA-IMPORTANT**)
 
+(this way any piece of document subtree has the same event interface whether it's html or svg or whatever)
+
 # Notes/Remarks
 
 i actually kinda wanna keep xslt
@@ -221,4 +237,14 @@ that said it may or may not be necessary
 
 [Loupe](https://vocab.methodandstructure.com/loupe#) on the server side will give me basic markup
 
-not clear how to give loupe instructions
+not clear how to give loupe instructions (??? what did i mean by this)
+
+consider local-first-ish: i could have _my_ own set of assertions that differ from the shared space but the shared space lives on the server (ish)
+
+or does it?
+
+there are graph statements i want to share with colleagues (to say nothing of the public) but then there are others i don't want to disclose
+
+i also don't want it to be possible for somebody else to retract statements i have made unless i approve the action
+
+(this will all be replayable history anyway)

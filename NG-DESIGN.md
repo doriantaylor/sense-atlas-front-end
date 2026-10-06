@@ -248,22 +248,23 @@ interactive svg graphics should have uniform (rdf) interfaces so the app doesn't
 
 ## Bill of Materials
 
-in addition to what is furnished by the server:
+Augmenting what is furnished by the server:
 
 * **Bootstrapper:** This is a `<script>` that is attached on the server side to every document resource under the app's purview (though maybe via a different subject, like the associated instance).
-* **Instance:** This is the resource that defines the global attributes of the app, like which app shell to use. Can be something like `sioc:Space`. It can also be the subject that yokes together the common libraries and functionality:
+* **Instance:** This is the hypermedia resource that defines the global attributes of the app, like which app shell to use. Can be something like `sioc:Space`. It can also be the subject that yokes together the common libraries and functionality:
   * RDF quad store
   * graph delta event stuff
   * websocket connection management (including link to WS URI)
-* **App shell:**: This is primarily an (X)HTML document that contains all `<template>` and custom element definitions, as well as links to any application-specific scripts. It is intended to be reusable and independently testable and therefore **MUST NOT** contain or refer to any instance-specific information.
+* **App shell:** This is primarily an (X)HTML document that contains all `<template>` and custom element definitions, as well as links to any application-specific scripts. It is intended to be reusable and independently testable and therefore **MUST NOT** contain or refer to any instance-specific information.
 
 # Sense Atlas Itself
 
 * If we are designing the UI from first principles we also have to discuss the possibility of different views.
   * The radial hyperbolic Sugiyama (that I invented) is an interesting start.
   * Sugiyama in general makes sense for IBIS (and SKOS) because these are (roughly) hierarchical.
-  * It makes less sense for FOAF (social networks are perhaps the only place force-directed is best)
+  * It makes less sense for FOAF (social networks are perhaps the only place force-directed is best).
   * _However_, intel gathered from other projects suggests users _hate_ the graph view.
+    * I don't know if this is _all_ graph views or just force-directed (which I can see, frankly).
   * this is why I have started referring to the Sugiyama view of Sense Atlas as "the diagnostic view".
   * I actually think a topologically-sorted, min-cut-partitioned, hierarchical outline view might be extremely handy for overviews and quick data entry
     * think like obsidian or roam but with types

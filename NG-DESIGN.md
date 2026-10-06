@@ -4,7 +4,7 @@ It is time to consider a new design for the [Sense
 Atlas](https://senseatlas.net/) front end. The current one was evolved
 incrementally from the original 2013 prototype which was originally
 designed to function without JavaScript. That constraint is no longer
-tenable, and has not been for quite some time.
+tenable, and in practice has been abandoned for quite some time.
 
 That aside, there are two major forcing functions operating in tandem
 to spur a first-principles reconsideration of the design:

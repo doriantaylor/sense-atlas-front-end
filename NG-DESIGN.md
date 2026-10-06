@@ -12,7 +12,8 @@ to spur a reconsideration of the design:
 1. XSLT, which I have been using for two decades to do ultra-lazy
    client-side Web templating, is finally getting memory-holed by the
    browsers and the WHATWG.
-2. Sense Atlas is beginning to collide headlong with `httpRange-14`.
+2. Sense Atlas is beginning to collide headlong with
+   [`httpRange-14`](https://en.wikipedia.org/wiki/HTTPRange-14).
 
 In addition to these forcing functions, there are a number of issues
 with the UI which have been accumulating for years. To put Sense Atlas
@@ -23,7 +24,8 @@ paradigm.
 ## Elimination of XSLT
 
 It is an extreme bummer that XSLT, the red-headed stepchild of the Web
-ecosystem, is finally getting taken out behind the woodshed. The
+ecosystem, is finally getting [taken out behind the
+woodshed](https://github.com/whatwg/html/issues/11523). The
 precipitating event was a Google security researcher siccing a fuzzer
 on both implementations (LibXSLT via WebKit/Blink, and Gecko) and
 finding a whole pile of zero-day. On one hand I can understand their
@@ -89,7 +91,7 @@ What the server can guarantee the client:
 * The body of a `200 OK` response **MUST** be a representation of the
   information resource identified by the request-URI.
 * Non-hypermedia representations **MUST** provide a `Link:` header to
-  A hypermedia variant that encodes the related metadata.
+  a hypermedia variant that encodes the related metadata.
 * A hypermedia representation:
   * **MUST** encode _all_ forward _and_ backward links, or a
     pagination mechanism in lieu.

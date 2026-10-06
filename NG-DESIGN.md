@@ -162,6 +162,8 @@ let's not mess this up:
 * just store the URI, let the state be reconstructed programmatically
   * ie UI bootstrap and navigation event are essentially the same code
 
+i want to be able to navigate in and out of the app context on the same domain, ie the app shell should be linked to RDF classes and/or specific resources, not the entire site.
+
 ## State Manipulation
 
 * adding/removing nodes
@@ -245,6 +247,15 @@ interactive svg graphics should have uniform (rdf) interfaces so the app doesn't
 (this way any piece of document subtree has the same event interface whether it's html or svg or whatever)
 
 ## Bill of Materials
+
+in addition to what is furnished by the server:
+
+* **Bootstrapper:** This is a `<script>` that is attached on the server side to every document resource under the app's purview (though maybe via a different subject, like the associated instance).
+* **Instance:** This is the resource that defines the global attributes of the app, like which app shell to use. Can be something like `sioc:Space`. It can also be the subject that yokes together the common libraries and functionality:
+  * RDF quad store
+  * graph delta event stuff
+  * websocket connection management (including link to WS URI)
+* **App shell:**: This is primarily an (X)HTML document that contains all `<template>` and custom element definitions, as well as links to any application-specific scripts. It is intended to be reusable and independently testable and therefore **MUST NOT** contain or refer to any instance-specific information.
 
 # Notes/Remarks
 

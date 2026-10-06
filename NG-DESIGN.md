@@ -7,7 +7,7 @@ designed to function without JavaScript. That constraint is no longer
 tenable, and has not been for quite some time.
 
 That aside, there are two major forcing functions operating in tandem
-to spur a reconsideration of the design:
+to spur a first-principles reconsideration of the design:
 
 1. XSLT, which I have been using for two decades to do ultra-lazy
    client-side Web templating, is finally getting memory-holed by the
@@ -148,10 +148,13 @@ navigate by content replacement
 
 let's not mess this up:
 
-* location bar **MUST** _always_ represent the subject
+* location bar **MUST** _always_ represent the current subject
   * even if the subject is a fragment
   * ie it should be possible to cut and paste the URI into another
     browser (modulo access control, etc) and see the exact same thing.
+  * note not every fragment will replace the UI, only certain ones will
+    * others will just do ordinary scroll/focus stuff
+    * (will probably depend on the RDF type)
 * navigation clicks push to history stack
   * back button pops off history stack
   * forward button pops off some other stack and re-pushes it onto the history

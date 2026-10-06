@@ -267,6 +267,7 @@ Augmenting what is furnished by the server:
     * I don't know if this is _all_ graph views or just force-directed (which I can see, frankly).
     * I also don't know how strongly to interpret "hate", since the remark was hearsay.
     * (I emailed the PI of that project about this and she never got back to me)
+    * Hate to do a Principal Skinner here but I'm not sure how you do a synoptic view of the graph without, you know, drawing the graph.
   * this is why I have started referring to the Sugiyama view of Sense Atlas as "the diagnostic view".
   * I actually think a topologically-sorted, min-cut-partitioned, hierarchical outline view might be extremely handy for overviews and quick data entry
     * think like obsidian or roam but with types

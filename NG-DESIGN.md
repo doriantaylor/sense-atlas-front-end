@@ -261,10 +261,12 @@ Augmenting what is furnished by the server:
 
 * If we are designing the UI from first principles we also have to discuss the possibility of different views.
   * The radial hyperbolic Sugiyama (that I invented) is an interesting start.
-  * Sugiyama in general makes sense for IBIS (and SKOS) because these are (roughly) hierarchical.
+  * Sugiyama layouts in general make sense for IBIS (and SKOS) because these are (roughly) hierarchical.
   * It makes less sense for FOAF (social networks are perhaps the only place force-directed is best).
   * _However_, intel gathered from other projects suggests users _hate_ the graph view.
     * I don't know if this is _all_ graph views or just force-directed (which I can see, frankly).
+    * I also don't know how strongly to interpret "hate", since the remark was hearsay.
+    * (I emailed the PI of that project about this and she never got back to me)
   * this is why I have started referring to the Sugiyama view of Sense Atlas as "the diagnostic view".
   * I actually think a topologically-sorted, min-cut-partitioned, hierarchical outline view might be extremely handy for overviews and quick data entry
     * think like obsidian or roam but with types

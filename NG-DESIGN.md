@@ -230,7 +230,7 @@ therefore screen readers **SHOULD** always work (ie this is a normative assertio
 
 ## Graphics
 
-CSS **SHOULD** be dispatched by RDFa whenever possible, instead of having to manage an entire other ménagerie of class names.
+CSS **SHOULD** be dispatched by RDFa whenever possible, instead of having to manage [an entire other ménagerie of class names.](https://doriantaylor.com/the-symbol-management-problem)
 
 State changes that alter the geometry of a graphical representation **SHOULD** be calculated in advance and then animated.
 
@@ -257,11 +257,57 @@ in addition to what is furnished by the server:
   * websocket connection management (including link to WS URI)
 * **App shell:**: This is primarily an (X)HTML document that contains all `<template>` and custom element definitions, as well as links to any application-specific scripts. It is intended to be reusable and independently testable and therefore **MUST NOT** contain or refer to any instance-specific information.
 
+# Sense Atlas Itself
+
+* If we are designing the UI from first principles we also have to discuss the possibility of different views.
+  * The radial hyperbolic Sugiyama (that I invented) is an interesting start.
+  * Sugiyama in general makes sense for IBIS (and SKOS) because these are (roughly) hierarchical.
+  * It makes less sense for FOAF (social networks are perhaps the only place force-directed is best)
+  * _However_, intel gathered from other projects suggests users _hate_ the graph view.
+  * this is why I have started referring to the Sugiyama view of Sense Atlas as "the diagnostic view".
+  * I actually think a topologically-sorted, min-cut-partitioned, hierarchical outline view might be extremely handy for overviews and quick data entry
+    * think like obsidian or roam but with types
+* Speaking of types, one thing I have run into when adding (resource) relations is really dumb behaviour around having to select the type of the object first before existing ones can be matched.
+  * the behaviour instead should be something like:
+    * object type is available for refining assertions on _new_ resources, but the pool of _existing_ resources to match against should be the most general (up to disjoint types—that might actually be tough to implement, we'll see).
+    * in other words if you attach an object with a type assertion farther up the class hierarchy, it should "upgrade" the class to the one in the range of the associated property (which is what OWL implies anyway but we want to record the assertion).
+* The nature of IBIS in particular is that detail increases as you drill down.
+  * It concomitates furthermore with specialist concepts.
+  * This implies the value of some kind of "horizon" and/or "rollup" representation that will abridge the details for different audiences.
+  * This information would be useful whether the representation was graphical or purely typographical.
+* There is also mobile to consider.
+  * The diagnostic view takes up tons of space; it's basically impossible to do it justice on mobile.
+  * The big rectangular lozenge that recapitulates the subject and its immediate neighbours takes up a big chunk of the screen real estate, even on a desktop.
+    * It was never a very good solution.
+* Other aspects of Sense Atlas have never been implemented:
+  * Most of the process model stuff
+  * Bibliographic records (including citation network)
+  * Plain-vanilla notes
+    * (I mainly haven't implemented this because I have no idea how these ought to look)
+  * CRM info on `foaf:Agent` entities
+    * (this is pretty straightforward and has basically been waiting for the UI reboot, as well as addressable transforms which have now been implemented)
+  * Works (of people, organizations)
+    * Products
+  * External resource metadata
+    * this is contingent on some kind of link preview infrastructure
+      * this in turn was contingent on some kind of async job infrastructure/websocket gateway in intertwingler
+    * could probably add that to the websocket subprotocol
+      * not even, actually, because it would be just another statement delta
+* Many times I have wanted to reuse resources (eg SKOS concepts, IBIS entities, FOAF agents, bibliographic records…) across instances.
+  * This is a pain in the ass because I have to copy the statements out of one and into the other, then I have to ensure they stay synced.
+  * It would be useful to provide a source of truth for these so other graphs can "lease" these resources.
+  * Then if they deviate in any way they can be adopted into the foreign graph.
+* The type-ahead to determine new/existing resources could be a hell of a lot better.
+  * for one `ibis:concerns` could be auto-populated from whatever it is in the current subject
+  * perhaps a little language model to tie the room together
+
+<!--
+
 # Notes/Remarks
 
 i actually kinda wanna keep xslt
 
-that said it may or may not be necessary
+that said it may not even be necessary
 
 [Loupe](https://vocab.methodandstructure.com/loupe#) on the server side will give me basic markup
 
@@ -276,3 +322,5 @@ there are graph statements i want to share with colleagues (to say nothing of th
 i also don't want it to be possible for somebody else to retract statements i have made unless i approve the action
 
 (this will all be replayable history anyway)
+
+-->

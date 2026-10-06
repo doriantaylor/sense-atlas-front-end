@@ -179,6 +179,8 @@ Every change in the client-side graph **MUST** be registered and confirmed by th
 
 The graph should fundamentally be equivalent to the sum of a log of statement deltas, such that replaying the log into a new store will produce an identical graph (this will be its own Project™ to be sure).
 
+(the idea there is that if all state reduces to statement deltas and the graph itself is the sum of the log of deltas, this takes care of undo at the level of the entire system)
+
 composite UI mutation primitives (molecules?):
 
 * asserts/retracts several statements at once
